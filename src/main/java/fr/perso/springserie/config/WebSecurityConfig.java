@@ -47,7 +47,7 @@ public class WebSecurityConfig {
 
     private static final String[] WHITE_LISTED_URLS = new String[]{
             "/user/authenticate", "/user/save", "/series/list","/series/detail/**" ,"/series/load**",
-            "/saison/bySeries/**", "/episode/bySaisons/**"
+            "/saison/bySeries/**", "/episode/bySaisons/**", "/user/generateuser"
     };
 
     @Bean

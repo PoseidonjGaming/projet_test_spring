@@ -60,6 +60,7 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
         return new JwtResponse(jwtTokenUtil.generateToken(user));
     }
 
+
     private void authenticateManager(String username, String password) {
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);
