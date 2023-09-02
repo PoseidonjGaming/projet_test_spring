@@ -1,8 +1,8 @@
 package fr.perso.springserie.repository;
 
-import fr.perso.springserie.model.entity.Acteur;
+import fr.perso.springserie.model.entity.Actor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface IActeurRepo extends IBaseRepo<Acteur>{
+public interface IActorRepo extends IBaseRepo<Actor>{
 }

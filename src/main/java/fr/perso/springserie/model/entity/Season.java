@@ -13,13 +13,13 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"serie_id","numero"}))
-public class Saison extends BaseEntity {
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"series_id","number"}))
+public class Season extends BaseEntity {
 
     @ManyToOne
-    private Series serie;
-    private int numero;
+    private Series series;
+    private int number;
 
-    @OneToMany(mappedBy = "saison")
+    @OneToMany(mappedBy = "season")
     private List<Episode> episodes;
 }

@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface IEpisodeRepo extends IBaseRepo<Episode> {
-    List<Episode> findBySaisonIdIn(List<Integer> id);
+    List<Episode> findBySeasonIdIn(List<Integer> id);
 }

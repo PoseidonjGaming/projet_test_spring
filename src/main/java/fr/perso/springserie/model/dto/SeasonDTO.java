@@ -11,8 +11,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SaisonDTO extends BaseDTO{
+public class SeasonDTO extends BaseDTO{
     private int seriesId;
-    private int numero;
+    private int number;
     private List<Integer> episodesIds;
 }

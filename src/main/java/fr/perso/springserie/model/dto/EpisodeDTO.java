@@ -12,9 +12,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EpisodeDTO extends BaseDTO {
-    private String nom;
-    private String resume;
+    private String name;
+    private String summary;
     private LocalDate datePremDiff;
-    private int saisonId;
+    private int seasonId;
     private int seriesId;
 }

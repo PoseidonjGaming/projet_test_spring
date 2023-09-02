@@ -17,13 +17,13 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
 
     @Override
     public List<EpisodeDTO> getBySaisonIdIn(List<Integer> id) {
-        return ((IEpisodeRepo) repository).findBySaisonIdIn(id).stream().map(this::toDTO).toList();
+        return ((IEpisodeRepo) repository).findBySeasonIdIn(id).stream().map(this::toDTO).toList();
     }
 
     @Override
     public EpisodeDTO toDTO(Episode entity) {
         EpisodeDTO dto = super.toDTO(entity);
-        dto.setSeriesId(entity.getSaison().getSerie().getId());
+        dto.setSeriesId(entity.getSeason().getSeries().getId());
         return dto;
     }
 }

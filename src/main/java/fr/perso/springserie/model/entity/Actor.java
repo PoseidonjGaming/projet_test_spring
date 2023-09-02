@@ -14,10 +14,10 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Acteur extends BaseEntity{
-    private String nom;
-    private String prenom;
+public class Actor extends BaseEntity{
+    private String lastname;
+    private String firstname;
 
     @ManyToMany
-    private List<Personnage> personnages;
+    private List<Character> characters;
 }

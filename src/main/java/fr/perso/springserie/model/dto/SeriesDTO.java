@@ -13,10 +13,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SeriesDTO extends BaseDTO{
-    private String nom;
-    private LocalDate dateDiff;
-    private String resume;
-    private String affiche;
-    private String urlBa;
-    private List<Integer> saisonsIds;
+    private String name;
+    private LocalDate releaseDate;
+    private String summary;
+    private String poster;
+    private String trailerUrl;
+    private List<Integer> seasonsIds;
 }
