@@ -1,5 +1,6 @@
 package fr.perso.springserie.model.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
@@ -19,5 +20,5 @@ public class Actor extends BaseEntity{
     private String firstname;
 
     @ManyToMany
-    private List<Character> characters;
+    private List<Character> character;
 }

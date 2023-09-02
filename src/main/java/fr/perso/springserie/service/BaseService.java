@@ -52,4 +52,8 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     public D toDTO(E entity) {
         return mapper.map(entity,dtoClass);
     }
+
+    protected <T extends BaseEntity> List<Integer> map(List<T> list){
+        return list.stream().map(BaseEntity::getId).toList();
+    }
 }

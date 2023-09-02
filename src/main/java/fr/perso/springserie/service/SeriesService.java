@@ -46,7 +46,7 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
     @Override
     public SeriesDTO toDTO(Series entity) {
         SeriesDTO dto = super.toDTO(entity);
-        dto.setSeasonsIds(entity.getSeasons().stream().map(BaseEntity::getId).toList());
+        dto.setSeasonsIds(map(entity.getSeasons()));
         return dto;
     }
 }

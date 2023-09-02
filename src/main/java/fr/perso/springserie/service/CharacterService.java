@@ -22,7 +22,8 @@ public class CharacterService extends BaseService<Character, CharacterDTO> imple
     @Override
     public CharacterDTO toDTO(Character entity) {
         CharacterDTO dto = super.toDTO(entity);
-        dto.setActorsIds(entity.getActors().stream().map(BaseEntity::getId).toList());
+        dto.setActorsIds(map(entity.getActor()));
+        dto.setSeriesIds(map(entity.getSeries()));
         return dto;
     }
 }
