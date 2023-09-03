@@ -25,4 +25,9 @@ public class EpisodeController extends BaseController<Episode, EpisodeDTO>{
     public ResponseEntity<List<EpisodeDTO>> getBySaison(@PathVariable List<Integer> id){
         return ResponseEntity.ok(((IEpisodeService)service).getBySaisonIdIn(id));
     }
+
+    @Override
+    public ResponseEntity<List<EpisodeDTO>> search(String term) {
+        return null;
+    }
 }

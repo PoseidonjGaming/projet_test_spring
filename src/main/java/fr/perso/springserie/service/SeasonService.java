@@ -33,15 +33,14 @@ public class SeasonService extends BaseService<Season, SeasonDTO> implements ISe
         return season;
     }
 
-    @Override
-    public SeasonDTO toDTO(Season entity) {
-        SeasonDTO dto = super.toDTO(entity);
-        dto.setEpisodesIds(map(entity.getEpisodes()));
-        return dto;
-    }
 
     @Override
     public List<SeasonDTO> getBySeriesId(int id) {
         return ((ISeasonRepo) repository).findBySeriesId(id).stream().map(this::toDTO).toList();
+    }
+
+    @Override
+    public List<SeasonDTO> search(String term) {
+        return null;
     }
 }

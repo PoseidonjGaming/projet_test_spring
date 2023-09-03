@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -44,6 +45,11 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
         if (user.getPassword() != null)
             user.setPassword(encoder.encode(user.getPassword()));
         super.save(user);
+    }
+
+    @Override
+    public List<UserDTO> search(String term) {
+        return null;
     }
 
     @Override

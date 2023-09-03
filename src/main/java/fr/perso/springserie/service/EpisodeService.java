@@ -21,9 +21,7 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
     }
 
     @Override
-    public EpisodeDTO toDTO(Episode entity) {
-        EpisodeDTO dto = super.toDTO(entity);
-        dto.setSeriesId(entity.getSeason().getSeries().getId());
-        return dto;
+    public List<EpisodeDTO> search(String term) {
+        return null;
     }
 }

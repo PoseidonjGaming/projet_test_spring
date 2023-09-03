@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Service
 public class SeriesService extends BaseService<Series, SeriesDTO> implements ISeriesService {
 
@@ -44,9 +46,7 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
     }
 
     @Override
-    public SeriesDTO toDTO(Series entity) {
-        SeriesDTO dto = super.toDTO(entity);
-        dto.setSeasonsIds(map(entity.getSeasons()));
-        return dto;
+    public List<SeriesDTO> search(String term) {
+        return ((ISeriesRepo)repository).findByNameContaining(term).stream().map(this::toDTO).toList();
     }
 }

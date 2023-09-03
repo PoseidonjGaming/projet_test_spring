@@ -50,4 +50,9 @@ public class SeriesController extends BaseController<Series, SeriesDTO> {
         return ResponseEntity.ok().contentType((filename.split("\\.")[1].equals("jpg")) ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG)
                 .body(new InputStreamResource(fileService.load(filename)));
     }
+
+    @Override
+    public ResponseEntity<List<SeriesDTO>> search(String term) {
+        return ResponseEntity.ok(service.search(term));
+    }
 }

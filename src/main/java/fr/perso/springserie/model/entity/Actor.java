@@ -19,6 +19,6 @@ public class Actor extends BaseEntity{
     private String lastname;
     private String firstname;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "actor")
     private List<Character> character;
 }

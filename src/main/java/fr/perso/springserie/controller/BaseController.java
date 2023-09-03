@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-public class BaseController<E extends BaseEntity, D extends BaseDTO> {
+public abstract class BaseController<E extends BaseEntity, D extends BaseDTO> {
 
     protected final IBaseService<E, D> service;
 
@@ -26,6 +26,9 @@ public class BaseController<E extends BaseEntity, D extends BaseDTO> {
         return ResponseEntity.ofNullable(service.getById(id));
     }
 
+    @GetMapping("/search")
+    public abstract ResponseEntity<List<D>> search(String term);
+
     @PostMapping("/save")
     public void save(@RequestBody D d) {
         service.save(d);
@@ -40,4 +43,5 @@ public class BaseController<E extends BaseEntity, D extends BaseDTO> {
     public void delete(@PathVariable int id) {
         service.delete(id);
     }
+
 }

@@ -1,5 +1,6 @@
 package fr.perso.springserie.service.interfaces;
 
+import fr.perso.springserie.model.dto.ActorDTO;
 import fr.perso.springserie.model.dto.BaseDTO;
 import fr.perso.springserie.model.entity.BaseEntity;
 
@@ -13,4 +14,6 @@ public interface IBaseService<E extends BaseEntity, D extends BaseDTO> {
     void save(D d);
 
     void delete(int id);
+
+    List<D> search(String term);
 }

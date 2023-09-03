@@ -22,6 +22,6 @@ public class Character extends BaseEntity{
 
     @ManyToMany
     private List<Series> series;
-    @ManyToMany(mappedBy = "character")
+    @ManyToMany
     private List<Actor> actor;
 }
