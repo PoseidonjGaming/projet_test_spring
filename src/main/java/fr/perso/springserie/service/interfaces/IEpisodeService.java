@@ -6,5 +6,5 @@ import fr.perso.springserie.model.entity.Episode;
 import java.util.List;
 
 public interface IEpisodeService extends IBaseService<Episode, EpisodeDTO>{
-    List<EpisodeDTO> getBySaisonIdIn(List<Integer> id);
+    List<EpisodeDTO> getBySeasonIdIn(List<Integer> id);
 }

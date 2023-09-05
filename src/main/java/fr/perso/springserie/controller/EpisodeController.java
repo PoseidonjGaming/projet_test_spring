@@ -21,9 +21,9 @@ public class EpisodeController extends BaseController<Episode, EpisodeDTO>{
         super(service);
     }
 
-    @GetMapping("/bySaisons/{id}")
-    public ResponseEntity<List<EpisodeDTO>> getBySaison(@PathVariable List<Integer> id){
-        return ResponseEntity.ok(((IEpisodeService)service).getBySaisonIdIn(id));
+    @GetMapping("/bySeasons/{id}")
+    public ResponseEntity<List<EpisodeDTO>> getBySeason(@PathVariable List<Integer> id){
+        return ResponseEntity.ofNullable(((IEpisodeService)service).getBySeasonIdIn(id));
     }
 
     @Override

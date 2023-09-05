@@ -16,8 +16,8 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
 
 
     @Override
-    public List<EpisodeDTO> getBySaisonIdIn(List<Integer> id) {
-        return ((IEpisodeRepo) repository).findBySeasonIdIn(id).stream().map(this::toDTO).toList();
+    public List<EpisodeDTO> getBySeasonIdIn(List<Integer> id) {
+        return (id.get(0) == 0) ? null : ((IEpisodeRepo) repository).findBySeasonIdIn(id).stream().map(this::toDTO).toList();
     }
 
     @Override
