@@ -13,5 +13,5 @@ public interface IFileService {
 
     void saves(List<MultipartFile> files);
 
-    InputStream writeExcel();
+    InputStream writeExcel(List<Boolean> booleanList);
 }

@@ -4,12 +4,9 @@ import fr.perso.springserie.service.interfaces.IFileService;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.util.List;
 
 @RestController
 @RequestMapping("/file")
@@ -21,8 +18,8 @@ public class FileController {
         this.service = service;
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<InputStreamResource> test(){
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(new InputStreamResource(service.writeExcel()));
+    @PostMapping("/test")
+    public ResponseEntity<InputStreamResource> test(@RequestBody List<Boolean> booleanList) {
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(new InputStreamResource(service.writeExcel(booleanList)));
     }
 }

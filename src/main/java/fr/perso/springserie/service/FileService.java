@@ -1,17 +1,20 @@
 package fr.perso.springserie.service;
 
-import fr.perso.springserie.model.entity.Series;
-import fr.perso.springserie.repository.ISeriesRepo;
+import fr.perso.springserie.model.dto.*;
+import fr.perso.springserie.model.entity.BaseEntity;
+import fr.perso.springserie.service.interfaces.IBaseService;
 import fr.perso.springserie.service.interfaces.IFileService;
+import fr.perso.springserie.service.interfaces.ISeasonService;
+import fr.perso.springserie.service.interfaces.ISeriesService;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +22,7 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -26,14 +30,16 @@ import java.util.stream.Stream;
 @Service
 public class FileService implements IFileService {
 
-    private final ISeriesRepo repo;
+    @Autowired
+    @Lazy
+    private ISeriesService seriesService;
+
+    @Autowired
+    private ISeasonService seasonService;
 
     @Value("${app.storageFolder}")
     private String fileRoot;
 
-    public FileService(ISeriesRepo repo) {
-        this.repo = repo;
-    }
 
     @Override
     public void save(MultipartFile file) {
@@ -49,7 +55,7 @@ public class FileService implements IFileService {
 
     @Override
     public InputStream load(String filename) {
-        try (Stream<Path> files = Files.find(Paths.get(System.getProperty("user.dir"), fileRoot), 3,
+        try (Stream<Path> files = Files.find(Paths.get(System.getProperty("user.dir"), fileRoot), 4,
                 (p, a) -> p.getFileName().toString().equals(filename))) {
 
             Path pathParent = files.toList().get(0);
@@ -70,72 +76,77 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public InputStream writeExcel() {
-        List<Series> list = repo.findAll();
+    public InputStream writeExcel(List<Boolean> booleanList) {
 
-        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet("Series");
-            sheet.setColumnWidth(0, 6000);
+        if (booleanList.size() == 5) {
+            List<Class<? extends BaseDTO>> classList = new ArrayList<>();
 
-            CellStyle headerStyle = workbook.createCellStyle();
-            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            for (int i = 0; i < booleanList.size(); i++) {
+                switch (i) {
+                    case 0 -> classList.add(SeriesDTO.class);
+                    case 1 -> classList.add(SeasonDTO.class);
+                    case 2 -> classList.add(ActorDTO.class);
+                    case 3 -> classList.add(CharacterDTO.class);
+                    case 4 -> classList.add(EpisodeDTO.class);
+                    default -> System.out.println("Class not found");
+                }
+            }
 
 
-            XSSFFont font = workbook.createFont();
-            font.setFontName("Arial");
-            font.setFontHeightInPoints((short) 16);
-            font.setBold(true);
+            try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+                classList.forEach(aClass -> {
+                    System.out.println(aClass.getSimpleName());
+                    switch (aClass.getSimpleName()) {
+                        case "SeriesDTO" -> write(aClass, workbook, seriesService);
+                        case "SeasonDTO" -> write(aClass, workbook, seasonService);
+                        default -> System.out.println("Class not found");
+                    }
+                });
+                createFolder(Path.of(System.getProperty("user.dir"), fileRoot, "files"));
+                FileOutputStream outputStream = new FileOutputStream(Path.of(System.getProperty("user.dir"), fileRoot, "files", "test.xlsx").toFile());
+                workbook.write(outputStream);
 
-            headerStyle.setFont(font);
+                return load("test.xlsx");
 
-            Row header = sheet.createRow(0);
-            CellStyle style = workbook.createCellStyle();
-            style.setWrapText(true);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-            createHeaders(Series.class, header, headerStyle);
-            list.forEach(series -> createCellData(Series.class, sheet.createRow(list.indexOf(series) + 1), style, series));
-            System.out.println("test");
-
-            createFolder(Path.of(System.getProperty("user.dir"), fileRoot, "files"));
-
-            FileOutputStream outputStream = new FileOutputStream(Path.of(System.getProperty("user.dir"), fileRoot, "files", "test.xlsx").toFile());
-            workbook.write(outputStream);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
-        InputStream stream = load("test.xlsx");
-        File file = Path.of(System.getProperty("user.dir"), fileRoot, "files", "test.xlsx").toFile();
-        if(file.delete())
-            System.out.println("delete");
-        return stream;
+        return null;
+
     }
 
-    private void createHeaders(@NotNull Class<Series> seriesClass, Row header, CellStyle headerStyle) {
-        Field[] fields = seriesClass.getDeclaredFields();
-
+    private void createHeaders(@NotNull Class<? extends BaseDTO> classe, Row header, CellStyle headerStyle) {
+        Field[] fields = classe.getDeclaredFields();
         Arrays.stream(fields).forEach(field -> {
-            Cell headerCell = header.createCell(header.getLastCellNum() + 1);
+            Cell headerCell = header.createCell((header.getLastCellNum() == -1) ? 0 : header.getLastCellNum());
             headerCell.setCellValue(field.getName());
             headerCell.setCellStyle(headerStyle);
         });
     }
 
-    private void createCellData(@NotNull Class<Series> seriesClass, Row row, CellStyle headerStyle, Series series) {
+    private <D extends BaseDTO> void createCellData(@NotNull Class<? extends BaseDTO> seriesClass, Row
+            row, CellStyle headerStyle, D dtos) {
         Field[] fields = seriesClass.getDeclaredFields();
 
         Arrays.stream(fields).forEach(field -> {
-            Cell headerCell = row.createCell(row.getLastCellNum() + 1);
+            Cell headerCell = row.createCell((row.getLastCellNum() == -1) ? 0 : row.getLastCellNum());
+            if (field.getName().equals("summary"))
+                headerStyle.setWrapText(true);
             field.setAccessible(true);
             try {
-                headerCell.setCellValue(field.get(series).toString());
+                headerCell.setCellValue(field.get(dtos).toString());
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
             field.setAccessible(false);
             headerCell.setCellStyle(headerStyle);
         });
+    }
+
+    private Sheet createSheet(Workbook workbook, Class<?> aClass) {
+        return workbook.createSheet(aClass.getSimpleName().replace("DTO",""));
     }
 
     private void createFolder(Path path) {
@@ -145,6 +156,30 @@ public class FileService implements IFileService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    private <E extends BaseEntity, D extends BaseDTO> void write(Class<? extends BaseDTO> dtoClass, Workbook
+            workbook, IBaseService<E, D> service) {
+        List<D> list;
+        Sheet sheet = createSheet(workbook, dtoClass);
+        for (int i = 0; i < dtoClass.getDeclaredFields().length; i++) {
+            sheet.setColumnWidth(i, 6000);
+        }
+
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        Row headers = sheet.createRow(0);
+        createHeaders(dtoClass, headers, headerStyle);
+        list = service.getAll();
+
+
+        if (list != null) {
+            CellStyle style = workbook.createCellStyle();
+            list.forEach(dto -> createCellData(dtoClass, sheet.createRow(
+                    (sheet.getLastRowNum() == -1) ? 0 : sheet.getLastRowNum()), style, dto));
         }
     }
 }
