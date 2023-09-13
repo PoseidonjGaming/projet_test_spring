@@ -18,7 +18,7 @@ public class FileController {
         this.service = service;
     }
 
-    @PostMapping("/test")
+    @PostMapping("/export")
     public ResponseEntity<InputStreamResource> test(@RequestBody List<Boolean> booleanList) {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(new InputStreamResource(service.writeExcel(booleanList)));
     }

@@ -103,10 +103,11 @@ public class FileService implements IFileService {
                     }
                 });
                 createFolder(Path.of(System.getProperty("user.dir"), fileRoot, "files"));
-                FileOutputStream outputStream = new FileOutputStream(Path.of(System.getProperty("user.dir"), fileRoot, "files", "test.xlsx").toFile());
+                String filename = "data.xlsx";
+                FileOutputStream outputStream = new FileOutputStream(Path.of(System.getProperty("user.dir"), fileRoot, "files", filename).toFile());
                 workbook.write(outputStream);
 
-                return load("test.xlsx");
+                return load(filename);
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -127,7 +128,7 @@ public class FileService implements IFileService {
     }
 
     private <D extends BaseDTO> void createCellData(@NotNull Class<? extends BaseDTO> seriesClass, Row
-            row, CellStyle headerStyle, D dtos) {
+            row, CellStyle headerStyle, D dto) {
         Field[] fields = seriesClass.getDeclaredFields();
 
         Arrays.stream(fields).forEach(field -> {
@@ -136,7 +137,7 @@ public class FileService implements IFileService {
                 headerStyle.setWrapText(true);
             field.setAccessible(true);
             try {
-                headerCell.setCellValue(field.get(dtos).toString());
+                headerCell.setCellValue(field.get(dto).toString());
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -178,6 +179,7 @@ public class FileService implements IFileService {
 
         if (list != null) {
             CellStyle style = workbook.createCellStyle();
+            System.out.println(sheet.getLastRowNum());
             list.forEach(dto -> createCellData(dtoClass, sheet.createRow(
                     (sheet.getLastRowNum() == -1) ? 0 : sheet.getLastRowNum()), style, dto));
         }
