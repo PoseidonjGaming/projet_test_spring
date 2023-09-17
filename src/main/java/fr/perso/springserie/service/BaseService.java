@@ -8,7 +8,6 @@ import fr.perso.springserie.service.interfaces.IMapper;
 import org.modelmapper.ModelMapper;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,14 +52,14 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public D toDTO(E entity) {
-        return map(entity,mapper.map(entity, dtoClass));
+        return mapList(entity,mapper.map(entity, dtoClass));
     }
 
-    protected <T extends BaseEntity> List<Integer> map(List<T> list) {
+    protected <T extends BaseEntity> List<Integer> mapList(List<T> list) {
         return list.stream().map(BaseEntity::getId).toList();
     }
 
-    protected D map(E entity, D dto) {
+    protected D mapList(E entity, D dto) {
         Arrays.stream(entity.getClass().getDeclaredFields()).filter(e->e.getType().equals(List.class)).forEach(field -> {
             try {
                 field.setAccessible(true);
