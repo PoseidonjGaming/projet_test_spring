@@ -19,8 +19,4 @@ public class CharacterController extends BaseController<Character, CharacterDTO>
         super(service);
     }
 
-    @Override
-    public ResponseEntity<List<CharacterDTO>> search(String term) {
-        return null;
-    }
 }
