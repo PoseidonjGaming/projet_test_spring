@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class EpisodeDTO extends BaseDTO {
     private String name;
     private String summary;
-    private LocalDate datePremDiff;
+    private LocalDate releaseDate;
     private int seasonId;
     private int seriesId;
 }
