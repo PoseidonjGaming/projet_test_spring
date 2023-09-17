@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class UserService extends BaseService<User, UserDTO> implements IUserService, UserDetailsService {
@@ -49,21 +48,21 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
 
     @Override
     public List<UserDTO> search(String term) {
-        return null;
+        return ((IUserRepo)repository).findByUsernameContains(term).stream().map(this::toDTO).toList();
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = ((IUserRepo) repository).findByUsername(username);
-        return user.map(value -> new org.springframework.security.core.userdetails.User(value.getUsername(), value.getPassword(),
-                value.getRoles().stream().map(SimpleGrantedAuthority::new).toList())).orElse(null);
+        List<User> user = ((IUserRepo) repository).findByUsernameContains(username);
+        return user.stream().map(value -> new org.springframework.security.core.userdetails.User(value.getUsername(), value.getPassword(),
+                value.getRoles().stream().map(SimpleGrantedAuthority::new).toList())).toList().get(0);
     }
 
     @Override
     public JwtResponse authenticate(JwtUser jwtUser) {
-        UserDTO user = toDTO(((IUserRepo) repository).findByUsername(jwtUser.getUsername()).orElse(null));
-        authenticateManager(user.getUsername(), jwtUser.getPassword());
-        return new JwtResponse(jwtTokenUtil.generateToken(user));
+        List<User> user = ((IUserRepo)repository).findByUsernameContains(jwtUser.getUsername());
+        authenticateManager(user.get(0).getUsername(), jwtUser.getPassword());
+        return new JwtResponse(jwtTokenUtil.generateToken(toDTO(user.get(0))));
     }
 
 
@@ -76,5 +75,12 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
         } catch (Exception e) {
             throw new RuntimeException("Invalid Credentials");
         }
+    }
+
+    @Override
+    public UserDTO toDTO(User entity) {
+        UserDTO dto = super.toDTO(entity);
+        dto.setPassword(null);
+        return dto;
     }
 }

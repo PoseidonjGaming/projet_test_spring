@@ -16,6 +16,7 @@ public class UserDTO extends BaseDTO{
     private String username;
     private String roles;
     private String password;
+    private String avatarFile;
 
     public List<String> getRoles() {
         return Arrays.stream(roles.split(",")).map(e->e.replace("[", "")

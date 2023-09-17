@@ -2,8 +2,8 @@ package fr.perso.springserie.repository;
 
 import fr.perso.springserie.model.entity.User;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface IUserRepo extends IBaseRepo<User> {
-    Optional<User> findByUsername(String nom);
+    List<User> findByUsernameContains(String nom);
 }

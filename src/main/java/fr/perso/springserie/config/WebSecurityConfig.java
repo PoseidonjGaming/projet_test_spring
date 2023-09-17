@@ -47,7 +47,7 @@ public class WebSecurityConfig {
 
     private static final String[] WHITE_LISTED_URLS = new String[]{
             "/user/authenticate", "/user/save", "/series/list","/series/detail/**" ,"/series/load**",
-            "/season/bySeries/**", "/episode/bySeasons/**", "/user/generateuser"
+            "/season/bySeries/**", "/episode/bySeasons/**"
     };
 
     @Bean
@@ -70,7 +70,7 @@ public class WebSecurityConfig {
                             try {
                                 auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                         .requestMatchers(WHITE_LISTED_URLS).permitAll()
-                                        .requestMatchers("/**").hasRole("super_admin");
+                                        .anyRequest().hasRole("super_admin");
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
