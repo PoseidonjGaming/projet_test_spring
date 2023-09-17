@@ -30,8 +30,4 @@ public class SeasonController extends BaseController<Season, SeasonDTO> {
         return ResponseEntity.ofNullable(((ISeasonService)service).getBySeriesId(id));
     }
 
-    @Override
-    public ResponseEntity<List<SeasonDTO>> search(String term) {
-        return null;
-    }
 }

@@ -19,8 +19,4 @@ public class ActorController extends BaseController<Actor, ActorDTO> {
         super(service);
     }
 
-    @Override
-    public ResponseEntity<List<ActorDTO>> search(String term) {
-        return ResponseEntity.ok(service.search(term));
-    }
 }

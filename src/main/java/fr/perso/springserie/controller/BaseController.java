@@ -27,7 +27,9 @@ public abstract class BaseController<E extends BaseEntity, D extends BaseDTO> {
     }
 
     @GetMapping("/search")
-    public abstract ResponseEntity<List<D>> search(String term);
+    public ResponseEntity<List<D>> search(String term){
+     return ResponseEntity.ok(service.search(term));
+    }
 
     @PostMapping("/save")
     public void save(@RequestBody D d) {

@@ -2,6 +2,7 @@ package fr.perso.springserie.controller;
 
 import fr.perso.springserie.model.dto.SeriesDTO;
 import fr.perso.springserie.model.entity.Series;
+import fr.perso.springserie.service.interfaces.IBaseService;
 import fr.perso.springserie.service.interfaces.IFileService;
 import fr.perso.springserie.service.interfaces.ISeriesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.util.List;
 
 @RestController
@@ -51,8 +53,14 @@ public class SeriesController extends BaseController<Series, SeriesDTO> {
                 .body(new InputStreamResource(fileService.load(filename)));
     }
 
-    @Override
-    public ResponseEntity<List<SeriesDTO>> search(String term) {
-        return ResponseEntity.ok(service.search(term));
+    @GetMapping("write")
+    public ResponseEntity<InputStream> test(){
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(fileService.write("test.xlsx"));
     }
+    @GetMapping("read")
+    public ResponseEntity<?> read(){
+        fileService.load(IBaseService::save, service);
+        return ResponseEntity.ok().build();
+    }
+
 }

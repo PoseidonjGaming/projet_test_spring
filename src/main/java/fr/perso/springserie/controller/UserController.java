@@ -28,12 +28,7 @@ public class UserController extends BaseController<User, UserDTO> {
 
     @GetMapping("/generateuser")
     public ResponseEntity<?> generate() {
-        service.save(new UserDTO("Admin",List.of("ROLE_super_admin").toString(),"1234"));
+        service.save(new UserDTO("Admin",List.of("ROLE_super_admin").toString(),"1234",""));
         return ResponseEntity.ok().build();
-    }
-
-    @Override
-    public ResponseEntity<List<UserDTO>> search(String term) {
-        return null;
     }
 }
