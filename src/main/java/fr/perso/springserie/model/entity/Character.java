@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Character extends BaseEntity{
+public class Character extends BaseEntity {
 
     private String name;
 

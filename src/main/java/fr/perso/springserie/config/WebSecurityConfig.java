@@ -28,6 +28,10 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
+    private static final String[] WHITE_LISTED_URLS = new String[]{
+            "/user/authenticate", "/user/save", "/series/list", "/series/detail/**", "/series/load**",
+            "/season/bySeries/**", "/episode/bySeasons/**", "/user/generateuser"
+    };
     @Autowired
     private JwtFilter jwtAuthFilter;
     @Autowired
@@ -44,11 +48,6 @@ public class WebSecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
-    private static final String[] WHITE_LISTED_URLS = new String[]{
-            "/user/authenticate", "/user/save", "/series/list","/series/detail/**" ,"/series/load**",
-            "/season/bySeries/**", "/episode/bySeasons/**"
-    };
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

@@ -3,7 +3,6 @@ package fr.perso.springserie.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.perso.springserie.model.dto.SeriesDTO;
-import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.model.entity.Series;
 import fr.perso.springserie.repository.ISeriesRepo;
 import fr.perso.springserie.service.interfaces.IFileService;
@@ -47,6 +46,6 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
 
     @Override
     public List<SeriesDTO> search(String term) {
-        return ((ISeriesRepo)repository).findByNameContaining(term).stream().map(this::toDTO).toList();
+        return ((ISeriesRepo) repository).findByNameContaining(term).stream().map(this::toDTO).toList();
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActorDTO extends BaseDTO{
+public class ActorDTO extends BaseDTO {
     private String lastname;
     private String firstname;
     private List<Integer> characterIds;

@@ -27,7 +27,7 @@ public class SeasonController extends BaseController<Season, SeasonDTO> {
 
     @GetMapping("/bySeries/{id}")
     public ResponseEntity<List<SeasonDTO>> getBySeriesId(@PathVariable int id) {
-        return ResponseEntity.ofNullable(((ISeasonService)service).getBySeriesId(id));
+        return ResponseEntity.ofNullable(((ISeasonService) service).getBySeriesId(id));
     }
 
 }

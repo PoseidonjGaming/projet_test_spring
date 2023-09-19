@@ -15,6 +15,7 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
 
     private final ISeasonRepo seasonRepo;
     private final ISeriesRepo seriesRepo;
+
     public EpisodeService(IEpisodeRepo repository, ISeasonRepo seasonRepo, ISeriesRepo seriesRepo) {
         super(repository, EpisodeDTO.class, Episode.class);
         this.seasonRepo = seasonRepo;
@@ -41,10 +42,10 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
 
     @Override
     public void delete(int id) {
-        EpisodeDTO dto=getById(id);
+        EpisodeDTO dto = getById(id);
         super.delete(id);
         seasonRepo.findById(dto.getSeasonId()).ifPresent(season -> {
-            if(season.getEpisodes().isEmpty())
+            if (season.getEpisodes().isEmpty())
                 seasonRepo.delete(season);
         });
     }

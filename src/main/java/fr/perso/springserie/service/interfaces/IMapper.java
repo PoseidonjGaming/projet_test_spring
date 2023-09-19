@@ -5,5 +5,6 @@ import fr.perso.springserie.model.entity.BaseEntity;
 
 public interface IMapper<E extends BaseEntity, D extends BaseDTO> {
     E toEntity(D dto);
+
     D toDTO(E entity);
 }

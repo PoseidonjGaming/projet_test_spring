@@ -1,6 +1,5 @@
 package fr.perso.springserie.model.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
@@ -15,7 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Actor extends BaseEntity{
+public class Actor extends BaseEntity {
     private String lastname;
     private String firstname;
 

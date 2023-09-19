@@ -2,6 +2,7 @@ package fr.perso.springserie.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +28,9 @@ public class Series extends BaseEntity {
 
     @OneToMany(mappedBy = "series")
     private List<Season> seasons;
+
+    @ManyToMany(mappedBy = "series")
+    private List<Category> categories;
 
 
 }

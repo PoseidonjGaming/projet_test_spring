@@ -24,16 +24,14 @@ import java.util.Objects;
 @Service
 public class UserService extends BaseService<User, UserDTO> implements IUserService, UserDetailsService {
 
-    @Lazy
-    @Autowired
-    private PasswordEncoder encoder;
-
     @Autowired
     protected JwtUtil jwtTokenUtil;
-
     @Autowired
     @Lazy
     protected AuthenticationManager authenticationManager;
+    @Lazy
+    @Autowired
+    private PasswordEncoder encoder;
 
     public UserService(IUserRepo repo) {
         super(repo, UserDTO.class, User.class);
@@ -48,7 +46,7 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
 
     @Override
     public List<UserDTO> search(String term) {
-        return ((IUserRepo)repository).findByUsernameContains(term).stream().map(this::toDTO).toList();
+        return ((IUserRepo) repository).findByUsernameContains(term).stream().map(this::toDTO).toList();
     }
 
     @Override
@@ -60,7 +58,7 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
 
     @Override
     public JwtResponse authenticate(JwtUser jwtUser) {
-        List<User> user = ((IUserRepo)repository).findByUsernameContains(jwtUser.getUsername());
+        List<User> user = ((IUserRepo) repository).findByUsernameContains(jwtUser.getUsername());
         authenticateManager(user.get(0).getUsername(), jwtUser.getPassword());
         return new JwtResponse(jwtTokenUtil.generateToken(toDTO(user.get(0))));
     }

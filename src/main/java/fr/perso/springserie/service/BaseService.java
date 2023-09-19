@@ -37,7 +37,9 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public void save(D d) {
-        repository.save(toEntity(d));
+        E entity = toEntity(d);
+        System.out.println(d);
+        repository.save(entity);
     }
 
     @Override
@@ -52,7 +54,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public D toDTO(E entity) {
-        return mapList(entity,mapper.map(entity, dtoClass));
+        return mapList(entity, mapper.map(entity, dtoClass));
     }
 
     protected <T extends BaseEntity> List<Integer> mapList(List<T> list) {
@@ -60,15 +62,15 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     }
 
     protected D mapList(E entity, D dto) {
-        Arrays.stream(entity.getClass().getDeclaredFields()).filter(e->e.getType().equals(List.class)).forEach(field -> {
+        Arrays.stream(entity.getClass().getDeclaredFields()).filter(e -> e.getType().equals(List.class)).forEach(field -> {
             try {
                 field.setAccessible(true);
                 List<E> list = (List<E>) field.get(entity);
                 field.setAccessible(false);
 
-                Field dtoField= Arrays.stream(dto.getClass().getDeclaredFields()).filter(field1 -> field1.getName().equals(field.getName()+"Ids")).findFirst().orElse(null);
+                Field dtoField = Arrays.stream(dto.getClass().getDeclaredFields()).filter(field1 -> field1.getName().equals(field.getName() + "Ids")).findFirst().orElse(null);
                 dtoField.setAccessible(true);
-                dtoField.set(dto,list.stream().map(BaseEntity::getId).toList());
+                dtoField.set(dto, list.stream().map(BaseEntity::getId).toList());
                 dtoField.setAccessible(false);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);

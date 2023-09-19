@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/episode")
-public class EpisodeController extends BaseController<Episode, EpisodeDTO>{
+public class EpisodeController extends BaseController<Episode, EpisodeDTO> {
 
     @Autowired
     public EpisodeController(IEpisodeService service) {
@@ -22,8 +22,8 @@ public class EpisodeController extends BaseController<Episode, EpisodeDTO>{
     }
 
     @GetMapping("/bySeasons/{id}")
-    public ResponseEntity<List<EpisodeDTO>> getBySeason(@PathVariable("id") List<Integer> id){
-        return ResponseEntity.ofNullable(((IEpisodeService)service).getBySeasonIdIn(id));
+    public ResponseEntity<List<EpisodeDTO>> getBySeason(@PathVariable("id") List<Integer> id) {
+        return ResponseEntity.ofNullable(((IEpisodeService) service).getBySeasonIdIn(id));
     }
 
 }

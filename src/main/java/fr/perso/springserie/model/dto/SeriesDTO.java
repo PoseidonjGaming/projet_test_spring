@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode(callSuper = false)
-public class SeriesDTO extends BaseDTO{
+public class SeriesDTO extends BaseDTO {
     private String name;
     private LocalDate releaseDate;
     private String summary;

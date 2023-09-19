@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Episode extends BaseEntity{
+public class Episode extends BaseEntity {
 
     private String name;
 

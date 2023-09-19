@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"series_id","number"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"series_id", "number"}))
 public class Season extends BaseEntity {
 
     @ManyToOne

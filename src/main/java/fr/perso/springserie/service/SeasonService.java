@@ -1,7 +1,6 @@
 package fr.perso.springserie.service;
 
 import fr.perso.springserie.model.dto.SeasonDTO;
-import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.model.entity.Season;
 import fr.perso.springserie.repository.IEpisodeRepo;
 import fr.perso.springserie.repository.ISeasonRepo;

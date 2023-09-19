@@ -15,6 +15,7 @@ public class CharacterService extends BaseService<Character, CharacterDTO> imple
 
     private final IActorRepo actorRepo;
     private final ISeriesRepo seriesRepo;
+
     protected CharacterService(ICharacterRepo repository, IActorRepo actorRepo, ISeriesRepo seriesRepo) {
         super(repository, CharacterDTO.class, Character.class);
         this.actorRepo = actorRepo;
@@ -29,8 +30,8 @@ public class CharacterService extends BaseService<Character, CharacterDTO> imple
     @Override
     public Character toEntity(CharacterDTO dto) {
         Character entity = super.toEntity(dto);
-        entity.setActor(dto.getActorIds().stream().map(e->actorRepo.findById(e).orElse(null)).toList());
-        entity.setSeries(dto.getSeriesIds().stream().map(e->seriesRepo.findById(e).orElse(null)).toList());
+        entity.setActor(dto.getActorIds().stream().map(e -> actorRepo.findById(e).orElse(null)).toList());
+        entity.setSeries(dto.getSeriesIds().stream().map(e -> seriesRepo.findById(e).orElse(null)).toList());
         return entity;
     }
 }

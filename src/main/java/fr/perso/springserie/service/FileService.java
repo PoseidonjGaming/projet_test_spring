@@ -147,7 +147,7 @@ public class FileService implements IFileService {
     }
 
     private Sheet createSheet(Workbook workbook, Class<?> aClass) {
-        return workbook.createSheet(aClass.getSimpleName().replace("DTO",""));
+        return workbook.createSheet(aClass.getSimpleName().replace("DTO", ""));
     }
 
     private void createFolder(Path path) {
