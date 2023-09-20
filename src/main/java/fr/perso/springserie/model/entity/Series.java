@@ -30,7 +30,7 @@ public class Series extends BaseEntity {
     private List<Season> seasons;
 
     @ManyToMany(mappedBy = "series")
-    private List<Category> categories;
+    private List<Category> category;
 
 
 }
