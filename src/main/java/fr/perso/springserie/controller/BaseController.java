@@ -12,7 +12,7 @@ public abstract class BaseController<E extends BaseEntity, D extends BaseDTO> {
 
     protected final IBaseService<E, D> service;
 
-    public BaseController(IBaseService<E, D> service) {
+    protected BaseController(IBaseService<E, D> service) {
         this.service = service;
     }
 
