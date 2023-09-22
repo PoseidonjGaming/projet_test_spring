@@ -2,7 +2,7 @@ package fr.perso.springserie.controller;
 
 import fr.perso.springserie.model.dto.SeriesDTO;
 import fr.perso.springserie.model.entity.Series;
-import fr.perso.springserie.model.special.SearchSeries;
+import fr.perso.springserie.model.dto.special.SearchSeries;
 import fr.perso.springserie.service.interfaces.IFileService;
 import fr.perso.springserie.service.interfaces.ISeriesService;
 import org.springframework.beans.factory.annotation.Autowired;

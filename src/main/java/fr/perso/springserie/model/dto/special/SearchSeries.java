@@ -1,4 +1,4 @@
-package fr.perso.springserie.model.special;
+package fr.perso.springserie.model.dto.special;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
