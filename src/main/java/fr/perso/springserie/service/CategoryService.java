@@ -16,6 +16,6 @@ public class CategoryService extends BaseService<Category, CategoryDTO> implemen
 
     @Override
     public List<CategoryDTO> search(String term) {
-        return null;
+        return toDTOList(((ICategoryRepo)repository).findByNameContains(term));
     }
 }
