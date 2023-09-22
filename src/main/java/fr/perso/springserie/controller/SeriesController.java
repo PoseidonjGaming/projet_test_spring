@@ -2,6 +2,7 @@ package fr.perso.springserie.controller;
 
 import fr.perso.springserie.model.dto.SeriesDTO;
 import fr.perso.springserie.model.entity.Series;
+import fr.perso.springserie.model.special.SearchSeries;
 import fr.perso.springserie.service.interfaces.IFileService;
 import fr.perso.springserie.service.interfaces.ISeriesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,4 +51,13 @@ public class SeriesController extends BaseController<Series, SeriesDTO> {
                 .body(new InputStreamResource(fileService.load(filename)));
     }
 
+    @PostMapping("/byCategories")
+    public ResponseEntity<List<SeriesDTO>> byCategories(@RequestBody List<Integer> ids){
+        return ResponseEntity.ok(((ISeriesService)service).getByCategoryIds(ids));
+    }
+
+    @PostMapping("/filteredSearch")
+    public ResponseEntity<List<SeriesDTO>> filteredSearch(@RequestBody SearchSeries search){
+        return ResponseEntity.ok(((ISeriesService)service).search(search.getTerm(), search.getIds()));
+    }
 }

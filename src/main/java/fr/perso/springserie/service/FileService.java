@@ -46,7 +46,6 @@ public class FileService implements IFileService {
         Path path = Path.of(System.getProperty("user.dir"), fileRoot, file.getOriginalFilename());
         createFolder(path);
         try {
-
             file.transferTo(path.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);

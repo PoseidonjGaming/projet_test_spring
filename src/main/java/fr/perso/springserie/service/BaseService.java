@@ -27,7 +27,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public List<D> getAll() {
-        return repository.findAll().stream().map(this::toDTO).toList();
+        return toDTOList(repository.findAll());
     }
 
     @Override
@@ -37,9 +37,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public void save(D d) {
-        E entity = toEntity(d);
-        System.out.println(d);
-        repository.save(entity);
+        repository.save(toEntity(d));
     }
 
     @Override
@@ -78,5 +76,9 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
         });
         return dto;
+    }
+
+    protected List<D> toDTOList(List<E> entities){
+        return entities.stream().map(this::toDTO).toList();
     }
 }
