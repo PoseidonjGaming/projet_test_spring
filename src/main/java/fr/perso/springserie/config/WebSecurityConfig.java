@@ -31,7 +31,7 @@ public class WebSecurityConfig {
     private static final String[] WHITE_LISTED_URLS = new String[]{
             "/user/authenticate", "/user/save", "/series/list", "/series/detail/**", "/series/load**",
             "/season/bySeries/**", "/episode/bySeasons/**", "/user/generateuser", "/category/list",
-            "/character/**", "/series/byCategories","/series/filteredSearch", "/series/search"
+            "/character/**", "/series/byCategories", "/series/filteredSearch", "/series/search"
     };
     @Autowired
     private JwtFilter jwtAuthFilter;

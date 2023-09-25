@@ -1,7 +1,6 @@
 package fr.perso.springserie.service;
 
 import fr.perso.springserie.model.dto.*;
-import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.service.interfaces.IBaseService;
 import fr.perso.springserie.service.interfaces.IFileService;
 import fr.perso.springserie.service.interfaces.ISeasonService;
@@ -159,8 +158,8 @@ public class FileService implements IFileService {
         }
     }
 
-    private <E extends BaseEntity, D extends BaseDTO> void write(Class<? extends BaseDTO> dtoClass, Workbook
-            workbook, IBaseService<E, D> service) {
+    private <D extends BaseDTO> void write(Class<? extends BaseDTO> dtoClass, Workbook
+            workbook, IBaseService<D> service) {
         List<D> list;
         Sheet sheet = createSheet(workbook, dtoClass);
         for (int i = 0; i < dtoClass.getDeclaredFields().length; i++) {

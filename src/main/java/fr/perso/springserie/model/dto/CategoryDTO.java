@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryDTO extends BaseDTO{
+public class CategoryDTO extends BaseDTO {
     private String name;
     private List<Integer> seriesIds;
 }

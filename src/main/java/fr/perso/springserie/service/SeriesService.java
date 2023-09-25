@@ -46,12 +46,12 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
 
     @Override
     public List<SeriesDTO> getByCategoryIds(List<Integer> categoryIds) {
-        return ((ISeriesRepo)repository).findByCategoryIn(categoryIds).stream().map(this::toDTO).toList();
+        return ((ISeriesRepo) repository).findByCategoryIn(categoryIds).stream().map(this::toDTO).toList();
     }
 
     @Override
     public List<SeriesDTO> search(String term, List<Integer> categoryIds) {
-        return ((ISeriesRepo)repository).findByNameContainingAndCategoryIn(term, categoryIds).stream().map(this::toDTO).toList();
+        return ((ISeriesRepo) repository).findByNameContainingAndCategoryIn(term, categoryIds).stream().map(this::toDTO).toList();
     }
 
     @Override

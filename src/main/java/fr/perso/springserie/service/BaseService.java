@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> implements IBaseService<E, D>, IMapper<E, D> {
+public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> implements IBaseService<D>, IMapper<E, D> {
 
     protected final IBaseRepo<E> repository;
     protected final ModelMapper mapper;
@@ -78,7 +78,12 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         return dto;
     }
 
-    protected List<D> toDTOList(List<E> entities){
+    protected List<D> toDTOList(List<E> entities) {
         return entities.stream().map(this::toDTO).toList();
+    }
+
+    @Override
+    public List<D> getBydIds(List<Integer> ids) {
+        return toDTOList(repository.findByIdIn(ids));
     }
 }

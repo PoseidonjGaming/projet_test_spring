@@ -1,14 +1,15 @@
 package fr.perso.springserie.service.interfaces;
 
 import fr.perso.springserie.model.dto.BaseDTO;
-import fr.perso.springserie.model.entity.BaseEntity;
 
 import java.util.List;
 
-public interface IBaseService<E extends BaseEntity, D extends BaseDTO> {
+public interface IBaseService<D extends BaseDTO> {
     List<D> getAll();
 
     D getById(int id);
+
+    List<D> getBydIds(List<Integer> ids);
 
     void save(D d);
 

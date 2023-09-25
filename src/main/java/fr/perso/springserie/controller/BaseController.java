@@ -10,9 +10,9 @@ import java.util.List;
 
 public abstract class BaseController<E extends BaseEntity, D extends BaseDTO> {
 
-    protected final IBaseService<E, D> service;
+    protected final IBaseService<D> service;
 
-    protected BaseController(IBaseService<E, D> service) {
+    protected BaseController(IBaseService<D> service) {
         this.service = service;
     }
 
@@ -24,6 +24,11 @@ public abstract class BaseController<E extends BaseEntity, D extends BaseDTO> {
     @GetMapping("/detail/{id}")
     public ResponseEntity<D> getById(@PathVariable int id) {
         return ResponseEntity.ofNullable(service.getById(id));
+    }
+
+    @PostMapping("/byIds")
+    public ResponseEntity<List<D>> getByIds(@RequestBody List<Integer> ids) {
+        return ResponseEntity.ok(service.getBydIds(ids));
     }
 
     @GetMapping("/search")
