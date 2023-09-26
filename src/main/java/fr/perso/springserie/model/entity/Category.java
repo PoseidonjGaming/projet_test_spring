@@ -20,6 +20,6 @@ public class Category extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "category")
     private List<Series> series;
 }

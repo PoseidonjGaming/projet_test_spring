@@ -29,7 +29,7 @@ public class Series extends BaseEntity {
     @OneToMany(mappedBy = "series")
     private List<Season> seasons;
 
-    @ManyToMany(mappedBy = "series")
+    @ManyToMany
     private List<Category> category;
 
 

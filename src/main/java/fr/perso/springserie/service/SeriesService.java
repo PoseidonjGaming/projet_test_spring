@@ -4,9 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.perso.springserie.model.dto.SeriesDTO;
 import fr.perso.springserie.model.entity.Series;
+import fr.perso.springserie.repository.ICategoryRepo;
+import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.repository.ISeriesRepo;
 import fr.perso.springserie.service.interfaces.IFileService;
-import fr.perso.springserie.service.interfaces.ISeasonService;
 import fr.perso.springserie.service.interfaces.ISeriesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,13 +20,15 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
 
 
     private final IFileService fileService;
-    private final ISeasonService saisonService;
+    private final ISeasonRepo seasonRepo;
+    private final ICategoryRepo categoryRepo;
 
     @Autowired
-    public SeriesService(ISeriesRepo repo, IFileService fileService, ISeasonService saisonService) {
+    public SeriesService(ISeriesRepo repo, IFileService fileService, ISeasonRepo seasonRepo, ICategoryRepo categoryRepo) {
         super(repo, SeriesDTO.class, Series.class);
         this.fileService = fileService;
-        this.saisonService = saisonService;
+        this.seasonRepo = seasonRepo;
+        this.categoryRepo = categoryRepo;
     }
 
     @Override
@@ -57,5 +60,13 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
     @Override
     public List<SeriesDTO> search(String term) {
         return ((ISeriesRepo) repository).findByNameContaining(term).stream().map(this::toDTO).toList();
+    }
+
+    @Override
+    public Series toEntity(SeriesDTO dto) {
+        Series entity = super.toEntity(dto);
+        entity.setCategory(getRelatedEntities(dto.getCategoryIds(), categoryRepo));
+        entity.setSeasons(getRelatedEntities(dto.getSeasonsIds(), seasonRepo));
+        return entity;
     }
 }

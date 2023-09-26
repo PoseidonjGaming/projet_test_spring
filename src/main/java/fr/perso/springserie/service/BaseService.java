@@ -10,6 +10,9 @@ import org.modelmapper.ModelMapper;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
 public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> implements IBaseService<D>, IMapper<E, D> {
 
@@ -37,7 +40,9 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public void save(D d) {
-        repository.save(toEntity(d));
+        E entity = toEntity(d);
+        System.out.println();
+        repository.save(entity);
     }
 
     @Override
@@ -80,6 +85,10 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     protected List<D> toDTOList(List<E> entities) {
         return entities.stream().map(this::toDTO).toList();
+    }
+
+    protected <R extends BaseEntity> List<R> getRelatedEntities(List<Integer> ids, IBaseRepo<R> repo){
+        return repo.findByIdIn(ids);
     }
 
     @Override
