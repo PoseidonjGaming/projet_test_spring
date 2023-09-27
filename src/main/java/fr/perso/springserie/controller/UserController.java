@@ -31,4 +31,9 @@ public class UserController extends BaseController<User, UserDTO> {
         service.save(new UserDTO("Admin", List.of("ROLE_super_admin").toString(), "1234", ""));
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/exist")
+    public ResponseEntity<Boolean> exist(String username){
+        return ResponseEntity.ok(service.search(username).isEmpty());
+    }
 }
