@@ -6,7 +6,6 @@ import fr.perso.springserie.model.entity.Series;
 import fr.perso.springserie.service.interfaces.IFileService;
 import fr.perso.springserie.service.interfaces.ISeriesService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +31,10 @@ public class SeriesController extends BaseController<Series, SeriesDTO> {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping(value = "/save/seasons")
+    public void saveWithSeasons(SeriesDTO series) {
+        ((ISeriesService) service).saveWithSeasons(series);
+    }
 
     @PostMapping("/save/file")
     public ResponseEntity<?> saveFile(@RequestBody MultipartFile file) {

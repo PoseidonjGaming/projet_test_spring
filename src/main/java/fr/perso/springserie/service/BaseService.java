@@ -40,9 +40,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public void save(D d) {
-        E entity = toEntity(d);
-        System.out.println();
-        repository.save(entity);
+        repository.save(toEntity(d));
     }
 
     @Override

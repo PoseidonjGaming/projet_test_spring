@@ -3,6 +3,7 @@ package fr.perso.springserie.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import fr.perso.springserie.model.dto.SeasonDTO;
 import fr.perso.springserie.model.dto.SeriesDTO;
 import fr.perso.springserie.model.entity.Series;
 import fr.perso.springserie.repository.ICategoryRepo;
@@ -23,6 +24,7 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
     private final IFileService fileService;
     private final ISeasonRepo seasonRepo;
     private final ICategoryRepo categoryRepo;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public SeriesService(ISeriesRepo repo, IFileService fileService, ISeasonRepo seasonRepo, ICategoryRepo categoryRepo) {
@@ -30,12 +32,13 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
         this.fileService = fileService;
         this.seasonRepo = seasonRepo;
         this.categoryRepo = categoryRepo;
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     @Override
     public void saveWithFile(MultipartFile file, String series) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
+
         SeriesDTO seriesObj;
         try {
             seriesObj = objectMapper.readValue(series, SeriesDTO.class);
@@ -57,6 +60,17 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
     @Override
     public List<SeriesDTO> search(String term, List<Integer> categoryIds) {
         return ((ISeriesRepo) repository).findByNameContainingAndCategoryIn(term, categoryIds).stream().map(this::toDTO).toList();
+    }
+
+    @Override
+    public void saveWithSeasons(SeriesDTO seriesDTO) {
+//        Series series=repository.save(toEntity(seriesDTO));
+//        seriesDTO.getCategoryIds().forEach(number ->{
+//            SeasonDTO seasonDTO=new SeasonDTO();
+//            seasonDTO.setNumber(number);
+//            seasonDTO.setSeriesId(series.getId());
+//            seasonRepo.save(toEntity())
+//        });
     }
 
     @Override
