@@ -11,6 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,18 +55,16 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public InputStream load(String filename) {
+    public ResponseEntity<?> load(String filename) {
         try (Stream<Path> files = Files.find(Paths.get(System.getProperty("user.dir"), fileRoot), 4,
                 (p, a) -> p.getFileName().toString().equals(filename))) {
 
             Path pathParent = files.toList().get(0);
-
-            String fileResourcePath = pathParent.getParent().toString().split("resources")[1];
-
-            return getClass().getResourceAsStream(String.join("\\", fileResourcePath, filename).replace("\\", "/"));
-
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(Files.readAllBytes(pathParent));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -74,7 +75,7 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public InputStream writeExcel(List<Boolean> booleanList) {
+    public ResponseEntity<?> writeExcel(List<Boolean> booleanList) {
 
         if (booleanList.size() == 5) {
             List<Class<? extends BaseDTO>> classList = new ArrayList<>();

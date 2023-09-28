@@ -22,7 +22,7 @@ public class FileController {
     }
 
     @PostMapping("/export")
-    public ResponseEntity<InputStreamResource> test(@RequestBody List<Boolean> booleanList) {
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(new InputStreamResource(service.writeExcel(booleanList)));
+    public ResponseEntity<?> test(@RequestBody List<Boolean> booleanList) {
+        return service.writeExcel(booleanList);
     }
 }

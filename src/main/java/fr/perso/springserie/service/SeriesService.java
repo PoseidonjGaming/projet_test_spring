@@ -2,6 +2,7 @@ package fr.perso.springserie.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.perso.springserie.model.dto.SeriesDTO;
 import fr.perso.springserie.model.entity.Series;
 import fr.perso.springserie.repository.ICategoryRepo;
@@ -34,6 +35,7 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
     @Override
     public void saveWithFile(MultipartFile file, String series) {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         SeriesDTO seriesObj;
         try {
             seriesObj = objectMapper.readValue(series, SeriesDTO.class);

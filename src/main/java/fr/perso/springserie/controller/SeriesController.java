@@ -46,9 +46,8 @@ public class SeriesController extends BaseController<Series, SeriesDTO> {
     }
 
     @GetMapping("/load")
-    public ResponseEntity<InputStreamResource> load(String filename) {
-        return ResponseEntity.ok().contentType((filename.split("\\.")[1].equals("jpg")) ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG)
-                .body(new InputStreamResource(fileService.load(filename)));
+    public ResponseEntity<?> load(String filename) {
+        return fileService.load(filename);
     }
 
     @PostMapping("/byCategories")

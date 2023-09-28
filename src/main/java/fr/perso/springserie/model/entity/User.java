@@ -17,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User extends BaseEntity {
+    @Column(unique = true)
     private String username;
     @Column(columnDefinition = "json")
     private String roles;
