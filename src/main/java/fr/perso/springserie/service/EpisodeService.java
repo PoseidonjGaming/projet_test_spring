@@ -2,6 +2,8 @@ package fr.perso.springserie.service;
 
 import fr.perso.springserie.model.dto.EpisodeDTO;
 import fr.perso.springserie.model.entity.Episode;
+import fr.perso.springserie.model.entity.Season;
+import fr.perso.springserie.model.entity.Series;
 import fr.perso.springserie.repository.IEpisodeRepo;
 import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.repository.ISeriesRepo;
@@ -9,6 +11,7 @@ import fr.perso.springserie.service.interfaces.IEpisodeService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements IEpisodeService {
@@ -48,5 +51,20 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
             if (season.getEpisodes().isEmpty())
                 seasonRepo.delete(season);
         });
+    }
+
+    @Override
+    public void save(EpisodeDTO episodeDTO) {
+        seasonRepo.findById(episodeDTO.getSeasonId()).or(() -> {
+            Season season = new Season();
+            Optional<Series> series = seriesRepo.findById(episodeDTO.getSeriesId());
+            series.ifPresent(series1 -> {
+                season.setSeries(series1);
+                season.setNumber(series1.getSeasons().size() + 1);
+            });
+            return Optional.of(seasonRepo.save(season));
+        }).ifPresent(season -> episodeDTO.setSeasonId(season.getId()));
+
+        super.save(episodeDTO);
     }
 }
