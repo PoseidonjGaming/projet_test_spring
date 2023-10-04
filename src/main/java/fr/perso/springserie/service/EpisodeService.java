@@ -11,7 +11,6 @@ import fr.perso.springserie.service.interfaces.IEpisodeService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements IEpisodeService {
@@ -55,16 +54,17 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
 
     @Override
     public void save(EpisodeDTO episodeDTO) {
-        seasonRepo.findById(episodeDTO.getSeasonId()).or(() -> {
-            Season season = new Season();
-            Optional<Series> series = seriesRepo.findById(episodeDTO.getSeriesId());
-            series.ifPresent(series1 -> {
-                season.setSeries(series1);
-                season.setNumber(series1.getSeasons().size() + 1);
-            });
-            return Optional.of(seasonRepo.save(season));
-        }).ifPresent(season -> episodeDTO.setSeasonId(season.getId()));
+        Season season = seasonRepo.findById(episodeDTO.getSeasonId()).orElse(new Season());
+        if (season.getId() == 0) {
+            Series series = seriesRepo.findById(episodeDTO.getSeriesId()).orElse(null);
+            if (series != null) {
+                season.setSeries(series);
+                int number = series.getSeasons().size() + 1;
+                season.setNumber(number);
+            }
 
+        }
+        episodeDTO.setSeasonId(seasonRepo.save(season).getId());
         super.save(episodeDTO);
     }
 }

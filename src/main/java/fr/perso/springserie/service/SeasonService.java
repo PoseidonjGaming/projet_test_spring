@@ -24,14 +24,6 @@ public class SeasonService extends BaseService<Season, SeasonDTO> implements ISe
         this.episodeRepo = episodeRepo;
     }
 
-    @Override
-    public Season toEntity(SeasonDTO dto) {
-        Season season = super.toEntity(dto);
-        if (dto.getSeriesId() != 0)
-            season.setSeries(seriesRepo.findById(dto.getSeriesId()).orElse(null));
-        return season;
-    }
-
 
     @Override
     public List<SeasonDTO> getBySeriesId(int id) {

@@ -1,18 +1,23 @@
 package fr.perso.springserie.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.perso.springserie.model.dto.BaseDTO;
 import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.repository.IBaseRepo;
 import fr.perso.springserie.service.interfaces.IBaseService;
 import fr.perso.springserie.service.interfaces.IMapper;
+import fr.perso.springserie.task.MapService;
+import jakarta.persistence.ManyToMany;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.IntConsumer;
 
 public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> implements IBaseService<D>, IMapper<E, D> {
 
@@ -20,6 +25,9 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     protected final ModelMapper mapper;
     protected final Class<D> dtoClass;
     protected final Class<E> entityClass;
+
+    @Autowired
+    protected MapService mapService;
 
     protected BaseService(IBaseRepo<E> repository, Class<D> dtoClass, Class<E> entityClass) {
         this.repository = repository;
@@ -44,13 +52,69 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     }
 
     @Override
+    public void save(File file) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        try {
+            List<D> dtoList = objectMapper.readValue(file, objectMapper.getTypeFactory().constructCollectionType(List.class, dtoClass));
+            dtoList.forEach(this::save);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void delete(int id) {
         repository.delete(toEntity(getById(id)));
     }
 
     @Override
     public E toEntity(D dto) {
-        return mapper.map(dto, entityClass);
+        E entity = mapper.map(dto, entityClass);
+        Arrays.stream(entityClass.getDeclaredFields()).forEach(field -> {
+            field.setAccessible(true);
+            try {
+                String lowerCase = field.getType().getSimpleName().toLowerCase();
+                Class<?> clazz = mapService.getClass(lowerCase);
+                Field dtoField;
+
+                if (clazz != null) {
+                    dtoField = getField(field.getName().concat("Id"));
+                    dtoField.setAccessible(true);
+                    field.set(entity, mapService.getRepo(lowerCase).findById((Integer) dtoField.get(dto)).orElse((BaseEntity) field.getType().getConstructor().newInstance()));
+
+                    dtoField.setAccessible(false);
+                }
+
+                if (field.getType().equals(List.class)) {
+                    dtoField = getField(field.getName().concat("Ids"));
+                    ManyToMany manyToMany = field.getAnnotation(ManyToMany.class);
+                    if (manyToMany != null && manyToMany.mappedBy() == null) {
+                        dtoField.setAccessible(true);
+                        List<?> relatedEntities = getRelatedEntities((List<Integer>) dtoField.get(dto), mapService.getRepo(field.getName()));
+                        field.set(entity, relatedEntities);
+                        dtoField.setAccessible(false);
+                    }
+
+                }
+
+                field.setAccessible(false);
+            } catch (IllegalAccessException | InvocationTargetException | InstantiationException |
+                     NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return entity;
+    }
+
+    private Field getField(String name) {
+        try {
+            return dtoClass.getDeclaredField(name);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+
+        }
+
     }
 
     @Override
@@ -85,7 +149,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         return entities.stream().map(this::toDTO).toList();
     }
 
-    protected <R extends BaseEntity> List<R> getRelatedEntities(List<Integer> ids, IBaseRepo<R> repo){
+    protected <R extends BaseEntity> List<R> getRelatedEntities(List<Integer> ids, IBaseRepo<R> repo) {
         return repo.findByIdIn(ids);
     }
 

@@ -1,8 +1,5 @@
 package fr.perso.springserie.model.dto;
 
-import fr.perso.springserie.model.entity.Category;
-import fr.perso.springserie.model.entity.Character;
-import jakarta.persistence.ManyToMany;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -20,5 +17,4 @@ public class MovieDTO extends BaseDTO {
     private LocalDate releaseDate;
 
     private List<Integer> categoryIds;
-    private List<Integer> characterIds;
 }

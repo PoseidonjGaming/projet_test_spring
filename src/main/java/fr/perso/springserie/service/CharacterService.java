@@ -27,11 +27,4 @@ public class CharacterService extends BaseService<Character, CharacterDTO> imple
         return null;
     }
 
-    @Override
-    public Character toEntity(CharacterDTO dto) {
-        Character entity = super.toEntity(dto);
-        entity.setActor(dto.getActorIds().stream().map(e -> actorRepo.findById(e).orElse(null)).toList());
-        entity.setSeries(dto.getSeriesIds().stream().map(e -> seriesRepo.findById(e).orElse(null)).toList());
-        return entity;
-    }
 }

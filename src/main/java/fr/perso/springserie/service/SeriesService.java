@@ -3,7 +3,6 @@ package fr.perso.springserie.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import fr.perso.springserie.model.dto.SeasonDTO;
 import fr.perso.springserie.model.dto.SeriesDTO;
 import fr.perso.springserie.model.entity.Series;
 import fr.perso.springserie.repository.ICategoryRepo;
@@ -76,13 +75,5 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
     @Override
     public List<SeriesDTO> search(String term) {
         return ((ISeriesRepo) repository).findByNameContaining(term).stream().map(this::toDTO).toList();
-    }
-
-    @Override
-    public Series toEntity(SeriesDTO dto) {
-        Series entity = super.toEntity(dto);
-        entity.setCategory(getRelatedEntities(dto.getCategoryIds(), categoryRepo));
-        entity.setSeasons(getRelatedEntities(dto.getSeasonsIds(), seasonRepo));
-        return entity;
     }
 }
