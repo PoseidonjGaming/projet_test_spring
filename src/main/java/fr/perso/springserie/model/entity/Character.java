@@ -2,6 +2,7 @@ package fr.perso.springserie.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,8 +21,10 @@ public class Character extends BaseEntity {
 
     private String name;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "character")
     private List<Series> series;
-    @ManyToMany
-    private List<Actor> actor;
+    @ManyToMany(mappedBy = "character")
+    private List<Movie> movie;
+    @ManyToOne
+    private Actor actor;
 }
