@@ -33,7 +33,7 @@ public class UserController extends BaseController<User, UserDTO> {
     }
 
     @GetMapping("/exist")
-    public ResponseEntity<Boolean> exist(String username){
+    public ResponseEntity<Boolean> exist(String username) {
         return ResponseEntity.ok(service.search(username).isEmpty());
     }
 }

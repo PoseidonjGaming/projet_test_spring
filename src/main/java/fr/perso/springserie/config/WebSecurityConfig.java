@@ -32,7 +32,7 @@ public class WebSecurityConfig {
             "/user/authenticate", "/user/save", "/series/list", "/series/detail/**", "/series/load**",
             "/season/bySeries/**", "/episode/bySeasons/**", "/user/generateuser", "/category/list",
             "/character/**", "/series/byCategories", "/series/filteredSearch", "/series/search",
-            "/user/exist**"
+            "/user/exist**", "actor/byIds", "season/byIds", "episode/byIds"
     };
     @Autowired
     private JwtFilter jwtAuthFilter;

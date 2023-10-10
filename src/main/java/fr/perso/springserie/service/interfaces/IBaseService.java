@@ -13,6 +13,7 @@ public interface IBaseService<D extends BaseDTO> {
     List<D> getBydIds(List<Integer> ids);
 
     void save(D d);
+
     void save(File file);
 
     void delete(int id);

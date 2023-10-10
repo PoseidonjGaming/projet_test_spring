@@ -14,4 +14,5 @@ import java.util.List;
 public class CategoryDTO extends BaseDTO {
     private String name;
     private List<Integer> seriesIds;
+    private List<Integer> movieIds;
 }

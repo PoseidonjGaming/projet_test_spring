@@ -52,7 +52,7 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         List<User> user = ((IUserRepo) repository).findByUsernameContains(username);
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             return null;
         }
         return user.stream().map(value -> new org.springframework.security.core.userdetails.User(value.getUsername(), value.getPassword(),

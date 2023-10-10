@@ -17,11 +17,10 @@ public class Startup implements CommandLineRunner {
     @Autowired
     private MapService mapService;
 
-    private String[] order = {"user", "actor", "character", "series", "season", "episode"};
 
     @Override
     public void run(String... args) {
-
+        String[] order = {"user", "actor", "character", "category", "movie", "series", "season", "episode"};
 
         try (Stream<Path> files = Files.list(Paths.get(System.getProperty("user.dir"), "src/main/resources/data"))) {
             List<Path> paths = files.toList();
@@ -29,9 +28,8 @@ public class Startup implements CommandLineRunner {
                 paths.stream().filter(path -> path.getFileName().toString().startsWith(s)).findFirst().ifPresent(path ->
                         mapService.getService(s).save(path.toFile()));
             }
-            System.out.println("after");
-        } catch (IOException ignored) {
-
+        } catch (IOException e) {
+            e.fillInStackTrace();
         }
     }
 }

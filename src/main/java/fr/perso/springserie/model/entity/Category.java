@@ -22,4 +22,7 @@ public class Category extends BaseEntity {
 
     @ManyToMany(mappedBy = "category")
     private List<Series> series;
+
+    @ManyToMany(mappedBy = "category")
+    private List<Movie> movie;
 }

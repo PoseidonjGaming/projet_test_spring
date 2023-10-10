@@ -80,21 +80,27 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
                 if (clazz != null) {
                     dtoField = getField(field.getName().concat("Id"));
-                    dtoField.setAccessible(true);
-                    field.set(entity, mapService.getRepo(lowerCase).findById((Integer) dtoField.get(dto)).orElse((BaseEntity) field.getType().getConstructor().newInstance()));
+                    if (dtoField != null) {
+                        dtoField.setAccessible(true);
+                        field.set(entity, mapService.getRepo(lowerCase).findById((Integer) dtoField.get(dto)).orElse((BaseEntity) field.getType().getConstructor().newInstance()));
 
-                    dtoField.setAccessible(false);
+                        dtoField.setAccessible(false);
+                    }
+
                 }
 
                 if (field.getType().equals(List.class)) {
                     dtoField = getField(field.getName().concat("Ids"));
-                    ManyToMany manyToMany = field.getAnnotation(ManyToMany.class);
-                    if (manyToMany != null && manyToMany.mappedBy() == null) {
-                        dtoField.setAccessible(true);
-                        List<?> relatedEntities = getRelatedEntities((List<Integer>) dtoField.get(dto), mapService.getRepo(field.getName()));
-                        field.set(entity, relatedEntities);
-                        dtoField.setAccessible(false);
+                    if (dtoField != null) {
+                        ManyToMany manyToMany = field.getAnnotation(ManyToMany.class);
+                        if (manyToMany != null && manyToMany.mappedBy().isEmpty()) {
+                            dtoField.setAccessible(true);
+                            List<?> relatedEntities = getRelatedEntities((List<Integer>) dtoField.get(dto), mapService.getRepo(field.getName()));
+                            field.set(entity, relatedEntities);
+                            dtoField.setAccessible(false);
+                        }
                     }
+
 
                 }
 
@@ -111,8 +117,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         try {
             return dtoClass.getDeclaredField(name);
         } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-
+            return null;
         }
 
     }

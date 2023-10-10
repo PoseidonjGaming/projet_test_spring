@@ -21,16 +21,17 @@ public class MapService {
 
     @Autowired
     @Lazy
-    public MapService(IActorService actorService, ICharacterService characterService, ISeriesService seriesService,
+    public MapService(IActorService actorService, ICharacterService characterService, ISeriesService seriesService, ICategoryService categoryService,
                       ISeasonService seasonService, IEpisodeService episodeService, IMovieService movieService,
                       IUserService userService, ISeriesRepo seriesRepo, ISeasonRepo seasonRepo, IEpisodeRepo episodeRepo,
-                      IActorRepo actorRepo, ICharacterRepo characterRepo, IMovieRepo movieRepo) {
+                      IActorRepo actorRepo, ICharacterRepo characterRepo, IMovieRepo movieRepo, ICategoryRepo categoryRepo) {
         mapService = new HashMap<>();
 
         mapService.put("actor", actorService);
         mapService.put("character", characterService);
         mapService.put("series", seriesService);
         mapService.put("season", seasonService);
+        mapService.put("category", categoryService);
         mapService.put("episode", episodeService);
         mapService.put("movie", movieService);
         mapService.put("user", userService);
@@ -41,6 +42,7 @@ public class MapService {
         mapClass.put("character", CharacterDTO.class);
         mapClass.put("series", SeriesDTO.class);
         mapClass.put("season", SeasonDTO.class);
+        mapClass.put("category", CategoryDTO.class);
         mapClass.put("episode", EpisodeDTO.class);
         mapClass.put("movie", MovieDTO.class);
         mapClass.put("user", UserDTO.class);
@@ -51,6 +53,7 @@ public class MapService {
         mapRepo.put("character", characterRepo);
         mapRepo.put("series", seriesRepo);
         mapRepo.put("season", seasonRepo);
+        mapRepo.put("category", categoryRepo);
         mapRepo.put("episode", episodeRepo);
         mapRepo.put("movie", movieRepo);
     }
@@ -63,7 +66,7 @@ public class MapService {
         return mapClass.get(key);
     }
 
-    public IBaseRepo<BaseEntity> getRepo(String key){
+    public IBaseRepo<BaseEntity> getRepo(String key) {
         return (IBaseRepo<BaseEntity>) mapRepo.get(key);
     }
 }

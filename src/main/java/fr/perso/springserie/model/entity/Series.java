@@ -23,7 +23,7 @@ public class Series extends BaseEntity {
     private String poster;
     private String trailerUrl;
 
-    @OneToMany(mappedBy = "series",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "series", fetch = FetchType.EAGER)
     private List<Season> seasons;
 
     @ManyToMany
@@ -31,6 +31,18 @@ public class Series extends BaseEntity {
 
     @ManyToMany
     private List<Category> category;
+
+    @OneToOne
+    private Series nextSeries;
+
+    @OneToOne
+    private Series previousSeries;
+
+    @OneToOne
+    private Movie nextMovie;
+
+    @OneToOne
+    private Movie previousMovie;
 
 
 }
