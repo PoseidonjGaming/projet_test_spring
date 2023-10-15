@@ -82,7 +82,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                     dtoField = getField(field.getName().concat("Id"));
                     if (dtoField != null) {
                         dtoField.setAccessible(true);
-                        field.set(entity, mapService.getRepo(lowerCase).findById((Integer) dtoField.get(dto)).orElse((BaseEntity) field.getType().getConstructor().newInstance()));
+                        field.set(entity, mapService.getRepo(lowerCase).findById((Integer) dtoField.get(dto)).orElse(null));
 
                         dtoField.setAccessible(false);
                     }
@@ -105,8 +105,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                 }
 
                 field.setAccessible(false);
-            } catch (IllegalAccessException | InvocationTargetException | InstantiationException |
-                     NoSuchMethodException e) {
+            } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         });
