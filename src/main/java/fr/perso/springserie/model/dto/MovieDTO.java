@@ -17,4 +17,5 @@ public class MovieDTO extends BaseDTO {
     private LocalDate releaseDate;
 
     private List<Integer> categoryIds;
+    private List<Integer> characterIds;
 }
