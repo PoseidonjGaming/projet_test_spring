@@ -23,14 +23,13 @@ public class ActorService extends BaseService<Actor, ActorDTO> implements IActor
 
     @Override
     public List<ActorDTO> test(ActorDTO dto) {
-        List<Actor> entities=repository.findAll(Example.of(toEntity(dto),
-                ExampleMatcher.matchingAny()
-                        .withMatcher("firstname",
-                                ExampleMatcher.GenericPropertyMatchers.contains().caseSensitive())
-                        .withMatcher("lastname",
-                                ExampleMatcher.GenericPropertyMatchers.contains().caseSensitive())
-                        .withIgnoreNullValues()
-                        .withIgnorePaths("id")));
+        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
+                .withMatcher("firstname",
+                        ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                .withMatcher("lastname",
+                        ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                .withIgnoreNullValues().withIgnorePaths("id");
+        List<Actor> entities = repository.findAll(Example.of(toEntity(dto), exampleMatcher));
         return toDTOList(entities);
     }
 }
