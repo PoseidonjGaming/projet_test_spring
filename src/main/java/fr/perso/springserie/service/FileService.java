@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 @Service
 public class FileService implements IFileService {
 
+    private final String root = System.getProperty("user.dir");
     @Autowired
     @Lazy
     private ISeriesService seriesService;
@@ -42,8 +43,8 @@ public class FileService implements IFileService {
 
 
     @Override
-    public void save(MultipartFile file) {
-        Path path = Path.of(System.getProperty("user.dir"), fileRoot, file.getOriginalFilename());
+    public void save(MultipartFile file, String type) {
+        Path path = Path.of(root, fileRoot, type, file.getOriginalFilename());
         createFolder(path);
         try {
             file.transferTo(path.toFile());
@@ -54,7 +55,7 @@ public class FileService implements IFileService {
 
     @Override
     public ResponseEntity<?> load(String filename) {
-        try (Stream<Path> files = Files.find(Paths.get(System.getProperty("user.dir"), fileRoot), 4,
+        try (Stream<Path> files = Files.find(Paths.get(root, fileRoot), 2,
                 (p, a) -> p.getFileName().toString().equals(filename))) {
 
             Path pathParent = files.toList().get(0);
@@ -67,9 +68,9 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public void saves(List<MultipartFile> files) {
+    public void saves(List<MultipartFile> files, String type) {
         if (files != null)
-            files.forEach(this::save);
+            files.forEach(multipartFile -> save(multipartFile,type));
     }
 
     @Override
@@ -99,9 +100,9 @@ public class FileService implements IFileService {
                         default -> System.out.println("Class not found");
                     }
                 });
-                createFolder(Path.of(System.getProperty("user.dir"), fileRoot, "files"));
+                createFolder(Path.of(root, fileRoot, "files"));
                 String filename = "data.xlsx";
-                FileOutputStream outputStream = new FileOutputStream(Path.of(System.getProperty("user.dir"), fileRoot, "files", filename).toFile());
+                FileOutputStream outputStream = new FileOutputStream(Path.of(root, fileRoot, "files", filename).toFile());
                 workbook.write(outputStream);
 
                 return load(filename);

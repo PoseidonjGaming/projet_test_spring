@@ -36,22 +36,10 @@ public class SeriesController extends BaseController<Series, SeriesDTO> {
         ((ISeriesService) service).saveWithSeasons(series);
     }
 
-    @PostMapping("/save/file")
-    public ResponseEntity<?> saveFile(@RequestBody MultipartFile file) {
-        fileService.save(file);
-        return ResponseEntity.ok().build();
-    }
 
-    @PostMapping("/save/files")
-    public ResponseEntity<?> saveFiles(@RequestBody List<MultipartFile> files) {
-        fileService.saves(files);
-        return ResponseEntity.ok().build();
-    }
 
-    @GetMapping("/load")
-    public ResponseEntity<?> load(String filename) {
-        return fileService.load(filename);
-    }
+
+
 
     @PostMapping("/byCategories")
     public ResponseEntity<List<SeriesDTO>> byCategories(@RequestBody List<Integer> ids) {

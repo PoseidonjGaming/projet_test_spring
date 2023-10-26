@@ -23,6 +23,7 @@ public class Movie extends BaseEntity {
     @Column(columnDefinition = "text")
     private String summary;
     private LocalDate releaseDate;
+    private String poster;
 
     @ManyToMany
     private List<Category> category;

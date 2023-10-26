@@ -45,7 +45,7 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
             throw new RuntimeException(e);
         }
         if (file != null && !file.isEmpty()) {
-            fileService.save(file);
+            fileService.save(file,"series");
             seriesObj.setPoster(file.getOriginalFilename());
         }
         save(seriesObj);
