@@ -8,7 +8,9 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Service
 public class ActorService extends BaseService<Actor, ActorDTO> implements IActorService {
@@ -24,12 +26,19 @@ public class ActorService extends BaseService<Actor, ActorDTO> implements IActor
     @Override
     public List<ActorDTO> test(ActorDTO dto) {
         ExampleMatcher exampleMatcher = ExampleMatcher.matchingAny()
-                .withMatcher("firstname",
-                        ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
-                .withMatcher("lastname",
-                        ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
                 .withIgnoreNullValues().withIgnorePaths("id");
+
+        Arrays.stream(Actor.class.getDeclaredFields()).forEach(field -> {
+          if(field.getType().equals(String.class)){
+              matcher(exampleMatcher, exampleMatcher1 -> exampleMatcher1.withMatcher(field.getName(),
+                      ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase()));
+          }
+        });
         List<Actor> entities = repository.findAll(Example.of(toEntity(dto), exampleMatcher));
         return toDTOList(entities);
+    }
+
+    private void matcher(ExampleMatcher exampleMatcher, Consumer<ExampleMatcher> consumer){
+        consumer.accept(exampleMatcher);
     }
 }
