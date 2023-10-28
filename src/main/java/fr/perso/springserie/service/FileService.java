@@ -55,7 +55,7 @@ public class FileService implements IFileService {
 
     @Override
     public ResponseEntity<?> load(String filename) {
-        try (Stream<Path> files = Files.find(Paths.get(root, fileRoot), 2,
+        try (Stream<Path> files = Files.find(Paths.get(root, fileRoot), 3,
                 (p, a) -> p.getFileName().toString().equals(filename))) {
 
             Path pathParent = files.toList().get(0);
