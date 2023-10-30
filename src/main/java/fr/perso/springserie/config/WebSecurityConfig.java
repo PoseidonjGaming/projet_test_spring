@@ -37,7 +37,8 @@ public class WebSecurityConfig {
             "series/byCategories", "series/filteredSearch",
             "series/search", "user/exist**",
             "actor/byIds", "season/byIds",
-            "episode/byIds", "actor/detail/**"
+            "episode/byIds", "actor/detail/**",
+            "movie/list"
     };
     @Autowired
     private JwtFilter jwtAuthFilter;
@@ -71,7 +72,7 @@ public class WebSecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity.cors().and().csrf(AbstractHttpConfigurer::disable)
+        return httpSecurity.cors(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
                             try {
                                 auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
