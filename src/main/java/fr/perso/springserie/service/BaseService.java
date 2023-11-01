@@ -11,11 +11,12 @@ import fr.perso.springserie.task.MapService;
 import jakarta.persistence.ManyToMany;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -92,10 +93,11 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                 if (field.getType().equals(List.class)) {
                     dtoField = getField(field.getName().concat("Ids"));
                     if (dtoField != null) {
+                        dtoField.setAccessible(true);
                         ManyToMany manyToMany = field.getAnnotation(ManyToMany.class);
-                        if (manyToMany != null && manyToMany.mappedBy().isEmpty()) {
-                            dtoField.setAccessible(true);
-                            List<?> relatedEntities = getRelatedEntities((List<Integer>) dtoField.get(dto), mapService.getRepo(field.getName()));
+                        Object o = dtoField.get(dto);
+                        if (manyToMany != null && manyToMany.mappedBy().isEmpty() && o != null) {
+                            List<?> relatedEntities = getRelatedEntities((List<Integer>) o, mapService.getRepo(field.getName()));
                             field.set(entity, relatedEntities);
                             dtoField.setAccessible(false);
                         }
@@ -111,6 +113,10 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         });
         return entity;
     }
+    @Override
+    public D toDTO(E entity) {
+        return mapList(entity, mapper.map(entity, dtoClass));
+    }
 
     private Field getField(String name) {
         try {
@@ -119,15 +125,6 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
             return null;
         }
 
-    }
-
-    @Override
-    public D toDTO(E entity) {
-        return mapList(entity, mapper.map(entity, dtoClass));
-    }
-
-    protected <T extends BaseEntity> List<Integer> mapList(List<T> list) {
-        return list.stream().map(BaseEntity::getId).toList();
     }
 
     protected D mapList(E entity, D dto) {
@@ -160,5 +157,15 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     @Override
     public List<D> getBydIds(List<Integer> ids) {
         return toDTOList(repository.findByIdIn(ids));
+    }
+
+    @Override
+    public List<D> search(D dto) {
+        final ExampleMatcher[] exampleMatcher = {ExampleMatcher.matchingAny()
+                .withIgnoreNullValues().withIgnorePaths("id")};
+
+        Arrays.stream(entityClass.getDeclaredFields()).forEach(field -> exampleMatcher[0] = exampleMatcher[0].withMatcher(field.getName(), matcher -> matcher.contains().ignoreCase()));
+        List<E> entities = repository.findAll(Example.of(toEntity(dto), exampleMatcher[0]));
+        return toDTOList(entities);
     }
 }

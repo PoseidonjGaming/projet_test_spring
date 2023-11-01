@@ -30,10 +30,6 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
         return (id.get(0) == 0) ? null : ((IEpisodeRepo) repository).findBySeasonIdIn(id).stream().map(this::toDTO).toList();
     }
 
-    @Override
-    public List<EpisodeDTO> search(String term) {
-        return null;
-    }
 
     @Override
     public EpisodeDTO toDTO(Episode entity) {

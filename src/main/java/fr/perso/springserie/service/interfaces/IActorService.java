@@ -7,5 +7,4 @@ import java.util.List;
 
 
 public interface IActorService extends IBaseService<ActorDTO> {
-    List<ActorDTO> test(ActorDTO dto);
 }

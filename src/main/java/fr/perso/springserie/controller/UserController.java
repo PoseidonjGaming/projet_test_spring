@@ -34,6 +34,6 @@ public class UserController extends BaseController<User, UserDTO> {
 
     @GetMapping("/exist")
     public ResponseEntity<Boolean> exist(String username) {
-        return ResponseEntity.ok(service.search(username).isEmpty());
+        return ResponseEntity.ok(service.search(new UserDTO(username)).isEmpty());
     }
 }

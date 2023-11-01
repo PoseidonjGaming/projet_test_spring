@@ -13,9 +13,4 @@ public class CategoryService extends BaseService<Category, CategoryDTO> implemen
     protected CategoryService(ICategoryRepo repository) {
         super(repository, CategoryDTO.class, Category.class);
     }
-
-    @Override
-    public List<CategoryDTO> search(String term) {
-        return toDTOList(((ICategoryRepo) repository).findByNameContains(term));
-    }
 }

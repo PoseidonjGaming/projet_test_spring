@@ -72,8 +72,4 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
 //        });
     }
 
-    @Override
-    public List<SeriesDTO> search(String term) {
-        return ((ISeriesRepo) repository).findByNameContaining(term).stream().map(this::toDTO).toList();
-    }
 }

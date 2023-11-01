@@ -14,8 +14,4 @@ public class MovieService extends BaseService<Movie, MovieDTO> implements IMovie
         super(repository, MovieDTO.class, Movie.class);
     }
 
-    @Override
-    public List<MovieDTO> search(String term) {
-        return null;
-    }
 }

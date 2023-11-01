@@ -29,9 +29,4 @@ public class SeasonService extends BaseService<Season, SeasonDTO> implements ISe
     public List<SeasonDTO> getBySeriesId(int id) {
         return ((ISeasonRepo) repository).findBySeriesId(id).stream().map(this::toDTO).toList();
     }
-
-    @Override
-    public List<SeasonDTO> search(String term) {
-        return null;
-    }
 }

@@ -18,5 +18,5 @@ public interface IBaseService<D extends BaseDTO> {
 
     void delete(int id);
 
-    List<D> search(String term);
+    List<D> search(D dto);
 }
