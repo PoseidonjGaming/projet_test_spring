@@ -1,8 +1,6 @@
 package fr.perso.springserie.controller;
 
-import fr.perso.springserie.model.dto.SeriesDTO;
 import fr.perso.springserie.service.interfaces.IFileService;
-import fr.perso.springserie.service.interfaces.ISeriesService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,21 +39,6 @@ public class FileController {
         return service.writeExcel(booleanList);
     }
 
-    @PostMapping("/save/file")
-    public ResponseEntity<?> saveFile(@RequestBody MultipartFile file) {
-        service.save(file);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/save/files")
-    public ResponseEntity<?> saveFiles(@RequestBody List<MultipartFile> files) {
-        service.saves(files);
-        return ResponseEntity.ok().build();
-    }
 
 
-    @GetMapping("/load")
-    public ResponseEntity<?> load(String filename) {
-        return service.load(filename);
-    }
 }
