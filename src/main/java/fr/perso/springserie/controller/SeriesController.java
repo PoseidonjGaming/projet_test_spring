@@ -39,8 +39,6 @@ public class SeriesController extends BaseController<Series, SeriesDTO> {
 
 
 
-
-
     @PostMapping("/byCategories")
     public ResponseEntity<List<SeriesDTO>> byCategories(@RequestBody List<Integer> ids) {
         return ResponseEntity.ok(((ISeriesService) service).getByCategoryIds(ids));

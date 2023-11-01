@@ -40,4 +40,22 @@ public class FileController {
     public ResponseEntity<?> test(@RequestBody List<Boolean> booleanList) {
         return service.writeExcel(booleanList);
     }
+
+    @PostMapping("/save/file")
+    public ResponseEntity<?> saveFile(@RequestBody MultipartFile file) {
+        service.save(file);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/save/files")
+    public ResponseEntity<?> saveFiles(@RequestBody List<MultipartFile> files) {
+        service.saves(files);
+        return ResponseEntity.ok().build();
+    }
+
+
+    @GetMapping("/load")
+    public ResponseEntity<?> load(String filename) {
+        return service.load(filename);
+    }
 }
