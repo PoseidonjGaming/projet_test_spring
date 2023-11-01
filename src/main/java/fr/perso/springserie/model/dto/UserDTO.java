@@ -20,6 +20,7 @@ public class UserDTO extends BaseDTO {
 
     public UserDTO(String username) {
         this.username = username;
+        roles="";
     }
 
     public List<String> getRoles() {
