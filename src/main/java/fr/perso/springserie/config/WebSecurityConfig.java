@@ -2,9 +2,9 @@ package fr.perso.springserie.config;
 
 import fr.perso.springserie.security.JwtAuthenticationEntryPoint;
 import fr.perso.springserie.security.JwtFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -40,12 +40,16 @@ public class WebSecurityConfig {
             "episode/byIds", "actor/detail/**",
             "movie/list"
     };
-    @Autowired
-    private JwtFilter jwtAuthFilter;
-    @Autowired
-    private JwtAuthenticationEntryPoint entryPoint;
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final JwtFilter jwtAuthFilter;
+    private final JwtAuthenticationEntryPoint entryPoint;
+    private final UserDetailsService userDetailsService;
+
+    @Lazy
+    public WebSecurityConfig(JwtFilter jwtAuthFilter, JwtAuthenticationEntryPoint entryPoint, UserDetailsService userDetailsService) {
+        this.jwtAuthFilter = jwtAuthFilter;
+        this.entryPoint = entryPoint;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

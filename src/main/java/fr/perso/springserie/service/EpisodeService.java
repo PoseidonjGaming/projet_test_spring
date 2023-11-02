@@ -8,6 +8,7 @@ import fr.perso.springserie.repository.IEpisodeRepo;
 import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.repository.ISeriesRepo;
 import fr.perso.springserie.service.interfaces.IEpisodeService;
+import fr.perso.springserie.task.MapService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,8 +19,8 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
     private final ISeasonRepo seasonRepo;
     private final ISeriesRepo seriesRepo;
 
-    public EpisodeService(IEpisodeRepo repository, ISeasonRepo seasonRepo, ISeriesRepo seriesRepo) {
-        super(repository, EpisodeDTO.class, Episode.class);
+    public EpisodeService(IEpisodeRepo repository, ISeasonRepo seasonRepo, ISeriesRepo seriesRepo, MapService mapService) {
+        super(repository, EpisodeDTO.class, Episode.class, mapService);
         this.seasonRepo = seasonRepo;
         this.seriesRepo = seriesRepo;
     }

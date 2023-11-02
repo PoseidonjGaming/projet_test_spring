@@ -7,9 +7,5 @@ import java.util.List;
 
 @Repository
 public interface ISeriesRepo extends IBaseRepo<Series> {
-    List<Series> findByNameContaining(String name);
-
-    List<Series> findByCategoryIn(List<Integer> categoryIds);
-
-    List<Series> findByNameContainingAndCategoryIn(String term, List<Integer> categoryIds);
+    List<Series> findByProjectCategoryIn(List<Integer> categoryIds);
 }

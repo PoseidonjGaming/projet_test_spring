@@ -7,7 +7,7 @@ import fr.perso.springserie.security.JwtResponse;
 import fr.perso.springserie.security.JwtUser;
 import fr.perso.springserie.security.JwtUtil;
 import fr.perso.springserie.service.interfaces.IUserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import fr.perso.springserie.task.MapService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,17 +24,17 @@ import java.util.Objects;
 @Service
 public class UserService extends BaseService<User, UserDTO> implements IUserService, UserDetailsService {
 
-    @Autowired
-    protected JwtUtil jwtTokenUtil;
-    @Autowired
-    @Lazy
-    protected AuthenticationManager authenticationManager;
-    @Lazy
-    @Autowired
-    private PasswordEncoder encoder;
+    protected final JwtUtil jwtTokenUtil;
+    protected final AuthenticationManager authenticationManager;
+    private final PasswordEncoder encoder;
 
-    public UserService(IUserRepo repo) {
-        super(repo, UserDTO.class, User.class);
+    @Lazy
+    public UserService(IUserRepo repo, MapService mapService, JwtUtil jwtTokenUtil,
+                       AuthenticationManager authenticationManager, PasswordEncoder encoder) {
+        super(repo, UserDTO.class, User.class, mapService);
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.authenticationManager = authenticationManager;
+        this.encoder = encoder;
     }
 
     @Override

@@ -36,16 +36,8 @@ public class SeriesController extends BaseController<Series, SeriesDTO> {
         ((ISeriesService) service).saveWithSeasons(series);
     }
 
-
-
-
     @PostMapping("/byCategories")
     public ResponseEntity<List<SeriesDTO>> byCategories(@RequestBody List<Integer> ids) {
         return ResponseEntity.ok(((ISeriesService) service).getByCategoryIds(ids));
-    }
-
-    @PostMapping("/filteredSearch")
-    public ResponseEntity<List<SeriesDTO>> filteredSearch(@RequestBody SearchSeries search) {
-        return ResponseEntity.ok(((ISeriesService) service).search(search.getTerm(), search.getIds()));
     }
 }

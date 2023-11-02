@@ -1,5 +1,6 @@
 package fr.perso.springserie.model.entity;
 
+import fr.perso.springserie.model.embeddable.ProjectEmbeddable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,34 +16,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Series extends BaseEntity {
-    private String name;
-    private LocalDate releaseDate;
 
-    @Column(columnDefinition = "text")
-    private String summary;
-    private String poster;
-    private String trailerUrl;
+    @Embedded
+    private ProjectEmbeddable project;
 
     @OneToMany(mappedBy = "series", fetch = FetchType.EAGER)
     private List<Season> seasons;
 
-    @ManyToMany
-    private List<Character> character;
-
-    @ManyToMany
-    private List<Category> category;
-
-    @OneToOne
-    private Series nextSeries;
-
-    @OneToOne
-    private Series previousSeries;
-
-    @OneToOne
-    private Movie nextMovie;
-
-    @OneToOne
-    private Movie previousMovie;
 
 
 }

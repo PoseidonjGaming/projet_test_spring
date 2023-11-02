@@ -6,6 +6,7 @@ import fr.perso.springserie.repository.IEpisodeRepo;
 import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.repository.ISeriesRepo;
 import fr.perso.springserie.service.interfaces.ISeasonService;
+import fr.perso.springserie.task.MapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +19,8 @@ public class SeasonService extends BaseService<Season, SeasonDTO> implements ISe
     private final IEpisodeRepo episodeRepo;
 
     @Autowired
-    public SeasonService(ISeasonRepo repository, ISeriesRepo seriesRepo, IEpisodeRepo episodeRepo) {
-        super(repository, SeasonDTO.class, Season.class);
+    public SeasonService(ISeasonRepo repository, ISeriesRepo seriesRepo, IEpisodeRepo episodeRepo, MapService mapService) {
+        super(repository, SeasonDTO.class, Season.class, mapService);
         this.seriesRepo = seriesRepo;
         this.episodeRepo = episodeRepo;
     }

@@ -20,9 +20,9 @@ public class Category extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "category")
+    @ManyToMany(mappedBy = "project.category")
     private List<Series> series;
 
-    @ManyToMany(mappedBy = "category")
+    @ManyToMany(mappedBy = "project.category")
     private List<Movie> movie;
 }

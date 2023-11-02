@@ -10,7 +10,5 @@ public interface ISeriesService extends IBaseService<SeriesDTO> {
 
     List<SeriesDTO> getByCategoryIds(List<Integer> categoryIds);
 
-    List<SeriesDTO> search(String term, List<Integer> categoryIds);
-
     void saveWithSeasons(SeriesDTO series);
 }

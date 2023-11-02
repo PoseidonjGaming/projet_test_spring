@@ -17,7 +17,7 @@ import java.util.List;
 public class UserController extends BaseController<User, UserDTO> {
 
     @Autowired
-    public UserController(UserService service) {
+    public UserController(IUserService service) {
         super(service);
     }
 

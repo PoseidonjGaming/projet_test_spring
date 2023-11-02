@@ -10,6 +10,7 @@ import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.repository.ISeriesRepo;
 import fr.perso.springserie.service.interfaces.IFileService;
 import fr.perso.springserie.service.interfaces.ISeriesService;
+import fr.perso.springserie.task.MapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,8 +27,8 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public SeriesService(ISeriesRepo repo, IFileService fileService, ISeasonRepo seasonRepo, ICategoryRepo categoryRepo) {
-        super(repo, SeriesDTO.class, Series.class);
+    public SeriesService(ISeriesRepo repo, IFileService fileService, ISeasonRepo seasonRepo, ICategoryRepo categoryRepo, MapService mapService) {
+        super(repo, SeriesDTO.class, Series.class, mapService);
         this.fileService = fileService;
         this.seasonRepo = seasonRepo;
         this.categoryRepo = categoryRepo;
@@ -53,13 +54,9 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
 
     @Override
     public List<SeriesDTO> getByCategoryIds(List<Integer> categoryIds) {
-        return ((ISeriesRepo) repository).findByCategoryIn(categoryIds).stream().map(this::toDTO).toList();
+        return ((ISeriesRepo) repository).findByProjectCategoryIn(categoryIds).stream().map(this::toDTO).toList();
     }
 
-    @Override
-    public List<SeriesDTO> search(String term, List<Integer> categoryIds) {
-        return ((ISeriesRepo) repository).findByNameContainingAndCategoryIn(term, categoryIds).stream().map(this::toDTO).toList();
-    }
 
     @Override
     public void saveWithSeasons(SeriesDTO seriesDTO) {
