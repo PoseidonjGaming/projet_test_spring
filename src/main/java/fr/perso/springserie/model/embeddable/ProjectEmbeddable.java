@@ -25,9 +25,9 @@ public class ProjectEmbeddable {
     private String poster;
     private String trailerUrl;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Category> category;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Character> character;
     @OneToOne
     private Series nextSeries;

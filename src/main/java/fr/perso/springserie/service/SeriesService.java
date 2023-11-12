@@ -9,6 +9,7 @@ import fr.perso.springserie.repository.ICategoryRepo;
 import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.repository.ISeriesRepo;
 import fr.perso.springserie.service.interfaces.IFileService;
+import fr.perso.springserie.service.interfaces.IMapper;
 import fr.perso.springserie.service.interfaces.ISeriesService;
 import fr.perso.springserie.task.MapService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,9 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public SeriesService(ISeriesRepo repo, IFileService fileService, ISeasonRepo seasonRepo, ICategoryRepo categoryRepo, MapService mapService) {
-        super(repo, SeriesDTO.class, Series.class, mapService);
+    public SeriesService(ISeriesRepo repo, IFileService fileService, ISeasonRepo seasonRepo,
+                         ICategoryRepo categoryRepo, MapService mapService, IMapper<Series,SeriesDTO> customMapper) {
+        super(repo, SeriesDTO.class, Series.class, mapService, customMapper);
         this.fileService = fileService;
         this.seasonRepo = seasonRepo;
         this.categoryRepo = categoryRepo;
@@ -54,7 +56,7 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
 
     @Override
     public List<SeriesDTO> getByCategoryIds(List<Integer> categoryIds) {
-        return ((ISeriesRepo) repository).findByProjectCategoryIn(categoryIds).stream().map(this::toDTO).toList();
+        return customMapper.toDTOList(((ISeriesRepo) repository).findByProjectCategoryIn(categoryIds), dtoClass);
     }
 
 

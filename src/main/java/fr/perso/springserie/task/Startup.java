@@ -26,6 +26,7 @@ public class Startup implements CommandLineRunner {
             List<Path> paths = files.toList();
             for (String s : order) {
                 paths.stream().filter(path -> path.getFileName().toString().startsWith(s)).findFirst().ifPresent(path ->
+
                         mapService.getService(s).save(path.toFile()));
             }
         } catch (IOException e) {

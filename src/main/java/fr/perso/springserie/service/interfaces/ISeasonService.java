@@ -5,6 +5,6 @@ import fr.perso.springserie.model.entity.Season;
 
 import java.util.List;
 
-public interface ISeasonService extends IBaseService<SeasonDTO>, IMapper<Season, SeasonDTO> {
+public interface ISeasonService extends IBaseService<SeasonDTO> {
     List<SeasonDTO> getBySeriesId(int id);
 }

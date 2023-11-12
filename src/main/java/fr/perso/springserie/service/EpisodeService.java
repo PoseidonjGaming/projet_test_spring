@@ -8,6 +8,7 @@ import fr.perso.springserie.repository.IEpisodeRepo;
 import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.repository.ISeriesRepo;
 import fr.perso.springserie.service.interfaces.IEpisodeService;
+import fr.perso.springserie.service.interfaces.IMapper;
 import fr.perso.springserie.task.MapService;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,9 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
     private final ISeasonRepo seasonRepo;
     private final ISeriesRepo seriesRepo;
 
-    public EpisodeService(IEpisodeRepo repository, ISeasonRepo seasonRepo, ISeriesRepo seriesRepo, MapService mapService) {
-        super(repository, EpisodeDTO.class, Episode.class, mapService);
+    public EpisodeService(IEpisodeRepo repository, ISeasonRepo seasonRepo, ISeriesRepo seriesRepo,
+                          MapService mapService, IMapper<Episode, EpisodeDTO> customMapper) {
+        super(repository, EpisodeDTO.class, Episode.class, mapService, customMapper);
         this.seasonRepo = seasonRepo;
         this.seriesRepo = seriesRepo;
     }
@@ -28,16 +30,16 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
 
     @Override
     public List<EpisodeDTO> getBySeasonIdIn(List<Integer> id) {
-        return (id.get(0) == 0) ? null : ((IEpisodeRepo) repository).findBySeasonIdIn(id).stream().map(this::toDTO).toList();
+        return (id.get(0) == 0) ? null : customMapper.toDTOList(((IEpisodeRepo) repository).findBySeasonIdIn(id), dtoClass);
     }
 
 
-    @Override
-    public EpisodeDTO toDTO(Episode entity) {
-        EpisodeDTO dto = super.toDTO(entity);
-        dto.setSeriesId(entity.getSeason().getSeries().getId());
-        return dto;
-    }
+//    @Override
+//    public EpisodeDTO toDTO(Episode entity) {
+//        EpisodeDTO dto = super.toDTO(entity);
+//        dto.setSeriesId(entity.getSeason().getSeries().getId());
+//        return dto;
+//    }
 
     @Override
     public void delete(int id) {

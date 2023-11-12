@@ -38,7 +38,7 @@ public class WebSecurityConfig {
             "series/search", "user/exist**",
             "actor/byIds", "season/byIds",
             "episode/byIds", "actor/detail/**",
-            "movie/list"
+            "movie/list", "movie/search"
     };
     private final JwtFilter jwtAuthFilter;
     private final JwtAuthenticationEntryPoint entryPoint;

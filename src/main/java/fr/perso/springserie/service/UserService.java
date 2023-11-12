@@ -6,6 +6,7 @@ import fr.perso.springserie.repository.IUserRepo;
 import fr.perso.springserie.security.JwtResponse;
 import fr.perso.springserie.security.JwtUser;
 import fr.perso.springserie.security.JwtUtil;
+import fr.perso.springserie.service.interfaces.IMapper;
 import fr.perso.springserie.service.interfaces.IUserService;
 import fr.perso.springserie.task.MapService;
 import org.springframework.context.annotation.Lazy;
@@ -30,8 +31,8 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
 
     @Lazy
     public UserService(IUserRepo repo, MapService mapService, JwtUtil jwtTokenUtil,
-                       AuthenticationManager authenticationManager, PasswordEncoder encoder) {
-        super(repo, UserDTO.class, User.class, mapService);
+                       AuthenticationManager authenticationManager, PasswordEncoder encoder, IMapper<User, UserDTO> customMapper) {
+        super(repo, UserDTO.class, User.class, mapService, customMapper);
         this.jwtTokenUtil = jwtTokenUtil;
         this.authenticationManager = authenticationManager;
         this.encoder = encoder;
@@ -58,7 +59,7 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     public JwtResponse authenticate(JwtUser jwtUser) {
         List<User> user = ((IUserRepo) repository).findByUsernameContains(jwtUser.getUsername());
         authenticateManager(user.get(0).getUsername(), jwtUser.getPassword());
-        return new JwtResponse(jwtTokenUtil.generateToken(toDTO(user.get(0))));
+        return new JwtResponse(jwtTokenUtil.generateToken(customMapper.toDTO(user.get(0), dtoClass, entityClass)));
     }
 
 
@@ -71,12 +72,5 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
         } catch (Exception e) {
             throw new RuntimeException("Invalid Credentials");
         }
-    }
-
-    @Override
-    public UserDTO toDTO(User entity) {
-        UserDTO dto = super.toDTO(entity);
-        dto.setPassword(null);
-        return dto;
     }
 }
