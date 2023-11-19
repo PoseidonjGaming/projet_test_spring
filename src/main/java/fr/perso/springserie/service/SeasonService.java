@@ -5,7 +5,7 @@ import fr.perso.springserie.model.entity.Season;
 import fr.perso.springserie.repository.IEpisodeRepo;
 import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.repository.ISeriesRepo;
-import fr.perso.springserie.service.interfaces.IMapper;
+import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.service.interfaces.ISeasonService;
 import fr.perso.springserie.task.MapService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class SeasonService extends BaseService<Season, SeasonDTO> implements ISe
 
     @Autowired
     public SeasonService(ISeasonRepo repository, ISeriesRepo seriesRepo, IEpisodeRepo episodeRepo,
-                         MapService mapService, IMapper<Season, SeasonDTO> customMapper) {
+                         MapService mapService, IMapper customMapper) {
         super(repository, SeasonDTO.class, Season.class, mapService, customMapper);
         this.seriesRepo = seriesRepo;
         this.episodeRepo = episodeRepo;
@@ -30,6 +30,6 @@ public class SeasonService extends BaseService<Season, SeasonDTO> implements ISe
 
     @Override
     public List<SeasonDTO> getBySeriesId(int id) {
-        return customMapper.toDTOList(((ISeasonRepo) repository).findBySeriesId(id), dtoClass);
+        return ((ISeasonRepo) repository).findBySeriesId(id).stream().map(e->customMapper.convert(e, dtoClass)).toList();
     }
 }

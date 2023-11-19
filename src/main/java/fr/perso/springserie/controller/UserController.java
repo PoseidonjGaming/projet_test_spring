@@ -4,9 +4,9 @@ import fr.perso.springserie.model.dto.UserDTO;
 import fr.perso.springserie.model.entity.User;
 import fr.perso.springserie.security.JwtResponse;
 import fr.perso.springserie.security.JwtUser;
-import fr.perso.springserie.service.UserService;
 import fr.perso.springserie.service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +34,6 @@ public class UserController extends BaseController<User, UserDTO> {
 
     @GetMapping("/exist")
     public ResponseEntity<Boolean> exist(String username) {
-        return ResponseEntity.ok(service.search(new UserDTO(username)).isEmpty());
+        return ResponseEntity.ok(service.search(new UserDTO(username), ExampleMatcher.MatchMode.ALL, ExampleMatcher.StringMatcher.EXACT).isEmpty());
     }
 }

@@ -9,7 +9,7 @@ import fr.perso.springserie.repository.ICategoryRepo;
 import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.repository.ISeriesRepo;
 import fr.perso.springserie.service.interfaces.IFileService;
-import fr.perso.springserie.service.interfaces.IMapper;
+import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.service.interfaces.ISeriesService;
 import fr.perso.springserie.task.MapService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
 
     @Autowired
     public SeriesService(ISeriesRepo repo, IFileService fileService, ISeasonRepo seasonRepo,
-                         ICategoryRepo categoryRepo, MapService mapService, IMapper<Series,SeriesDTO> customMapper) {
+                         ICategoryRepo categoryRepo, MapService mapService, IMapper customMapper) {
         super(repo, SeriesDTO.class, Series.class, mapService, customMapper);
         this.fileService = fileService;
         this.seasonRepo = seasonRepo;
@@ -48,7 +48,7 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
             throw new RuntimeException(e);
         }
         if (file != null && !file.isEmpty()) {
-            fileService.save(file,"series");
+            fileService.save(file, "series");
             seriesObj.setPoster(file.getOriginalFilename());
         }
         save(seriesObj);
@@ -56,7 +56,7 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
 
     @Override
     public List<SeriesDTO> getByCategoryIds(List<Integer> categoryIds) {
-        return customMapper.toDTOList(((ISeriesRepo) repository).findByProjectCategoryIn(categoryIds), dtoClass);
+        return ((ISeriesRepo) repository).findByProjectCategoryIn(categoryIds).stream().map(e->customMapper.convert(e,dtoClass)).toList();
     }
 
 
@@ -71,4 +71,9 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
 //        });
     }
 
+//    @Override
+//    public List<SeriesDTO> search(SeriesDTO dto) {
+//        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAll().withIgnoreNullValues().withIgnorePaths("id").withMatcher("project.name", matcher -> matcher.contains().ignoreCase());
+//        return customMapper.toDTOList(repository.findAll(Example.of(customMapper.toEntity(dto, Series.class), exampleMatcher)), SeriesDTO.class, Series.class);
+//    }
 }

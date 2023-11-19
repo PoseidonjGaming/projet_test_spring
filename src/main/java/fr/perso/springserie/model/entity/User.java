@@ -23,13 +23,4 @@ public class User extends BaseEntity {
     private String roles;
     private String password;
     private String avatarFile;
-
-    public List<String> getRoles() {
-        return Arrays.stream(roles.split(",")).map(e -> e.replace("[", "")
-                .replace("\"", "").replace("]", "")).toList();
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = new JSONArray(roles).toString();
-    }
 }

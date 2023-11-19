@@ -1,6 +1,7 @@
 package fr.perso.springserie.service.interfaces;
 
 import fr.perso.springserie.model.dto.BaseDTO;
+import org.springframework.data.domain.ExampleMatcher;
 
 import java.io.File;
 import java.util.List;
@@ -12,7 +13,7 @@ public interface IBaseService<D extends BaseDTO> {
 
     List<D> getBydIds(List<Integer> ids);
 
-    List<D> search(D dto);
+    List<D> search(D dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType);
 
     void save(D d);
 
@@ -21,4 +22,5 @@ public interface IBaseService<D extends BaseDTO> {
     void delete(int id);
 
 
+    void saves(List<D> ds);
 }

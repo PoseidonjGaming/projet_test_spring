@@ -8,7 +8,7 @@ import fr.perso.springserie.repository.IEpisodeRepo;
 import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.repository.ISeriesRepo;
 import fr.perso.springserie.service.interfaces.IEpisodeService;
-import fr.perso.springserie.service.interfaces.IMapper;
+import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
     private final ISeriesRepo seriesRepo;
 
     public EpisodeService(IEpisodeRepo repository, ISeasonRepo seasonRepo, ISeriesRepo seriesRepo,
-                          MapService mapService, IMapper<Episode, EpisodeDTO> customMapper) {
+                          MapService mapService, IMapper customMapper) {
         super(repository, EpisodeDTO.class, Episode.class, mapService, customMapper);
         this.seasonRepo = seasonRepo;
         this.seriesRepo = seriesRepo;
@@ -30,7 +30,7 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
 
     @Override
     public List<EpisodeDTO> getBySeasonIdIn(List<Integer> id) {
-        return (id.get(0) == 0) ? null : customMapper.toDTOList(((IEpisodeRepo) repository).findBySeasonIdIn(id), dtoClass);
+        return (id.get(0) == 0) ? null : ((IEpisodeRepo) repository).findBySeasonIdIn(id).stream().map(e->customMapper.convert(e, dtoClass)).toList();
     }
 
 

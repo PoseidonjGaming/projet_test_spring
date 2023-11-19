@@ -3,6 +3,7 @@ package fr.perso.springserie.controller;
 import fr.perso.springserie.model.dto.BaseDTO;
 import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.service.interfaces.IBaseService;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +39,7 @@ public abstract class BaseController<E extends BaseEntity, D extends BaseDTO> {
 
     @PostMapping("/saves")
     public void saves(@RequestBody List<D> ds) {
-        ds.forEach(service::save);
+        service.saves(ds);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -47,7 +48,7 @@ public abstract class BaseController<E extends BaseEntity, D extends BaseDTO> {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<D>> test(@RequestBody D dto) {
-        return ResponseEntity.ok(service.search(dto));
+    public ResponseEntity<List<D>> test(@RequestBody D dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher type) {
+        return ResponseEntity.ok(service.search(dto, mode, type));
     }
 }
