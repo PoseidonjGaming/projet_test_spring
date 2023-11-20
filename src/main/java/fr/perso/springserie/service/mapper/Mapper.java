@@ -37,29 +37,30 @@ public class Mapper implements IMapper {
     }
 
 
-    private <S, T> void map(S source, T target, Field field) {
-        if (field.getAnnotation(Embedded.class) != null) {
-            mapEmbedded(source, target, field);
-        } else if (field.getType().equals(BaseEntity.class)) {
-            mapEntity(source, target, field);
-        } else if (field.getType().equals(List.class)) {
-            mapEntities(source, target, field);
+    private <S, T> void map(S source, T target, Field targetField) {
+        if (targetField.getAnnotation(Embedded.class) != null) {
+            mapEmbedded(source, target, targetField);
+        } else if (targetField.getType().equals(BaseEntity.class)) {
+            mapEntity(source, target, targetField);
+        } else if (targetField.getType().equals(List.class)) {
+            mapEntities(source, target, targetField);
         } else {
-            transfert(source, target, field);
+            transfert(source, target, targetField);
         }
     }
 
-    private <S, T> void mapEntities(S source, T target, Field targetField) {
-        if (source instanceof BaseEntity baseEntity) {
-            System.out.println("map");
-        } else if (source instanceof BaseDTO baseDTO) {
-
-            if (targetField.getAnnotation(ManyToMany.class) != null && targetField.getAnnotation(ManyToMany.class).mappedBy().isEmpty()) {
-                System.out.println(targetField.getName());
-                List<Integer> ids = get(getField(targetField.getName().concat("Ids"), source.getClass()), source);
-                List<BaseEntity> entities = mapService.getRepo(targetField.getName()).findByIdIn(ids);
-            } else {
-                System.out.println(targetField.getName());
+    private <S, T> void mapEntities(S source, T target, Field sourceField) {
+        if (sourceField.getAnnotation(ManyToMany.class) != null &&
+                sourceField.getAnnotation(ManyToMany.class).mappedBy().isEmpty()) {
+            Field targetField = getField(sourceField.getName().concat("Ids"),
+                    target.getClass());
+            set(mapService.getRepo(sourceField.getName()).findByIdIn(
+                    get(sourceField, source)),target, targetField);
+        } else if (sourceField.getName().endsWith("Ids")) {
+            Field targetField = getField(sourceField.getName().substring(0, sourceField.getName().length() - 3), source.getClass());
+            if (targetField != null) {
+                List<BaseEntity> sourceObject = get(targetField, source);
+                set(sourceObject.stream().map(BaseEntity::getId).toList(), target, targetField);
             }
 
         }
@@ -76,24 +77,13 @@ public class Mapper implements IMapper {
     private <S, T> void transfert(S source, T target, Field targetField) {
         Field sourceField = getField(targetField.getName(), source.getClass());
         if (sourceField != null) {
-            targetField.setAccessible(true);
-            targetField.setAccessible(true);
             set(get(sourceField, source), target, targetField);
-            targetField.setAccessible(false);
-            targetField.setAccessible(false);
         }
     }
 
     private <S, T> void mapEmbedded(S source, T target, Field field) {
-        try {
-            Object embeddedObject = field.getType().getDeclaredConstructor().newInstance();
-            browseField(embeddedObject.getClass(), embeddedObject, (embeddedField, object) -> map(source, object, embeddedField));
-            set(embeddedObject, target, field);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                 NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-
+        Object embeddedObject=get(field,target);
+        browseField(o);
     }
 
 
@@ -112,11 +102,9 @@ public class Mapper implements IMapper {
 
     protected <O, T> void set(O source, T target, Field targetField) {
         try {
-            if (source != null) {
-                targetField.setAccessible(true);
-                targetField.set(target, source);
-                targetField.setAccessible(false);
-            }
+            targetField.setAccessible(true);
+            targetField.set(target, source);
+            targetField.setAccessible(false);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
