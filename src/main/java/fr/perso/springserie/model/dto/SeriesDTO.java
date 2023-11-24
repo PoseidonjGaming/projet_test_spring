@@ -21,7 +21,7 @@ public class SeriesDTO extends BaseDTO {
     private int nextSeriesId;
     private int previousMovieId;
     private int previousSeriesId;
-    private List<Integer> seasonsIds;
+    private List<Integer> seasonIds;
     private List<Integer> categoryIds;
     private List<Integer> characterIds;
 }

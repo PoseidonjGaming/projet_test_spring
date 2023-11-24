@@ -21,5 +21,5 @@ public class Season extends BaseEntity {
     private int number;
 
     @OneToMany(mappedBy = "season")
-    private List<Episode> episodes;
+    private List<Episode> episode;
 }

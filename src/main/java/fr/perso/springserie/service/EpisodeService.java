@@ -46,7 +46,7 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
         EpisodeDTO dto = getById(id);
         super.delete(id);
         seasonRepo.findById(dto.getSeasonId()).ifPresent(season -> {
-            if (season.getEpisodes().isEmpty())
+            if (season.getEpisode().isEmpty())
                 seasonRepo.delete(season);
         });
     }
@@ -58,7 +58,7 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
             Series series = seriesRepo.findById(episodeDTO.getSeriesId()).orElse(null);
             if (series != null) {
                 season.setSeries(series);
-                int number = series.getSeasons().size() + 1;
+                int number = series.getSeason().size() + 1;
                 season.setNumber(number);
             }
 

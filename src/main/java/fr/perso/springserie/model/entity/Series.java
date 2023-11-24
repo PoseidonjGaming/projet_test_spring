@@ -21,7 +21,7 @@ public class Series extends BaseEntity {
     private ProjectEmbeddable project;
 
     @OneToMany(mappedBy = "series", fetch = FetchType.EAGER)
-    private List<Season> seasons;
+    private List<Season> season;
 
 
 
