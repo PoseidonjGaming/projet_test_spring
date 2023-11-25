@@ -37,7 +37,7 @@ public class Mapper implements IMapper {
 
         try {
             T target = targetClass.getDeclaredConstructor().newInstance();
-            browseField(source.getClass(), target, (field, object) -> map(source, object, field));
+            browseField(source.getClass(), target, (field, object) -> map(source.getClass(), source, object, field));
             return target;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
@@ -47,7 +47,7 @@ public class Mapper implements IMapper {
     }
 
 
-    private <S, T> void map(S source, T target, Field sourceField) {
+    private <S, T> void map(Class<?> sourceClass, S source, T target, Field sourceField) {
         if (sourceField.getType().isAnnotationPresent(Entity.class)) {
             mapEntityId(source, target, sourceField);
         } else if (sourceField.getType().equals(List.class)) {
@@ -57,24 +57,28 @@ public class Mapper implements IMapper {
         } else if (sourceField.isAnnotationPresent(Embedded.class)) {
             mapEmbedded(source, target, sourceField);
         } else {
-            transfert(source, target, sourceField);
+            transfert(source, target, sourceField, target.getClass());
         }
         Arrays.stream(target.getClass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Embedded.class)).forEach(targetField -> {
             try {
                 Object embedded = targetField.getType().getDeclaredConstructor().newInstance();
-                browseField(source.getClass(), field -> map(source, embedded, field));
+                browseField(source.getClass(), field -> map(sourceClass, source, embedded, field));
                 set(embedded, target, targetField);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                      NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
-
         });
+
+        Class<?> superClass = sourceClass.getSuperclass();
+        if (!superClass.equals(Object.class)) {
+            browseField(superClass, target, (superField, o) -> map(superClass, source, o, superField));
+        }
     }
 
     private <S, T> void mapEmbedded(S source, T target, Field sourceField) {
         Object embedded = get(sourceField, source);
-        browseField(sourceField.getType(), field -> map(embedded, target, field));
+        browseField(sourceField.getType(), field -> map(source.getClass(), embedded, target, field));
     }
 
     private <S, T> void mapEntity(S source, T target, Field sourceField) {
@@ -108,7 +112,9 @@ public class Mapper implements IMapper {
         } else {
             Field targetField = getField(sourceField.getName().substring(0, (sourceField.getName().length() - 3)), target.getClass());
             if (targetField != null && isMapped(targetField)) {
-                set(mapService.getRepo(targetField.getName()).findByIdIn(get(sourceField, source)), target, targetField);
+                List<Integer> ids = get(sourceField, source);
+                if (ids != null)
+                    set(mapService.getRepo(targetField.getName()).findByIdIn(ids), target, targetField);
             }
         }
     }
@@ -119,11 +125,16 @@ public class Mapper implements IMapper {
     }
 
 
-    private <S, T> void transfert(S source, T target, Field sourField) {
-        Field targetField = getField(sourField.getName(), target.getClass());
-        if (targetField != null) {
-            set(get(sourField, source), target, targetField);
+    private <S, T> void transfert(S source, T target, Field sourceField, Class<?> targetClass) {
+        if (source.getClass().getSuperclass().equals(sourceField.getDeclaringClass()) || source.getClass().equals(sourceField.getDeclaringClass())) {
+            Field targetField = getField(sourceField.getName(), targetClass);
+            if (targetField != null) {
+                set(get(sourceField, source), target, targetField);
+            } else if (!targetClass.getSuperclass().equals(Object.class)) {
+                transfert(source, target, sourceField, targetClass.getSuperclass());
+            }
         }
+
     }
 
 
@@ -151,11 +162,15 @@ public class Mapper implements IMapper {
     }
 
     protected <O> Field getField(String name, Class<O> sourceClass) {
-        try {
-            return sourceClass.getDeclaredField(name);
-        } catch (NoSuchFieldException e) {
-            return null;
+        if (sourceClass != null) {
+            try {
+                return sourceClass.getDeclaredField(name);
+            } catch (NoSuchFieldException e) {
+                return null;
+            }
         }
+        return null;
+
 
     }
 }

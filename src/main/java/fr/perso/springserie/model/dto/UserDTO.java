@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,8 +25,11 @@ public class UserDTO extends BaseDTO {
     }
 
     public List<String> getRoles() {
-        return Arrays.stream(roles.split(",")).map(e -> e.replace("[", "")
-                .replace("\"", "").replace("]", "")).toList();
+        if(roles!=null){
+            return Arrays.stream(roles.split(",")).map(e -> e.replace("[", "")
+                    .replace("\"", "").replace("]", "")).toList();
+        }
+        return null;
     }
 
     public void setRoles(List<String> roles) {

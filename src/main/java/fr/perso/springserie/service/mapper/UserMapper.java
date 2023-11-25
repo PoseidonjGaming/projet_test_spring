@@ -20,8 +20,11 @@ public class UserMapper extends Mapper implements IMapper {
 
         if (source instanceof UserDTO userDTO) {
             T target = super.convert(source,targetClass);
-            Gson json=new Gson();
-            set(json.toJson(userDTO.getRoles()), target, getField("roles", targetClass));
+            if(userDTO.getRoles()!=null){
+                Gson json=new Gson();
+                set(json.toJson(userDTO.getRoles()), target, getField("roles", targetClass));
+            }
+
             return target;
         }else {
             return super.convert(source, targetClass);

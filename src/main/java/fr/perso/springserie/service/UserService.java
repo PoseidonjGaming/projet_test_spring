@@ -7,7 +7,6 @@ import fr.perso.springserie.security.JwtResponse;
 import fr.perso.springserie.security.JwtUser;
 import fr.perso.springserie.security.JwtUtil;
 import fr.perso.springserie.service.interfaces.IUserService;
-import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.service.mapper.UserMapper;
 import fr.perso.springserie.task.MapService;
 import org.jetbrains.annotations.NotNull;
@@ -87,7 +86,7 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
 
     @Override
     protected @NotNull ExampleMatcher getMatcher(UserDTO dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
-        return ExampleMatcher.matchingAll().withIgnorePaths("password").withIgnoreNullValues().withMatcher("username", matcher -> matcher.exact().caseSensitive());
+        return ExampleMatcher.matchingAll().withIgnorePaths("password", "id").withIgnoreNullValues().withMatcher("username", matcher -> matcher.exact().caseSensitive());
     }
 
     @Override
