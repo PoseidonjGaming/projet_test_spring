@@ -25,4 +25,6 @@ public class UserController extends BaseController<User, UserDTO> {
     public ResponseEntity<JwtResponse> authenticate(@RequestBody JwtUser user) {
         return ResponseEntity.ofNullable(((IUserService) service).authenticate(user));
     }
+
+
 }
