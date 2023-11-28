@@ -24,12 +24,10 @@ import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
 @Primary
 public class Mapper implements IMapper {
 
-    private final ModelMapper modelMapper;
     private final MapService mapService;
 
     public Mapper(MapService mapService) {
         this.mapService = mapService;
-        this.modelMapper = new ModelMapper();
     }
 
     @Override
@@ -44,6 +42,11 @@ public class Mapper implements IMapper {
             throw new RuntimeException(e);
         }
 
+    }
+
+    @Override
+    public <S, T> List<T> convertList(List<S> listSource, Class<T> targetClass) {
+        return listSource.stream().map(s -> convert(s, targetClass)).toList();
     }
 
 
@@ -106,7 +109,8 @@ public class Mapper implements IMapper {
             Field targetField = getField(sourceField.getName().concat("Ids"), target.getClass());
             if (targetField != null) {
                 List<BaseEntity> entities = get(sourceField, source);
-                set(entities.stream().map(BaseEntity::getId).toList(), target, targetField);
+                if (entities != null)
+                    set(entities.stream().map(BaseEntity::getId).toList(), target, targetField);
             }
 
         } else {

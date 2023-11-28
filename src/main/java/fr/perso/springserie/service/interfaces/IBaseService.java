@@ -2,6 +2,7 @@ package fr.perso.springserie.service.interfaces;
 
 import fr.perso.springserie.model.dto.BaseDTO;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Sort;
 
 import java.io.File;
 import java.util.List;
@@ -15,7 +16,7 @@ public interface IBaseService<D extends BaseDTO> {
 
     List<D> search(D dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType);
 
-    void save(D d);
+    D save(D d);
 
     void save(File file);
 
@@ -23,4 +24,6 @@ public interface IBaseService<D extends BaseDTO> {
 
 
     void saves(List<D> ds);
+
+    List<D> order(String field, Sort.Direction direction);
 }

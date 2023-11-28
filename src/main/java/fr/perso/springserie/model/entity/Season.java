@@ -20,6 +20,6 @@ public class Season extends BaseEntity {
     private Series series;
     private int number;
 
-    @OneToMany(mappedBy = "season")
+    @OneToMany(mappedBy = "season", fetch = FetchType.EAGER)
     private List<Episode> episode;
 }

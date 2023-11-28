@@ -29,7 +29,7 @@ public class UserDTO extends BaseDTO {
             return Arrays.stream(roles.split(",")).map(e -> e.replace("[", "")
                     .replace("\"", "").replace("]", "")).toList();
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public void setRoles(List<String> roles) {

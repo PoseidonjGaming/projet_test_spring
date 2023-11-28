@@ -3,19 +3,21 @@ package fr.perso.springserie.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import fr.perso.springserie.model.dto.SeasonDTO;
 import fr.perso.springserie.model.dto.SeriesDTO;
+import fr.perso.springserie.model.entity.Season;
 import fr.perso.springserie.model.entity.Series;
-import fr.perso.springserie.repository.ICategoryRepo;
 import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.repository.ISeriesRepo;
 import fr.perso.springserie.service.interfaces.IFileService;
-import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.service.interfaces.ISeriesService;
+import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,16 +26,13 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
 
     private final IFileService fileService;
     private final ISeasonRepo seasonRepo;
-    private final ICategoryRepo categoryRepo;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public SeriesService(ISeriesRepo repo, IFileService fileService, ISeasonRepo seasonRepo,
-                         ICategoryRepo categoryRepo, MapService mapService, IMapper customMapper) {
+    public SeriesService(ISeriesRepo repo, IFileService fileService, ISeasonRepo seasonRepo, MapService mapService, IMapper customMapper) {
         super(repo, SeriesDTO.class, Series.class, mapService, customMapper);
         this.fileService = fileService;
         this.seasonRepo = seasonRepo;
-        this.categoryRepo = categoryRepo;
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
     }
@@ -56,24 +55,18 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
 
     @Override
     public List<SeriesDTO> getByCategoryIds(List<Integer> categoryIds) {
-        return ((ISeriesRepo) repository).findByProjectCategoryIn(categoryIds).stream().map(e->customMapper.convert(e,dtoClass)).toList();
+        return ((ISeriesRepo) repository).findByProjectCategoryIn(categoryIds).stream().map(e -> customMapper.convert(e, dtoClass)).toList();
     }
-
 
     @Override
-    public void saveWithSeasons(SeriesDTO seriesDTO) {
-//        Series series=repository.save(toEntity(seriesDTO));
-//        seriesDTO.getCategoryIds().forEach(number ->{
-//            SeasonDTO seasonDTO=new SeasonDTO();
-//            seasonDTO.setNumber(number);
-//            seasonDTO.setSeriesId(series.getId());
-//            seasonRepo.save(toEntity())
-//        });
+    public SeriesDTO savesWithSeasons(SeriesDTO dto, int seasons) {
+        SeriesDTO series=save(dto);
+        List<SeasonDTO> seasonsList=new ArrayList<>();
+        for (int i = 0; i < seasons; i++) {
+            int number = i+1;
+            seasonsList.add(new SeasonDTO(series.getId(), number, new ArrayList<>()));
+        }
+        seasonRepo.saveAll(customMapper.convertList(seasonsList, Season.class));
+        return series;
     }
-
-//    @Override
-//    public List<SeriesDTO> search(SeriesDTO dto) {
-//        ExampleMatcher exampleMatcher = ExampleMatcher.matchingAll().withIgnoreNullValues().withIgnorePaths("id").withMatcher("project.name", matcher -> matcher.contains().ignoreCase());
-//        return customMapper.toDTOList(repository.findAll(Example.of(customMapper.toEntity(dto, Series.class), exampleMatcher)), SeriesDTO.class, Series.class);
-//    }
 }

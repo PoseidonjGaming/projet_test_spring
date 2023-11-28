@@ -3,9 +3,7 @@ package fr.perso.springserie.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.perso.springserie.model.dto.BaseDTO;
-import fr.perso.springserie.model.dto.MovieDTO;
 import fr.perso.springserie.model.entity.BaseEntity;
-import fr.perso.springserie.model.entity.Movie;
 import fr.perso.springserie.repository.IBaseRepo;
 import fr.perso.springserie.service.interfaces.IBaseService;
 import fr.perso.springserie.service.mapper.IMapper;
@@ -15,11 +13,10 @@ import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Sort;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,26 +48,18 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public D getById(int id) {
-        try {
-            return customMapper.convert(repository.findById(id).orElse(entityClass.getDeclaredConstructor().newInstance()), dtoClass);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                 NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+        return customMapper.convert(repository.findById(id).orElse(null), dtoClass);
     }
 
     @Override
     public List<D> getBydIds(List<Integer> ids) {
-        return repository.findByIdIn(ids).stream().map(e -> customMapper.convert(e, dtoClass)).toList();
+        return customMapper.convertList(repository.findByIdIn(ids), dtoClass);
     }
 
     @Override
     public List<D> search(D dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
-        E entity = customMapper.convert(dto, entityClass);
-        ExampleMatcher matcher = getMatcher(dto, mode, matcherType);
-        List<E> list = repository.findAll(Example.of(entity, matcher));
-
-        return list.stream().map(e->customMapper.convert(e, dtoClass)).toList();
+        return customMapper.convertList(repository.findAll(Example.of(customMapper.convert(dto, entityClass),
+                getMatcher(dto, mode, matcherType))), dtoClass);
     }
 
     @NotNull
@@ -102,8 +91,8 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     }
 
     @Override
-    public void save(D d) {
-        repository.save(customMapper.convert(d, entityClass));
+    public D save(D d) {
+        return customMapper.convert(repository.save(customMapper.convert(d, entityClass)), dtoClass);
     }
 
     @Override
@@ -111,8 +100,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         try {
-            List<D> dtoList = objectMapper.readValue(file, objectMapper.getTypeFactory().constructCollectionType(List.class, dtoClass));
-            saves(dtoList);
+            saves(objectMapper.readValue(file, objectMapper.getTypeFactory().constructCollectionType(List.class, dtoClass)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -121,10 +109,9 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     @Override
     public void saves(List<D> ds) {
         List<D> list = ds.stream()
-                .filter(dto -> search(dto, ExampleMatcher.MatchMode.ALL, ExampleMatcher.StringMatcher.EXACT) == null).toList();
+                .filter(dto -> !search(dto, ExampleMatcher.MatchMode.ALL, ExampleMatcher.StringMatcher.EXACT).isEmpty()).toList();
         if (list.isEmpty()) {
-            List<E> entities = ds.stream().map(dto -> customMapper.convert(dto, entityClass)).toList();
-            repository.saveAll(entities);
+            repository.saveAll(customMapper.convertList(ds, entityClass));
         }
     }
 
@@ -133,5 +120,8 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         repository.delete(customMapper.convert(getById(id), entityClass));
     }
 
-
+    @Override
+    public List<D> order(String field, Sort.Direction direction) {
+        return customMapper.convertList(repository.findAll(Sort.by(direction, field)), dtoClass);
+    }
 }

@@ -18,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Embeddable
 public class ProjectEmbeddable {
+    @Column(nullable = false)
     private String name;
     private LocalDate releaseDate;
     @Column(columnDefinition = "text")

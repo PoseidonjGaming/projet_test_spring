@@ -52,7 +52,7 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
     }
 
     @Override
-    public void save(EpisodeDTO episodeDTO) {
+    public EpisodeDTO save(EpisodeDTO episodeDTO) {
         Season season = seasonRepo.findById(episodeDTO.getSeasonId()).orElse(new Season());
         if (season.getId() == 0) {
             Series series = seriesRepo.findById(episodeDTO.getSeriesId()).orElse(null);
@@ -64,6 +64,6 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
 
         }
         episodeDTO.setSeasonId(seasonRepo.save(season).getId());
-        super.save(episodeDTO);
+        return super.save(episodeDTO);
     }
 }
