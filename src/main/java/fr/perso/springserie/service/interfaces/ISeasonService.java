@@ -1,7 +1,6 @@
 package fr.perso.springserie.service.interfaces;
 
 import fr.perso.springserie.model.dto.SeasonDTO;
-import fr.perso.springserie.model.entity.Season;
 
 import java.util.List;
 

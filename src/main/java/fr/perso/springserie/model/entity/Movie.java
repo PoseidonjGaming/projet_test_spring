@@ -1,14 +1,12 @@
 package fr.perso.springserie.model.entity;
 
 import fr.perso.springserie.model.embeddable.ProjectEmbeddable;
-import jakarta.persistence.*;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Getter

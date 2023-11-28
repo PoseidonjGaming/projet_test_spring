@@ -6,10 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.json.JSONArray;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Entity
 @Getter

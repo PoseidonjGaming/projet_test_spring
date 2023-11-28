@@ -2,7 +2,6 @@ package fr.perso.springserie.service.mapper;
 
 import com.google.gson.Gson;
 import fr.perso.springserie.model.dto.UserDTO;
-import fr.perso.springserie.model.entity.User;
 import fr.perso.springserie.task.MapService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
