@@ -15,6 +15,8 @@ public interface IBaseService<D extends BaseDTO> {
     List<D> getBydIds(List<Integer> ids);
 
     List<D> search(D dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType);
+    List<D> sort(String field, Sort.Direction direction);
+    List<D> sortSearch(String field, Sort.Direction direction, D dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType);
 
     D save(D d);
 
@@ -25,5 +27,5 @@ public interface IBaseService<D extends BaseDTO> {
 
     void saves(List<D> ds);
 
-    List<D> order(String field, Sort.Direction direction);
+
 }

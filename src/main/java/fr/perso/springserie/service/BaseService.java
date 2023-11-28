@@ -62,6 +62,18 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                 getMatcher(dto, mode, matcherType))), dtoClass);
     }
 
+    @Override
+    public List<D> sort(String field, Sort.Direction direction) {
+        return customMapper.convertList(repository.findAll(Sort.by(direction, field)), dtoClass);
+    }
+
+    @Override
+    public List<D> sortSearch(String field, Sort.Direction direction, D dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
+        return customMapper.convertList(repository.findAll(
+                Example.of(customMapper.convert(dto, entityClass), getMatcher(dto, mode, matcherType)), Sort.by(direction, field)
+        ), dtoClass);
+    }
+
     @NotNull
     protected ExampleMatcher getMatcher(D dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
         final ExampleMatcher[] exampleMatcher = new ExampleMatcher[1];
@@ -120,8 +132,5 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         repository.delete(customMapper.convert(getById(id), entityClass));
     }
 
-    @Override
-    public List<D> order(String field, Sort.Direction direction) {
-        return customMapper.convertList(repository.findAll(Sort.by(direction, field)), dtoClass);
-    }
+
 }

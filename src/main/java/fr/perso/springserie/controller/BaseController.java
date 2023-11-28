@@ -53,8 +53,13 @@ public abstract class BaseController<E extends BaseEntity, D extends BaseDTO> {
         return ResponseEntity.ok(service.search(dto, mode, type));
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<List<D>> test(String field, Sort.Direction direction){
-        return ResponseEntity.ok(service.order(field, direction));
+    @GetMapping("/sort")
+    public ResponseEntity<List<D>> sort(String field, Sort.Direction direction){
+        return ResponseEntity.ok(service.sort(field, direction));
+    }
+
+    @GetMapping("/sort/search")
+    public ResponseEntity<List<D>> sortSearch(@RequestBody D dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher type, String field, Sort.Direction direction){
+        return ResponseEntity.ok(service.sortSearch(field, direction, dto, mode, type));
     }
 }
