@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.perso.springserie.model.dto.SeasonDTO;
 import fr.perso.springserie.model.dto.SeriesDTO;
+import fr.perso.springserie.model.dto.special.SearchDateDto;
+import fr.perso.springserie.model.dto.special.SearchDto;
 import fr.perso.springserie.model.entity.Season;
 import fr.perso.springserie.model.entity.Series;
 import fr.perso.springserie.repository.ISeasonRepo;
@@ -14,9 +16,12 @@ import fr.perso.springserie.service.interfaces.ISeriesService;
 import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +64,11 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
     }
 
     @Override
+    public List<SeriesDTO> search(SeriesDTO dto, SearchDto searchDto, SearchDateDto searchDateDto) {
+        return super.search(dto, searchDto, searchDateDto).stream().filter(seriesDTO->isBetween(searchDateDto, seriesDTO.getReleaseDate())).toList();
+    }
+
+    @Override
     public SeriesDTO savesWithSeasons(SeriesDTO dto, int seasons) {
         SeriesDTO series=save(dto);
         List<SeasonDTO> seasonsList=new ArrayList<>();
@@ -69,4 +79,6 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
         seasonRepo.saveAll(customMapper.convertList(seasonsList, Season.class));
         return series;
     }
+
+
 }

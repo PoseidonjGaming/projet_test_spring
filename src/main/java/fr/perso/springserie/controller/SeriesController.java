@@ -9,11 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/series")
-public class SeriesController extends BaseController<Series, SeriesDTO> {
+public class SeriesController extends BaseController<SeriesDTO> {
 
     private final IFileService fileService;
 
@@ -38,4 +39,6 @@ public class SeriesController extends BaseController<Series, SeriesDTO> {
     public ResponseEntity<SeriesDTO> saveWithSeasons(@RequestBody SeriesDTO dto, int seasons){
         return ResponseEntity.ok(((ISeriesService)service).savesWithSeasons(dto, seasons));
     }
-}
+
+
+ }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/category")
-public class CategoryController extends BaseController<Category, CategoryDTO> {
+public class CategoryController extends BaseController<CategoryDTO> {
     public CategoryController(ICategoryService service) {
         super(service);
     }

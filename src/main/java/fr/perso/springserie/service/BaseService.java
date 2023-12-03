@@ -2,7 +2,10 @@ package fr.perso.springserie.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import fr.perso.springserie.model.PageRequest;
 import fr.perso.springserie.model.dto.BaseDTO;
+import fr.perso.springserie.model.dto.special.SearchDateDto;
+import fr.perso.springserie.model.dto.special.SearchDto;
 import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.repository.IBaseRepo;
 import fr.perso.springserie.service.interfaces.IBaseService;
@@ -11,12 +14,11 @@ import fr.perso.springserie.task.MapService;
 import jakarta.persistence.Embedded;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,9 +43,23 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         mapper = new ModelMapper();
     }
 
+    protected static boolean isBetween(SearchDateDto searchDateDto, LocalDate releaseDate) {
+        return (releaseDate.isEqual(searchDateDto.getStartDate()) || releaseDate.isEqual(searchDateDto.getEndDate()))
+                || (releaseDate.isAfter(searchDateDto.getStartDate()) && releaseDate.isBefore(searchDateDto.getEndDate()));
+    }
+
     @Override
-    public List<D> getAll() {
-        return repository.findAll().stream().map(e -> customMapper.convert(e, dtoClass)).toList();
+    public PageRequest<D> getAll() {
+        return getAll(0, 0);
+    }
+
+    @Override
+    public PageRequest<D> getAll(int size, int page) {
+        return createPage(repository.findAll((size == 0) ? Pageable.unpaged() : Pageable.ofSize(size).withPage(page)));
+    }
+
+    private PageRequest<D> createPage(Page<E> pageRequest) {
+        return new PageRequest<>(customMapper.convertList(pageRequest.getContent(), dtoClass), pageRequest.getNumber(), pageRequest.getTotalElements());
     }
 
     @Override
@@ -57,9 +73,10 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     }
 
     @Override
-    public List<D> search(D dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
-        return customMapper.convertList(repository.findAll(Example.of(customMapper.convert(dto, entityClass),
-                getMatcher(dto, mode, matcherType))), dtoClass);
+    public List<D> search(D dto, SearchDto searchDto, SearchDateDto searchDateDto) {
+        List<E> entities = repository.findAll(Example.of(customMapper.convert(dto, entityClass),
+                getMatcher(dto, searchDto.getMode(), searchDto.getType())));
+        return customMapper.convertList(entities, dtoClass);
     }
 
     @Override
@@ -73,6 +90,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                 Example.of(customMapper.convert(dto, entityClass), getMatcher(dto, mode, matcherType)), Sort.by(direction, field)
         ), dtoClass);
     }
+
 
     @NotNull
     protected ExampleMatcher getMatcher(D dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
@@ -121,7 +139,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     @Override
     public void saves(List<D> ds) {
         List<D> list = ds.stream()
-                .filter(dto -> !search(dto, ExampleMatcher.MatchMode.ALL, ExampleMatcher.StringMatcher.EXACT).isEmpty()).toList();
+                .filter(dto -> !search(dto, new SearchDto(ExampleMatcher.MatchMode.ALL, ExampleMatcher.StringMatcher.EXACT), new SearchDateDto()).isEmpty()).toList();
         if (list.isEmpty()) {
             repository.saveAll(customMapper.convertList(ds, entityClass));
         }

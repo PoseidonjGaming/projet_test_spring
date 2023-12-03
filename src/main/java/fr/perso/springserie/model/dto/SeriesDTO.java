@@ -9,8 +9,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-@EqualsAndHashCode(callSuper = false)
 public class SeriesDTO extends BaseDTO {
     private String name;
     private LocalDate releaseDate;

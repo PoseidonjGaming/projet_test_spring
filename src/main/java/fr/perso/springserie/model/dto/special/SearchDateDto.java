@@ -5,13 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SearchSeries {
-    private String term;
-    private List<Integer> ids;
+public class SearchDateDto {
+    private LocalDate startDate;
+    private LocalDate endDate;
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/actor")
-public class ActorController extends BaseController<Actor, ActorDTO> {
+public class ActorController extends BaseController<ActorDTO> {
 
     @Autowired
     public ActorController(IActorService service) {

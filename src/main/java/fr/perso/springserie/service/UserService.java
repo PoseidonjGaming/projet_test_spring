@@ -1,6 +1,9 @@
 package fr.perso.springserie.service;
 
+import fr.perso.springserie.model.PageRequest;
 import fr.perso.springserie.model.dto.UserDTO;
+import fr.perso.springserie.model.dto.special.SearchDateDto;
+import fr.perso.springserie.model.dto.special.SearchDto;
 import fr.perso.springserie.model.entity.User;
 import fr.perso.springserie.repository.IUserRepo;
 import fr.perso.springserie.security.JwtResponse;
@@ -43,9 +46,9 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     }
 
     @Override
-    public List<UserDTO> getAll() {
-        List<UserDTO> dtos = super.getAll();
-        dtos.forEach(userDTO -> userDTO.setPassword(""));
+    public PageRequest<UserDTO> getAll() {
+        PageRequest<UserDTO> dtos = super.getAll();
+        dtos.getContent().forEach(userDTO -> userDTO.setPassword(""));
         return dtos;
     }
 
@@ -63,9 +66,10 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
         return dtos;
     }
 
+
     @Override
-    public List<UserDTO> search(UserDTO dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
-        List<UserDTO> dtos = super.search(dto, mode, matcherType);
+    public List<UserDTO> search(UserDTO dto, SearchDto searchDto, SearchDateDto searchDateDto) {
+        List<UserDTO> dtos = super.search(dto, searchDto, searchDateDto);
         dtos.forEach(userDTO -> userDTO.setPassword(""));
         return dtos;
     }
@@ -108,9 +112,15 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
 
     @Override
     public JwtResponse authenticate(JwtUser jwtUser) {
-        List<UserDTO> user = search(customMapper.convert(jwtUser, dtoClass), ExampleMatcher.MatchMode.ALL, ExampleMatcher.StringMatcher.EXACT);
-        authenticateManager(user.get(0).getUsername(), jwtUser.getPassword());
-        return new JwtResponse(jwtTokenUtil.generateToken(user.get(0)));
+        List<UserDTO> user = search(customMapper.convert(jwtUser, dtoClass),
+                new SearchDto(ExampleMatcher.MatchMode.ALL, ExampleMatcher.StringMatcher.EXACT), new SearchDateDto());
+        if (!user.isEmpty()){
+            authenticateManager(user.get(0).getUsername(), jwtUser.getPassword());
+            return new JwtResponse(jwtTokenUtil.generateToken(user.get(0)));
+        }else {
+            return null;
+        }
+
     }
 
 

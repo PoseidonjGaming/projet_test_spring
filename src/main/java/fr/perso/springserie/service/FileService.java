@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -172,7 +173,7 @@ public class FileService implements IFileService {
 
         Row headers = sheet.createRow(0);
         createHeaders(dtoClass, headers, headerStyle);
-        list = service.getAll();
+        list = service.getAll().getContent();
 
 
         if (list != null) {

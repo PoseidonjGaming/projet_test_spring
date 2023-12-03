@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/character")
-public class CharacterController extends BaseController<Character, CharacterDTO> {
+public class CharacterController extends BaseController<CharacterDTO> {
 
     @Autowired
     public CharacterController(ICharacterService service) {

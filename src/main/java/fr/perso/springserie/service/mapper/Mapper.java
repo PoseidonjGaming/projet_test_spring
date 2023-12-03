@@ -43,11 +43,6 @@ public class Mapper implements IMapper {
 
     }
 
-    @Override
-    public <S, T> List<T> convertList(List<S> listSource, Class<T> targetClass) {
-        return listSource.stream().map(s -> convert(s, targetClass)).toList();
-    }
-
 
     private <S, T> void map(Class<?> sourceClass, S source, T target, Field sourceField) {
         if (sourceField.getType().isAnnotationPresent(Entity.class)) {

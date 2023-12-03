@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/season")
-public class SeasonController extends BaseController<Season, SeasonDTO> {
+public class SeasonController extends BaseController<SeasonDTO> {
 
     private final ISeriesService seriesService;
 
