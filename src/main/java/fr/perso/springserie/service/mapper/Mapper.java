@@ -54,7 +54,7 @@ public class Mapper implements IMapper {
             mapEntity(source, target, sourceField);
         } else if (sourceField.isAnnotationPresent(Embedded.class)) {
             mapEmbedded(source, target, sourceField);
-        } else {
+         } else {
             transfert(source, target, sourceField, target.getClass());
         }
         Arrays.stream(target.getClass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Embedded.class)).forEach(targetField -> {
