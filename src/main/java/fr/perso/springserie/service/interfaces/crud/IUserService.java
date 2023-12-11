@@ -1,4 +1,4 @@
-package fr.perso.springserie.service.interfaces;
+package fr.perso.springserie.service.interfaces.crud;
 
 import fr.perso.springserie.model.dto.UserDTO;
 import fr.perso.springserie.security.JwtResponse;

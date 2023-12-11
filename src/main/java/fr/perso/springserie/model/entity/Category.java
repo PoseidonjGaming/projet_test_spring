@@ -21,7 +21,7 @@ public class Category extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "project.category" ,fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "project.category", fetch = FetchType.EAGER)
     private List<Series> series;
 
     @ManyToMany(mappedBy = "project.category", fetch = FetchType.EAGER)

@@ -1,6 +1,5 @@
 package fr.perso.springserie.task;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +13,11 @@ import java.util.stream.Stream;
 @Component
 public class Startup implements CommandLineRunner {
 
-    @Autowired
-    private MapService mapService;
+    private final MapService mapService;
+
+    public Startup(MapService mapService) {
+        this.mapService = mapService;
+    }
 
 
     @Override

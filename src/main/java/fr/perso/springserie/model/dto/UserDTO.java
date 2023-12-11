@@ -21,11 +21,11 @@ public class UserDTO extends BaseDTO {
 
     public UserDTO(String username) {
         this.username = username;
-        roles="";
+        roles = "";
     }
 
     public List<String> getRoles() {
-        if(roles!=null){
+        if (roles != null) {
             return Arrays.stream(roles.split(",")).map(e -> e.replace("[", "")
                     .replace("\"", "").replace("]", "")).toList();
         }

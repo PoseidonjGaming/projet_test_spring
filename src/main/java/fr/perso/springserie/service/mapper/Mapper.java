@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
+import static fr.perso.springserie.service.utility.ServiceUtility.get;
 
 @Service
 @Transactional
@@ -135,19 +136,6 @@ public class Mapper implements IMapper {
 
     }
 
-
-    protected <O> O get(Field field, Object object) {
-        O returned;
-        try {
-            field.setAccessible(true);
-            returned = (O) field.get(object);
-            field.setAccessible(false);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-        return returned;
-
-    }
 
     protected <O, T> void set(O source, T target, Field targetField) {
         try {

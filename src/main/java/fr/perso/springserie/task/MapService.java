@@ -3,7 +3,8 @@ package fr.perso.springserie.task;
 import fr.perso.springserie.model.dto.*;
 import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.repository.*;
-import fr.perso.springserie.service.interfaces.*;
+import fr.perso.springserie.service.interfaces.crud.*;
+import fr.perso.springserie.service.interfaces.listed.IBaseListedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -18,44 +19,54 @@ public class MapService {
     private final Map<String, Class<?>> mapClass;
     private final Map<String, IBaseRepo<? extends BaseEntity>> mapRepo;
 
+    private static final String ACTOR = "actor";
+    private static final String CHARACTER = "character";
+    private static final String SERIES = "series";
+    private static final String SEASON = "season";
+    private static final String CATEGORY = "category";
+    private static final String EPISODE = "episode";
+    private static final String MOVIE = "movie";
 
     @Autowired
     @Lazy
-    public MapService(IActorService actorService, ICharacterService characterService, ISeriesService seriesService, ICategoryService categoryService,
-                      ISeasonService seasonService, IEpisodeService episodeService, IMovieService movieService,
-                      IUserService userService, ISeriesRepo seriesRepo, ISeasonRepo seasonRepo, IEpisodeRepo episodeRepo,
-                      IActorRepo actorRepo, ICharacterRepo characterRepo, IMovieRepo movieRepo, ICategoryRepo categoryRepo) {
+    public MapService(IActorService actorService, ICharacterService characterService,
+                      ISeriesService seriesService, ICategoryService categoryService,
+                      ISeasonService seasonService, IEpisodeService episodeService,
+                      IMovieService movieService, IUserService userService,
+                      ISeriesRepo seriesRepo, ISeasonRepo seasonRepo, IEpisodeRepo episodeRepo,
+                      IActorRepo actorRepo, ICharacterRepo characterRepo,
+                      IMovieRepo movieRepo, ICategoryRepo categoryRepo) {
         mapService = new HashMap<>();
 
-        mapService.put("actor", actorService);
-        mapService.put("character", characterService);
-        mapService.put("series", seriesService);
-        mapService.put("season", seasonService);
-        mapService.put("category", categoryService);
-        mapService.put("episode", episodeService);
-        mapService.put("movie", movieService);
+        mapService.put(ACTOR, actorService);
+        mapService.put(CHARACTER, characterService);
+        mapService.put(SERIES, seriesService);
+        mapService.put(SEASON, seasonService);
+        mapService.put(CATEGORY, categoryService);
+        mapService.put(EPISODE, episodeService);
+        mapService.put(MOVIE, movieService);
         mapService.put("user", userService);
 
 
         mapClass = new HashMap<>();
-        mapClass.put("actor", ActorDTO.class);
-        mapClass.put("character", CharacterDTO.class);
-        mapClass.put("series", SeriesDTO.class);
-        mapClass.put("season", SeasonDTO.class);
-        mapClass.put("category", CategoryDTO.class);
-        mapClass.put("episode", EpisodeDTO.class);
-        mapClass.put("movie", MovieDTO.class);
+        mapClass.put(ACTOR, ActorDTO.class);
+        mapClass.put(CHARACTER, CharacterDTO.class);
+        mapClass.put(SERIES, SeriesDTO.class);
+        mapClass.put(SEASON, SeasonDTO.class);
+        mapClass.put(CATEGORY, CategoryDTO.class);
+        mapClass.put(EPISODE, EpisodeDTO.class);
+        mapClass.put(MOVIE, MovieDTO.class);
         mapClass.put("user", UserDTO.class);
 
 
         mapRepo = new HashMap<>();
-        mapRepo.put("actor", actorRepo);
-        mapRepo.put("character", characterRepo);
-        mapRepo.put("series", seriesRepo);
-        mapRepo.put("season", seasonRepo);
-        mapRepo.put("category", categoryRepo);
-        mapRepo.put("episode", episodeRepo);
-        mapRepo.put("movie", movieRepo);
+        mapRepo.put(ACTOR, actorRepo);
+        mapRepo.put(CHARACTER, characterRepo);
+        mapRepo.put(SERIES, seriesRepo);
+        mapRepo.put(SEASON, seasonRepo);
+        mapRepo.put(CATEGORY, categoryRepo);
+        mapRepo.put(EPISODE, episodeRepo);
+        mapRepo.put(MOVIE, movieRepo);
     }
 
     public IBaseService<BaseDTO> getService(String key) {

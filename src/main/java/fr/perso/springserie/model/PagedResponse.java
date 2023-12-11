@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class PageRequest<D extends BaseDTO> {
+public class PagedResponse<D extends BaseDTO> {
     private List<D> content;
     private int pageIndex;
     private long size;

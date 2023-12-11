@@ -16,4 +16,17 @@ public abstract class ServiceUtility {
     public static void browseField(Class<?> clazz, Consumer<Field> consumer) {
         Arrays.stream(clazz.getDeclaredFields()).forEach(consumer);
     }
+
+    public static <O> O get(Field field, Object object) {
+        O returned;
+        try {
+            field.setAccessible(true);
+            returned = (O) field.get(object);
+            field.setAccessible(false);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return returned;
+
+    }
 }

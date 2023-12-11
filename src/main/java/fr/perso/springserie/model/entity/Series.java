@@ -26,5 +26,4 @@ public class Series extends BaseEntity {
     private List<Season> season;
 
 
-
 }

@@ -1,17 +1,15 @@
-package fr.perso.springserie.service;
+package fr.perso.springserie.service.imp;
 
 import fr.perso.springserie.model.dto.*;
-import fr.perso.springserie.service.interfaces.IBaseService;
 import fr.perso.springserie.service.interfaces.IFileService;
-import fr.perso.springserie.service.interfaces.ISeasonService;
-import fr.perso.springserie.service.interfaces.ISeriesService;
+import fr.perso.springserie.service.interfaces.crud.IBaseService;
+import fr.perso.springserie.service.interfaces.crud.ISeasonService;
+import fr.perso.springserie.service.interfaces.crud.ISeriesService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,15 +30,18 @@ import java.util.stream.Stream;
 public class FileService implements IFileService {
 
     private final String root = System.getProperty("user.dir");
-    @Autowired
-    @Lazy
-    private ISeriesService seriesService;
+    private final ISeriesService seriesService;
 
-    @Autowired
-    private ISeasonService seasonService;
+    private final ISeasonService seasonService;
 
     @Value("${app.storageFolder}")
     private String fileRoot;
+
+    @Lazy
+    public FileService(ISeriesService seriesService, ISeasonService seasonService) {
+        this.seriesService = seriesService;
+        this.seasonService = seasonService;
+    }
 
 
     @Override
@@ -71,7 +72,7 @@ public class FileService implements IFileService {
     @Override
     public void saves(List<MultipartFile> files, String type) {
         if (files != null)
-            files.forEach(multipartFile -> save(multipartFile,type));
+            files.forEach(multipartFile -> save(multipartFile, type));
     }
 
     @Override
@@ -173,7 +174,7 @@ public class FileService implements IFileService {
 
         Row headers = sheet.createRow(0);
         createHeaders(dtoClass, headers, headerStyle);
-        list = service.getAll().getContent();
+        list = service.getAll();
 
 
         if (list != null) {
