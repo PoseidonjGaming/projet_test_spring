@@ -18,8 +18,10 @@ import org.springframework.data.domain.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
@@ -49,7 +51,10 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         return new PagedResponse<>(mapper.convertList(pageRequest.getContent(), dtoClass), pageRequest.getNumber(), pageRequest.getTotalElements());
     }
 
-    private String getPath(String... parts) {
+    private static String getPath(String... parts) {
+        if (parts[0].isEmpty()) {
+            return Arrays.stream(parts).skip(1).reduce((s, s2) -> s + "." + s2).orElse("");
+        }
         return Arrays.stream(parts).reduce((s, s2) -> s + "." + s2).orElse("");
     }
 
@@ -68,10 +73,10 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
             if (field.getAnnotation(Embedded.class) != null) {
                 browseField(field.getType(), embeddedField ->
                         exampleMatcher[0] = exampleMatcher[0].withMatcher(getPath(field.getName(), embeddedField.getName()), matcher ->
-                                matcher.stringMatcher(matcherType)));
+                                matcher.stringMatcher(matcherType).ignoreCase()));
 
             }
-            exampleMatcher[0] = exampleMatcher[0].withMatcher(field.getName(), matcher -> matcher.stringMatcher(matcherType));
+            exampleMatcher[0] = exampleMatcher[0].withMatcher(field.getName(), matcher -> matcher.stringMatcher(matcherType).ignoreCase());
         });
         return exampleMatcher[0];
     }
@@ -83,6 +88,33 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         }
         return true;
 
+    }
+
+    protected static <O> boolean filterList(List<O> entityList, List<O> compareTo) {
+        if ((entityList != null && !entityList.isEmpty()) && (compareTo != null && !compareTo.isEmpty())) {
+            return new HashSet<>(entityList).containsAll(compareTo);
+        }
+        return true;
+
+    }
+
+    protected static <O> String findField(O object, String searchedField) {
+        final String[] pathToField = {""};
+        browseField(object.getClass(), object, (field, o) -> {
+            if (field.isAnnotationPresent(Embedded.class)) {
+                try {
+                    pathToField[0] = getPath(pathToField[0], field.getName(), findField(field.getType().getDeclaredConstructor().newInstance(), searchedField));
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
+            } else if (field.getName().equals(searchedField)) {
+                pathToField[0] = getPath(pathToField[0], field.getName());
+            }
+
+        });
+
+        return pathToField[0];
     }
 
     @Override
@@ -136,9 +168,17 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                 )), dtoClass);
     }
 
+
     @Override
     public List<D> sort(SortDTO sortDTO) {
-        return mapper.convertList(repository.findAll(Sort.by(sortDTO.getDirection(), sortDTO.getField())), dtoClass);
+        try {
+            String field = findField(entityClass.getDeclaredConstructor().newInstance(), sortDTO.getField());
+            return mapper.convertList(repository.findAll(Sort.by(sortDTO.getDirection(), field)), dtoClass);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override

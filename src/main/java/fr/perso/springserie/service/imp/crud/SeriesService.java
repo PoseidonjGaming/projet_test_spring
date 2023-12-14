@@ -27,6 +27,7 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
     private final IFileService fileService;
     private final IBaseRepo<Season> seasonRepo;
     private final ObjectMapper objectMapper;
+
     public SeriesService(ISeriesRepo repository, IMapper mapper, MapService mapService,
                          IFileService fileService, IBaseRepo<Season> seasonRepo,
                          ObjectMapper objectMapper) {
@@ -36,30 +37,31 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
         this.objectMapper = objectMapper;
     }
 
-    @Override
-    public List<SeriesDTO> search(SearchDTO<SeriesDTO> searchDto) {
-        return super.search(searchDto).stream().filter(seriesDTO ->
-                isBetween(seriesDTO.getReleaseDate(), searchDto.getStartDate(),searchDto.getEndDate())).toList();
-    }
+//    @Override
+//    public List<SeriesDTO> search(SearchDTO<SeriesDTO> searchDto) {
+//        return super.search(searchDto).stream()
+//                .filter(seriesDTO -> isBetween(seriesDTO.getReleaseDate(), searchDto.getStartDate(), searchDto.getEndDate()))
+//                .filter(seriesDTO -> filterList(seriesDTO.getCategoryIds(), searchDto.getDto().getCategoryIds())).toList();
+//    }
 
     @Override
     public PagedResponse<SeriesDTO> search(SearchDTO<SeriesDTO> searchDto, int size, int page) {
         PagedResponse<SeriesDTO> search = super.search(searchDto, size, page);
-        search.setContent(search.getContent().stream().filter(seriesDTO -> isBetween(seriesDTO.getReleaseDate(), searchDto.getStartDate(),searchDto.getEndDate())).toList());
+        search.setContent(search.getContent().stream().filter(seriesDTO -> isBetween(seriesDTO.getReleaseDate(), searchDto.getStartDate(), searchDto.getEndDate())).toList());
         return search;
     }
 
     @Override
     public PagedResponse<SeriesDTO> sortSearch(SearchDTO<SeriesDTO> searchDto, SortDTO sortDTO, int size, int page) {
         PagedResponse<SeriesDTO> search = super.search(searchDto, size, page);
-        search.setContent(search.getContent().stream().filter(seriesDTO -> isBetween(seriesDTO.getReleaseDate(), searchDto.getStartDate(),searchDto.getEndDate())).toList());
+        search.setContent(search.getContent().stream().filter(seriesDTO -> isBetween(seriesDTO.getReleaseDate(), searchDto.getStartDate(), searchDto.getEndDate())).toList());
         return search;
     }
 
     @Override
     public List<SeriesDTO> sortSearch(SearchDTO<SeriesDTO> searchDto, SortDTO sortDTO) {
         return super.search(searchDto).stream().filter(seriesDTO ->
-                isBetween(seriesDTO.getReleaseDate(), searchDto.getStartDate(),searchDto.getEndDate())).toList();
+                isBetween(seriesDTO.getReleaseDate(), searchDto.getStartDate(), searchDto.getEndDate())).toList();
     }
 
     @Override
@@ -75,17 +77,5 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
             seriesObj.setPoster(file.getOriginalFilename());
         }
         save(seriesObj);
-    }
-
-    @Override
-    public SeriesDTO savesWithSeasons(SeriesDTO dto, int seasons) {
-        SeriesDTO series=save(dto);
-        List<SeasonDTO> seasonsList=new ArrayList<>();
-        for (int i = 0; i < seasons; i++) {
-            int number = i+1;
-            seasonsList.add(new SeasonDTO(series.getId(), number, new ArrayList<>()));
-        }
-        seasonRepo.saveAll(mapper.convertList(seasonsList, Season.class));
-        return series;
     }
 }

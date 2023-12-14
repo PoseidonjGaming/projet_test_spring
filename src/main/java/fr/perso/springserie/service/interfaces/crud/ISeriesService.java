@@ -6,5 +6,4 @@ import org.springframework.web.multipart.MultipartFile;
 public interface ISeriesService extends IBaseService<SeriesDTO> {
     void saveWithFile(MultipartFile file, String series);
 
-    SeriesDTO savesWithSeasons(SeriesDTO dto, int seasons);
 }

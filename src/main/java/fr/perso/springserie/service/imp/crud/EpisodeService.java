@@ -1,5 +1,6 @@
 package fr.perso.springserie.service.imp.crud;
 
+import fr.perso.springserie.model.PagedResponse;
 import fr.perso.springserie.model.dto.EpisodeDTO;
 import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.model.entity.Episode;
@@ -10,6 +11,7 @@ import fr.perso.springserie.repository.IEpisodeRepo;
 import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.repository.ISeriesRepo;
 import fr.perso.springserie.service.interfaces.crud.IEpisodeService;
+import fr.perso.springserie.service.mapper.EpisodeMapper;
 import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
 
     protected EpisodeService(IBaseRepo<Episode> repository,
                              ISeasonRepo seasonRepo, ISeriesRepo seriesRepo,
-                             IMapper mapper, MapService mapService) {
+                             EpisodeMapper mapper, MapService mapService) {
         super(repository, mapper, EpisodeDTO.class, Episode.class, mapService);
         this.seasonRepo = seasonRepo;
         this.seriesRepo = seriesRepo;
@@ -40,8 +42,29 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
 
     @Override
     public List<EpisodeDTO> search(SearchDTO<EpisodeDTO> searchDTO) {
+
         return super.search(searchDTO).stream().filter(episodeDTO ->
-                isBetween(episodeDTO.getReleaseDate(), searchDTO.getStartDate(), searchDTO.getEndDate())).toList();
+                        isBetween(episodeDTO.getReleaseDate(), searchDTO.getStartDate(), searchDTO.getEndDate()))
+                .filter(episodeDTO -> {
+                    if (searchDTO.getDto().getSeriesId() > 0) {
+                        return episodeDTO.getSeriesId() == searchDTO.getDto().getSeriesId();
+                    }
+                    return true;
+                }).toList();
+    }
+
+    @Override
+    public PagedResponse<EpisodeDTO> search(SearchDTO<EpisodeDTO> searchDto, int size, int page) {
+        PagedResponse<EpisodeDTO> search = super.search(searchDto, size, page);
+        search.setContent(search.getContent().stream().filter(episodeDTO ->
+                        isBetween(episodeDTO.getReleaseDate(), searchDto.getStartDate(), searchDto.getEndDate()))
+                .filter(episodeDTO -> {
+                    if (searchDto.getDto().getSeriesId() > 0) {
+                        return episodeDTO.getSeriesId() == searchDto.getDto().getSeriesId();
+                    }
+                    return true;
+                }).toList());
+        return search;
     }
 
     @Override
