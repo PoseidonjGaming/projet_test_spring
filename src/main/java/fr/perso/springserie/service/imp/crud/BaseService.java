@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -98,23 +99,31 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     }
 
-    protected static <O> String findField(O object, String searchedField) {
-        final String[] pathToField = {""};
-        browseField(object.getClass(), object, (field, o) -> {
-            if (field.isAnnotationPresent(Embedded.class)) {
-                try {
-                    pathToField[0] = getPath(pathToField[0], field.getName(), findField(field.getType().getDeclaredConstructor().newInstance(), searchedField));
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                         NoSuchMethodException e) {
-                    throw new RuntimeException(e);
-                }
-            } else if (field.getName().equals(searchedField)) {
-                pathToField[0] = getPath(pathToField[0], field.getName());
-            }
+    protected static <O> List<String> findField(O object, String searchedField) {
+        List<String> pathToField = new ArrayList<>();
+        Arrays.stream(object.getClass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Embedded.class))
+                .forEach(embeddedField -> {
+                    try {
 
-        });
+                        List<String> field = findField(embeddedField.getType().getDeclaredConstructor().newInstance(), searchedField);
+                        if(!field.isEmpty()){
+                            pathToField.add(embeddedField.getName());
+                            pathToField.addAll(field);
+                        }
 
-        return pathToField[0];
+
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                             NoSuchMethodException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        Arrays.stream(object.getClass().getDeclaredFields()).filter(field -> !field.isAnnotationPresent(Embedded.class))
+                .forEach(field -> {
+                    if(field.getName().equals(searchedField))
+                        pathToField.add(field.getName());
+                });
+        return pathToField;
     }
 
     @Override
@@ -172,7 +181,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     @Override
     public List<D> sort(SortDTO sortDTO) {
         try {
-            String field = findField(entityClass.getDeclaredConstructor().newInstance(), sortDTO.getField());
+            String field = getPath(findField(entityClass.getDeclaredConstructor().newInstance(), sortDTO.getField()).toArray(new String[]{}));
             return mapper.convertList(repository.findAll(Sort.by(sortDTO.getDirection(), field)), dtoClass);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
