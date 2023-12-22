@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 @Service
 public class UserService extends BaseService<User, UserDTO> implements IUserService, UserDetailsService {
@@ -58,6 +59,11 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
         return ExampleMatcher.matchingAll()
                 .withIgnorePaths("roles", "password", "id")
                 .withIgnoreNullValues().withMatcher("username", matcher -> matcher.exact().caseSensitive());
+    }
+
+    @Override
+    protected Predicate<UserDTO> predicate(SearchDTO<UserDTO> searchDTO) {
+        return null;
     }
 
     @Override

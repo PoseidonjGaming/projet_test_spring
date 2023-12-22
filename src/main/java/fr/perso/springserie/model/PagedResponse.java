@@ -12,6 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 public class PagedResponse<D extends BaseDTO> {
     private List<D> content;
-    private int pageIndex;
     private long size;
+
 }

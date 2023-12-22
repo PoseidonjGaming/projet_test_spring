@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
 
@@ -49,7 +50,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     }
 
     private PagedResponse<D> createPage(Page<E> pageRequest) {
-        return new PagedResponse<>(mapper.convertList(pageRequest.getContent(), dtoClass), pageRequest.getNumber(), pageRequest.getTotalElements());
+        return new PagedResponse<>(mapper.convertList(pageRequest.getContent(), dtoClass), pageRequest.getTotalElements());
     }
 
     private static String getPath(String... parts) {
@@ -99,6 +100,8 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     }
 
+    protected abstract Predicate<D> predicate(SearchDTO<D> searchDTO);
+
     protected static <O> List<String> findField(O object, String searchedField) {
         List<String> pathToField = new ArrayList<>();
         Arrays.stream(object.getClass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Embedded.class))
@@ -106,7 +109,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                     try {
 
                         List<String> field = findField(embeddedField.getType().getDeclaredConstructor().newInstance(), searchedField);
-                        if(!field.isEmpty()){
+                        if (!field.isEmpty()) {
                             pathToField.add(embeddedField.getName());
                             pathToField.addAll(field);
                         }
@@ -120,10 +123,34 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
         Arrays.stream(object.getClass().getDeclaredFields()).filter(field -> !field.isAnnotationPresent(Embedded.class))
                 .forEach(field -> {
-                    if(field.getName().equals(searchedField))
+                    if (field.getName().equals(searchedField))
                         pathToField.add(field.getName());
                 });
+        if (!object.getClass().equals(Object.class)) {
+            browseField(object.getClass().getSuperclass(), field -> {
+                if (!field.getType().isPrimitive()) {
+                    try {
+                        pathToField.addAll(findField(field.getType().getDeclaredConstructor().newInstance(), searchedField));
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                             NoSuchMethodException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                } else {
+                    if (pathToField.isEmpty())
+                        pathToField.add(field.getName());
+                }
+
+            });
+        }
+
         return pathToField;
+    }
+
+    protected static boolean equalsId(int entityId, int searchedId) {
+        if (searchedId > 0)
+            return entityId == searchedId;
+        return true;
     }
 
     @Override
@@ -152,15 +179,20 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public PagedResponse<D> sort(SortDTO sortDTO, int size, int page) {
-        return createPage(repository.findAll(PageRequest.of(page, size, sortDTO.getDirection(), sortDTO.getField())));
+        try {
+            return createPage(repository.findAll(PageRequest.of(page, size, sortDTO.getDirection(),
+                    getPath(findField(entityClass.getDeclaredConstructor().newInstance(), sortDTO.getField()).toArray(new String[]{})))));
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public PagedResponse<D> sortSearch(SearchDTO<D> searchDto, SortDTO sortDTO, int size, int page) {
-        return createPage(repository.findAll(
-                Example.of(mapper.convert(searchDto.getDto(), entityClass), getMatcher(searchDto.getDto(), searchDto.getMode(), searchDto.getType())),
-                PageRequest.of(page, size, sortDTO.getDirection(), sortDTO.getField()))
-        );
+    public PagedResponse<D> sortSearch(SearchDTO<D> searchDto, SortDTO sortDTO, int size, int pageNumber) {
+        List<D> temp = sortSearch(searchDto, sortDTO);
+        List<D> response = temp.stream().skip((long) size * pageNumber).limit(size).toList();
+        return new PagedResponse<>(response, temp.size());
     }
 
     @Override
@@ -193,7 +225,8 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     @Override
     public List<D> sortSearch(SearchDTO<D> searchDto, SortDTO sortDTO) {
         return mapper.convertList(repository.findAll(
-                        Example.of(mapper.convert(searchDto.getDto(), entityClass)),
+                        Example.of(mapper.convert(searchDto.getDto(), entityClass),
+                                getMatcher(searchDto.getDto(), searchDto.getMode(), searchDto.getType())),
                         Sort.by(sortDTO.getDirection(), sortDTO.getField())),
                 dtoClass
         );

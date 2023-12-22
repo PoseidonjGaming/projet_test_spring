@@ -17,6 +17,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Episode extends BaseEntity {
 
+    @Column(nullable = false)
     private String name;
 
     @Column(columnDefinition = "text")
