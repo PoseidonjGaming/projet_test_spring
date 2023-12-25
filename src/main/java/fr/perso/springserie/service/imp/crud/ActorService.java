@@ -19,6 +19,6 @@ public class ActorService extends BaseService<Actor, ActorDTO> implements IActor
 
     @Override
     protected Predicate<ActorDTO> predicate(SearchDTO<ActorDTO> searchDTO) {
-        return null;
+        return actorDTO -> true;
     }
 }

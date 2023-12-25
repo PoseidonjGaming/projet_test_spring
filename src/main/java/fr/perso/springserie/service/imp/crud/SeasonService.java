@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 
 @Service
 public class SeasonService extends BaseService<Season, SeasonDTO> implements ISeasonService {
-    protected SeasonService(ISeasonRepo repository, IMapper mapper,  MapService mapService) {
+    protected SeasonService(ISeasonRepo repository, IMapper mapper, MapService mapService) {
         super(repository, mapper, SeasonDTO.class, Season.class, mapService);
     }
 
@@ -25,6 +25,6 @@ public class SeasonService extends BaseService<Season, SeasonDTO> implements ISe
 
     @Override
     protected Predicate<SeasonDTO> predicate(SearchDTO<SeasonDTO> searchDTO) {
-        return null;
+        return seasonDTO -> filterList(seasonDTO.getEpisodeIds(), searchDTO.getDto().getEpisodeIds());
     }
 }

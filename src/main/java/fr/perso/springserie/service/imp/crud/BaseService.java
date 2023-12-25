@@ -49,8 +49,13 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         return Pageable.ofSize(size).withPage(page);
     }
 
-    private PagedResponse<D> createPage(Page<E> pageRequest) {
-        return new PagedResponse<>(mapper.convertList(pageRequest.getContent(), dtoClass), pageRequest.getTotalElements());
+    private PagedResponse<D> createPage(Page<E> pageRequest, SearchDTO<D> searchDTO) {
+        List<D> list = mapper.convertList(pageRequest.getContent(), dtoClass);
+        if (searchDTO != null) {
+            list = list.stream().filter(predicate(searchDTO)).toList();
+        }
+
+        return new PagedResponse<>(list, pageRequest.getTotalElements());
     }
 
     private static String getPath(String... parts) {
@@ -155,7 +160,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public PagedResponse<D> getAll(int size, int page) {
-        return createPage(repository.findAll(getPageable(size, page)));
+        return createPage(repository.findAll(getPageable(size, page)), null);
     }
 
     @Override
@@ -165,7 +170,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public PagedResponse<D> getByIds(List<Integer> ids, int size, int page) {
-        return createPage(repository.findByIdIn(ids, getPageable(size, page)));
+        return createPage(repository.findByIdIn(ids, getPageable(size, page)), null);
     }
 
     @Override
@@ -174,14 +179,14 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                         mapper.convert(searchDto.getDto(), entityClass),
                         getMatcher(searchDto.getDto(), searchDto.getMode(), searchDto.getType())),
                 getPageable(size, page)
-        ));
+        ),searchDto);
     }
 
     @Override
     public PagedResponse<D> sort(SortDTO sortDTO, int size, int page) {
         try {
             return createPage(repository.findAll(PageRequest.of(page, size, sortDTO.getDirection(),
-                    getPath(findField(entityClass.getDeclaredConstructor().newInstance(), sortDTO.getField()).toArray(new String[]{})))));
+                    getPath(findField(entityClass.getDeclaredConstructor().newInstance(), sortDTO.getField()).toArray(new String[]{})))), null);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
             throw new RuntimeException(e);
@@ -206,7 +211,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                 Example.of(
                         mapper.convert(searchDto.getDto(), entityClass),
                         getMatcher(searchDto.getDto(), searchDto.getMode(), searchDto.getType())
-                )), dtoClass);
+                )), dtoClass).stream().filter(predicate(searchDto)).toList();
     }
 
 

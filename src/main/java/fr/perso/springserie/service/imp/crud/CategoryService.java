@@ -7,6 +7,7 @@ import fr.perso.springserie.repository.IBaseRepo;
 import fr.perso.springserie.service.interfaces.crud.ICategoryService;
 import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Predicate;
@@ -19,6 +20,12 @@ public class CategoryService extends BaseService<Category, CategoryDTO> implemen
 
     @Override
     protected Predicate<CategoryDTO> predicate(SearchDTO<CategoryDTO> searchDTO) {
-        return null;
+        return categoryDTO -> {
+            if(searchDTO.getMode().equals(ExampleMatcher.MatchMode.ALL))
+                return filterList(categoryDTO.getMovieIds(), searchDTO.getDto().getMovieIds()) &&
+                        filterList(categoryDTO.getSeriesIds(), searchDTO.getDto().getMovieIds());
+            else  return filterList(categoryDTO.getMovieIds(), searchDTO.getDto().getMovieIds()) ||
+                    filterList(categoryDTO.getSeriesIds(), searchDTO.getDto().getMovieIds());
+        };
     }
 }

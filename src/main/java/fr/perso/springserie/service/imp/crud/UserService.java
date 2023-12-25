@@ -63,7 +63,7 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
 
     @Override
     protected Predicate<UserDTO> predicate(SearchDTO<UserDTO> searchDTO) {
-        return null;
+        return userDTO -> filterList(userDTO.getRoles(), searchDTO.getDto().getRoles());
     }
 
     @Override

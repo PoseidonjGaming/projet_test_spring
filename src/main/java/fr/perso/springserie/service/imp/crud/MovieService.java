@@ -7,6 +7,7 @@ import fr.perso.springserie.repository.IBaseRepo;
 import fr.perso.springserie.service.interfaces.crud.IMovieService;
 import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Predicate;
@@ -19,6 +20,13 @@ public class MovieService extends BaseService<Movie, MovieDTO> implements IMovie
 
     @Override
     protected Predicate<MovieDTO> predicate(SearchDTO<MovieDTO> searchDTO) {
-        return null;
+        return movieDTO -> {
+            if (searchDTO.getMode().equals(ExampleMatcher.MatchMode.ALL))
+                return filterList(movieDTO.getCategoryIds(), searchDTO.getDto().getCategoryIds()) &&
+                        filterList(movieDTO.getCharacterIds(), searchDTO.getDto().getCharacterIds());
+            else
+                return filterList(movieDTO.getCategoryIds(), searchDTO.getDto().getCategoryIds()) ||
+                        filterList(movieDTO.getCharacterIds(), searchDTO.getDto().getCharacterIds());
+        };
     }
 }

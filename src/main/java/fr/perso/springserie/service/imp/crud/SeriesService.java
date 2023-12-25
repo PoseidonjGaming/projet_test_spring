@@ -36,12 +36,6 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
         this.seasonRepo = seasonRepo;
         this.objectMapper = objectMapper;
     }
-
-    @Override
-    public List<SeriesDTO> search(SearchDTO<SeriesDTO> searchDto) {
-        return super.search(searchDto).stream().filter(predicate(searchDto)).toList();
-    }
-
     @Override
     protected Predicate<SeriesDTO> predicate(SearchDTO<SeriesDTO> searchDTO) {
         return seriesDTO -> {
@@ -55,25 +49,7 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
         };
     }
 
-    @Override
-    public PagedResponse<SeriesDTO> search(SearchDTO<SeriesDTO> searchDto, int size, int page) {
-        PagedResponse<SeriesDTO> search = super.search(searchDto, size, page);
-        search.setContent(search.getContent().stream().filter(seriesDTO -> isBetween(seriesDTO.getReleaseDate(), searchDto.getStartDate(), searchDto.getEndDate())).toList());
-        return search;
-    }
 
-    @Override
-    public PagedResponse<SeriesDTO> sortSearch(SearchDTO<SeriesDTO> searchDto, SortDTO sortDTO, int size, int pageNumber) {
-        PagedResponse<SeriesDTO> search = super.search(searchDto, size, pageNumber);
-        search.setContent(search.getContent().stream().filter(seriesDTO -> isBetween(seriesDTO.getReleaseDate(), searchDto.getStartDate(), searchDto.getEndDate())).toList());
-        return search;
-    }
-
-    @Override
-    public List<SeriesDTO> sortSearch(SearchDTO<SeriesDTO> searchDto, SortDTO sortDTO) {
-        return super.search(searchDto).stream().filter(seriesDTO ->
-                isBetween(seriesDTO.getReleaseDate(), searchDto.getStartDate(), searchDto.getEndDate())).toList();
-    }
 
     @Override
     public void saveWithFile(MultipartFile file, String series) {

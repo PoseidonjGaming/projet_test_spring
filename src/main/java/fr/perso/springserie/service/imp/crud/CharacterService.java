@@ -7,6 +7,7 @@ import fr.perso.springserie.repository.IBaseRepo;
 import fr.perso.springserie.service.interfaces.crud.ICharacterService;
 import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Predicate;
@@ -19,6 +20,13 @@ public class CharacterService extends BaseService<Character, CharacterDTO> imple
 
     @Override
     protected Predicate<CharacterDTO> predicate(SearchDTO<CharacterDTO> searchDTO) {
-        return null;
+        return characterDTO -> {
+            if(searchDTO.getMode().equals(ExampleMatcher.MatchMode.ALL))
+                return filterList(characterDTO.getMovieIds(), searchDTO.getDto().getMovieIds()) &&
+                        filterList(characterDTO.getSeriesIds(), searchDTO.getDto().getSeriesIds());
+            else
+                return filterList(characterDTO.getMovieIds(), searchDTO.getDto().getMovieIds()) ||
+                        filterList(characterDTO.getSeriesIds(), searchDTO.getDto().getSeriesIds());
+        };
     }
 }
