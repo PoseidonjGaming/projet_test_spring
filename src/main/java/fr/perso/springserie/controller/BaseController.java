@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class BaseController<D extends BaseDTO> {
     protected final IBaseService<D> service;
@@ -18,9 +19,20 @@ public abstract class BaseController<D extends BaseDTO> {
         this.service = service;
     }
 
+    protected void formatDTO(List<D> dtos) {
+        dtos.forEach(getConsumer());
+    }
+
+    protected Consumer<D> getConsumer() {
+        return d -> {
+        };
+    }
+
     @GetMapping("/list")
     public ResponseEntity<List<D>> getAll() {
-        return ResponseEntity.ok(service.getAll());
+        List<D> all = service.getAll();
+        formatDTO(all);
+        return ResponseEntity.ok(all);
     }
 
     @GetMapping("/paged/list")
@@ -34,38 +46,52 @@ public abstract class BaseController<D extends BaseDTO> {
     }
 
     @PostMapping("/byIds")
-    public ResponseEntity<List<D>> getByIds(@RequestBody List<Integer> ids){
-        return ResponseEntity.ok(service.getByIds(ids));
+    public ResponseEntity<List<D>> getByIds(@RequestBody List<Integer> ids) {
+        List<D> list = service.getByIds(ids);
+        formatDTO(list);
+        return ResponseEntity.ok(list);
     }
 
     @PostMapping("/search")
     public ResponseEntity<List<D>> search(@RequestBody SearchDTO<D> searchDTO) {
-        return ResponseEntity.ok(service.search(searchDTO));
+        List<D> search = service.search(searchDTO);
+        formatDTO(search);
+        return ResponseEntity.ok(search);
     }
 
     @PostMapping("/paged/search")
     public ResponseEntity<PagedResponse<D>> search(@RequestBody SearchDTO<D> searchDTO, int size, int page) {
-        return ResponseEntity.ok(service.search(searchDTO, size, page));
+        PagedResponse<D> response = service.search(searchDTO, size, page);
+        formatDTO(response.getContent());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/sort")
     public ResponseEntity<List<D>> sort(@RequestBody SortDTO sortDTO) {
-        return ResponseEntity.ok(service.sort(sortDTO));
+        List<D> sort = service.sort(sortDTO);
+        formatDTO(sort);
+        return ResponseEntity.ok(sort);
     }
 
     @PostMapping("/paged/sort")
     public ResponseEntity<PagedResponse<D>> sort(@RequestBody SortDTO sortDTO, int size, int page) {
-        return ResponseEntity.ok(service.sort(sortDTO, size, page));
+        PagedResponse<D> response = service.sort(sortDTO, size, page);
+        formatDTO(response.getContent());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/sort/search")
     public ResponseEntity<List<D>> sortSearch(@RequestBody SortSearchDTO<D> sortSearchDTO) {
-        return ResponseEntity.ok(service.sortSearch(sortSearchDTO.getSearchDTO(), sortSearchDTO.getSortDTO()));
+        List<D> sortSearch = service.sortSearch(sortSearchDTO.getSearchDTO(), sortSearchDTO.getSortDTO());
+        formatDTO(sortSearch);
+        return ResponseEntity.ok(sortSearch);
     }
 
     @PostMapping("/paged/sort/search")
     public ResponseEntity<PagedResponse<D>> sortSearch(@RequestBody SortSearchDTO<D> sortSearchDTO, int size, int page) {
-        return ResponseEntity.ok(service.sortSearch(sortSearchDTO.getSearchDTO(), sortSearchDTO.getSortDTO(), size, page));
+        PagedResponse<D> response = service.sortSearch(sortSearchDTO.getSearchDTO(), sortSearchDTO.getSortDTO(), size, page);
+        formatDTO(response.getContent());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/save")

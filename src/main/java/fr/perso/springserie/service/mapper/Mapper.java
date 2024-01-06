@@ -139,9 +139,12 @@ public class Mapper implements IMapper {
 
     protected <O, T> void set(O source, T target, Field targetField) {
         try {
-            targetField.setAccessible(true);
-            targetField.set(target, source);
-            targetField.setAccessible(false);
+            if(targetField!=null){
+                targetField.setAccessible(true);
+                targetField.set(target, source);
+                targetField.setAccessible(false);
+            }
+
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }

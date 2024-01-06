@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 @RestController
 @RequestMapping("/user")
 public class UserController extends BaseController<UserDTO> {
@@ -17,8 +20,18 @@ public class UserController extends BaseController<UserDTO> {
         super(service);
     }
 
+    @Override
+    protected Consumer<UserDTO> getConsumer() {
+        return UserDTO::erasePassword;
+    }
+
     @PostMapping("/authenticate")
     public ResponseEntity<JwtResponse> authenticate(@RequestBody JwtUser user) {
         return ResponseEntity.ofNullable(((IUserService) service).authenticate(user));
+    }
+
+    @PostMapping("/registration")
+    public void registration(@RequestBody UserDTO user) {
+        ((IUserService) service).registration(user);
     }
 }

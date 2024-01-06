@@ -55,10 +55,7 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
                 mapper.convert(e, dtoClass)).toList();
     }
 
-    @Override
-    public List<EpisodeDTO> search(SearchDTO<EpisodeDTO> searchDTO) {
-        return super.search(searchDTO).stream().filter(predicate(searchDTO)).toList();
-    }
+
 
 
 

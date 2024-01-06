@@ -1,12 +1,11 @@
 package fr.perso.springserie.model.dto;
 
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -25,14 +24,15 @@ public class UserDTO extends BaseDTO {
     }
 
     public List<String> getRoles() {
-        if (roles != null) {
-            return Arrays.stream(roles.split(",")).map(e -> e.replace("[", "")
-                    .replace("\"", "").replace("]", "")).toList();
-        }
-        return new ArrayList<>();
+        Gson gson = new Gson();
+        return gson.fromJson(roles, List.class);
     }
 
     public void setRoles(List<String> roles) {
         this.roles = roles.toString();
+    }
+
+    public void erasePassword() {
+        password = "";
     }
 }

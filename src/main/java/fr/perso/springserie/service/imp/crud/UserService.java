@@ -1,9 +1,7 @@
 package fr.perso.springserie.service.imp.crud;
 
-import fr.perso.springserie.model.PagedResponse;
 import fr.perso.springserie.model.dto.UserDTO;
 import fr.perso.springserie.model.dto.special.SearchDTO;
-import fr.perso.springserie.model.dto.special.SortDTO;
 import fr.perso.springserie.model.entity.User;
 import fr.perso.springserie.repository.IBaseRepo;
 import fr.perso.springserie.security.JwtResponse;
@@ -63,13 +61,19 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
 
     @Override
     protected Predicate<UserDTO> predicate(SearchDTO<UserDTO> searchDTO) {
-        return userDTO -> filterList(userDTO.getRoles(), searchDTO.getDto().getRoles());
+        return userDTO -> filterList(userDTO.getRoles(), userDTO.getRoles());
     }
 
     @Override
     public void saves(List<UserDTO> userDTOS) {
         userDTOS.forEach(userDTO -> userDTO.setPassword(encoder.encode(userDTO.getPassword())));
         super.saves(userDTOS);
+    }
+
+    @Override
+    public UserDTO save(UserDTO dto) {
+        dto.setPassword(encoder.encode(dto.getPassword()));
+        return super.save(dto);
     }
 
     @Override
@@ -82,6 +86,12 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
             return new JwtResponse(jwtTokenUtil.generateToken(results.get(0)));
         }
         return null;
+    }
+
+    @Override
+    public void registration(UserDTO userDTO) {
+        userDTO.setRoles(List.of("ROLE_user"));
+        save(userDTO);
     }
 
     @Override

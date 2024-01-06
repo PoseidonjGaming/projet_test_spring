@@ -2,6 +2,7 @@ package fr.perso.springserie.config;
 
 import fr.perso.springserie.security.JwtAuthenticationEntryPoint;
 import fr.perso.springserie.security.JwtFilter;
+import fr.perso.springserie.security.UserRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -24,6 +25,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
+import static fr.perso.springserie.security.UserRole.getRoles;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -39,7 +42,8 @@ public class WebSecurityConfig {
             "actor/byIds", "season/byIds",
             "episode/byIds", "actor/detail/**",
             "movie/list", "movie/search",
-            "episode/search", "episode/list"
+            "episode/search", "episode/list",
+            "user/registration", "user/**"
     };
     private final JwtFilter jwtAuthFilter;
     private final JwtAuthenticationEntryPoint entryPoint;
