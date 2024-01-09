@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class BaseController<D extends BaseDTO> {
-    protected final IBaseService<D> service;
+public abstract class BaseController<D extends BaseDTO, S extends IBaseService<D>> {
+    protected final S service;
 
-    protected BaseController(IBaseService<D> service) {
+    protected BaseController(S service) {
         this.service = service;
     }
 

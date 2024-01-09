@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/actor")
-public class ActorController extends BaseController<ActorDTO>{
+public class ActorController extends BaseController<ActorDTO, IActorService>{
     protected ActorController(IActorService service) {
         super(service);
     }

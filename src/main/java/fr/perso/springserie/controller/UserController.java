@@ -10,12 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("/user")
-public class UserController extends BaseController<UserDTO> {
+public class UserController extends BaseController<UserDTO, IUserService> {
     protected UserController(IUserService service) {
         super(service);
     }
@@ -27,11 +26,11 @@ public class UserController extends BaseController<UserDTO> {
 
     @PostMapping("/authenticate")
     public ResponseEntity<JwtResponse> authenticate(@RequestBody JwtUser user) {
-        return ResponseEntity.ofNullable(((IUserService) service).authenticate(user));
+        return ResponseEntity.ofNullable(service.authenticate(user));
     }
 
     @PostMapping("/registration")
     public void registration(@RequestBody UserDTO user) {
-        ((IUserService) service).registration(user);
+        service.registration(user);
     }
 }

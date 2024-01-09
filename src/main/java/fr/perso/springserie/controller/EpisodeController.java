@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/episode")
-public class EpisodeController extends BaseController<EpisodeDTO>{
+public class EpisodeController extends BaseController<EpisodeDTO, IEpisodeService>{
     protected EpisodeController(IEpisodeService service) {
         super(service);
     }

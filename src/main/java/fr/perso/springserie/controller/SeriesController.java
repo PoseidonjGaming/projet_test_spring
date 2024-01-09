@@ -12,14 +12,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/series")
-public class SeriesController extends BaseController<SeriesDTO> {
+public class SeriesController extends BaseController<SeriesDTO, ISeriesService> {
     protected SeriesController(ISeriesService service) {
         super(service);
     }
 
     @PostMapping(value = "/save", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> save(@RequestPart("file") MultipartFile file, @RequestPart("series") String series) {
-        ((ISeriesService) service).saveWithFile(file, series);
+        service.saveWithFile(file, series);
         return ResponseEntity.ok().build();
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/movie")
-public class MovieController extends BaseController<MovieDTO>{
+public class MovieController extends BaseController<MovieDTO, IMovieService>{
     protected MovieController(IMovieService service) {
         super(service);
     }
