@@ -1,10 +1,9 @@
 package fr.perso.springserie.service.imp;
 
-import fr.perso.springserie.model.dto.*;
+import fr.perso.springserie.model.dto.BaseDTO;
 import fr.perso.springserie.service.interfaces.IFileService;
 import fr.perso.springserie.service.interfaces.crud.IBaseService;
-import fr.perso.springserie.service.interfaces.crud.ISeasonService;
-import fr.perso.springserie.service.interfaces.crud.ISeriesService;
+import fr.perso.springserie.task.MapService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
@@ -21,26 +20,24 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+
+import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
 
 @Service
 public class FileService implements IFileService {
 
     private final String root = System.getProperty("user.dir");
-    private final ISeriesService seriesService;
-
-    private final ISeasonService seasonService;
-
     @Value("${app.storageFolder}")
     private String fileRoot;
 
+    private final MapService mapService;
+
     @Lazy
-    public FileService(ISeriesService seriesService, ISeasonService seasonService) {
-        this.seriesService = seriesService;
-        this.seasonService = seasonService;
+    public FileService(MapService mapService) {
+        this.mapService = mapService;
     }
 
 
@@ -76,78 +73,21 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public ResponseEntity<?> writeExcel(List<Boolean> booleanList) {
+    public ResponseEntity<?> writeExcel(List<String> classList) {
 
-        if (booleanList.size() == 5) {
-            List<Class<? extends BaseDTO>> classList = new ArrayList<>();
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            classList.forEach(aClass -> {
+                writeSheet(mapService.getClass(aClass), workbook, mapService.getService(aClass));
+            });
+            String filename = "data.xlsx";
+            FileOutputStream outputStream = new FileOutputStream(Path.of(root, fileRoot, "files", filename).toFile());
+            workbook.write(outputStream);
 
-            for (int i = 0; i < booleanList.size(); i++) {
-                switch (i) {
-                    case 0 -> classList.add(SeriesDTO.class);
-                    case 1 -> classList.add(SeasonDTO.class);
-                    case 2 -> classList.add(ActorDTO.class);
-                    case 3 -> classList.add(CharacterDTO.class);
-                    case 4 -> classList.add(EpisodeDTO.class);
-                    default -> System.out.println("Class not found");
-                }
-            }
+            return load(filename);
 
-
-            try (XSSFWorkbook workbook = new XSSFWorkbook()) {
-                classList.forEach(aClass -> {
-                    System.out.println(aClass.getSimpleName());
-                    switch (aClass.getSimpleName()) {
-                        case "SeriesDTO" -> write(aClass, workbook, seriesService);
-                        case "SeasonDTO" -> write(aClass, workbook, seasonService);
-                        default -> System.out.println("Class not found");
-                    }
-                });
-                createFolder(Path.of(root, fileRoot, "files"));
-                String filename = "data.xlsx";
-                FileOutputStream outputStream = new FileOutputStream(Path.of(root, fileRoot, "files", filename).toFile());
-                workbook.write(outputStream);
-
-                return load(filename);
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return null;
-
-    }
-
-    private void createHeaders(@NotNull Class<? extends BaseDTO> classe, Row header, CellStyle headerStyle) {
-        Field[] fields = classe.getDeclaredFields();
-        Arrays.stream(fields).forEach(field -> {
-            Cell headerCell = header.createCell((header.getLastCellNum() == -1) ? 0 : header.getLastCellNum());
-            headerCell.setCellValue(field.getName());
-            headerCell.setCellStyle(headerStyle);
-        });
-    }
-
-    private <D extends BaseDTO> void createCellData(@NotNull Class<? extends BaseDTO> seriesClass, Row
-            row, CellStyle headerStyle, D dto) {
-        Field[] fields = seriesClass.getDeclaredFields();
-
-        Arrays.stream(fields).forEach(field -> {
-            Cell headerCell = row.createCell((row.getLastCellNum() == -1) ? 0 : row.getLastCellNum());
-            if (field.getName().equals("summary"))
-                headerStyle.setWrapText(true);
-            field.setAccessible(true);
-            try {
-                headerCell.setCellValue(field.get(dto).toString());
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-            field.setAccessible(false);
-            headerCell.setCellStyle(headerStyle);
-        });
-    }
-
-    private Sheet createSheet(Workbook workbook, Class<?> aClass) {
-        return workbook.createSheet(aClass.getSimpleName().replace("DTO", ""));
     }
 
     private void createFolder(Path path) {
@@ -160,28 +100,9 @@ public class FileService implements IFileService {
         }
     }
 
-    private <D extends BaseDTO> void write(Class<? extends BaseDTO> dtoClass, Workbook
-            workbook, IBaseService<D> service) {
-        List<D> list;
-        Sheet sheet = createSheet(workbook, dtoClass);
-        for (int i = 0; i < dtoClass.getDeclaredFields().length; i++) {
-            sheet.setColumnWidth(i, 6000);
-        }
+    private void writeSheet(Class<? extends BaseDTO> dtoClass, XSSFWorkbook workbook, IBaseService<BaseDTO> service) {
 
-        CellStyle headerStyle = workbook.createCellStyle();
-        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-        Row headers = sheet.createRow(0);
-        createHeaders(dtoClass, headers, headerStyle);
-        list = service.getAll();
-
-
-        if (list != null) {
-            CellStyle style = workbook.createCellStyle();
-            System.out.println(sheet.getLastRowNum());
-            list.forEach(dto -> createCellData(dtoClass, sheet.createRow(
-                    (sheet.getLastRowNum() == -1) ? 0 : sheet.getLastRowNum()), style, dto));
-        }
     }
+
+
 }

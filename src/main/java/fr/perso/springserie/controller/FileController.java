@@ -35,8 +35,8 @@ public class FileController {
     }
 
     @PostMapping("/export")
-    public ResponseEntity<?> test(@RequestBody List<Boolean> booleanList) {
-        return service.writeExcel(booleanList);
+    public ResponseEntity<?> test(@RequestBody List<String> classList) {
+        return service.writeExcel(classList);
     }
 
 

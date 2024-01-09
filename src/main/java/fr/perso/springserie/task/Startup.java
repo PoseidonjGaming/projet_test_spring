@@ -22,7 +22,7 @@ public class Startup implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        String[] order = {"user", "actor", "character", "category", "series", "season", "episode", "movie"};
+        String[] order = {"user", "actor", "character", "category", "series", "season", "episode", "movie", "review"};
 
         try (Stream<Path> files = Files.list(Paths.get(System.getProperty("user.dir"), "src/main/resources/data"))) {
             List<Path> paths = files.toList();

@@ -4,7 +4,6 @@ import fr.perso.springserie.model.dto.*;
 import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.repository.*;
 import fr.perso.springserie.service.interfaces.crud.*;
-import fr.perso.springserie.service.interfaces.listed.IBaseListedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -16,7 +15,7 @@ import java.util.Map;
 public class MapService {
 
     private final Map<String, IBaseService<? extends BaseDTO>> mapService;
-    private final Map<String, Class<?>> mapClass;
+    private final Map<String, Class<? extends BaseDTO>> mapClass;
     private final Map<String, IBaseRepo<? extends BaseEntity>> mapRepo;
 
     private static final String ACTOR = "actor";
@@ -26,6 +25,8 @@ public class MapService {
     private static final String CATEGORY = "category";
     private static final String EPISODE = "episode";
     private static final String MOVIE = "movie";
+    private static final String USER = "user";
+    private static final String REVIEW="review";
 
     @Autowired
     @Lazy
@@ -33,9 +34,11 @@ public class MapService {
                       ISeriesService seriesService, ICategoryService categoryService,
                       ISeasonService seasonService, IEpisodeService episodeService,
                       IMovieService movieService, IUserService userService,
-                      ISeriesRepo seriesRepo, ISeasonRepo seasonRepo, IEpisodeRepo episodeRepo,
+                      IReviewService reviewService, ISeriesRepo seriesRepo,
+                      ISeasonRepo seasonRepo, IEpisodeRepo episodeRepo,
                       IActorRepo actorRepo, ICharacterRepo characterRepo,
-                      IMovieRepo movieRepo, ICategoryRepo categoryRepo) {
+                      IMovieRepo movieRepo, ICategoryRepo categoryRepo,
+                      IUserRepo userRepo, IReviewRepo reviewRepo) {
         mapService = new HashMap<>();
 
         mapService.put(ACTOR, actorService);
@@ -45,7 +48,8 @@ public class MapService {
         mapService.put(CATEGORY, categoryService);
         mapService.put(EPISODE, episodeService);
         mapService.put(MOVIE, movieService);
-        mapService.put("user", userService);
+        mapService.put(USER, userService);
+        mapService.put(REVIEW, reviewService);
 
 
         mapClass = new HashMap<>();
@@ -56,7 +60,8 @@ public class MapService {
         mapClass.put(CATEGORY, CategoryDTO.class);
         mapClass.put(EPISODE, EpisodeDTO.class);
         mapClass.put(MOVIE, MovieDTO.class);
-        mapClass.put("user", UserDTO.class);
+        mapClass.put(USER, UserDTO.class);
+        mapClass.put(REVIEW, ReviewDTO.class);
 
 
         mapRepo = new HashMap<>();
@@ -67,13 +72,15 @@ public class MapService {
         mapRepo.put(CATEGORY, categoryRepo);
         mapRepo.put(EPISODE, episodeRepo);
         mapRepo.put(MOVIE, movieRepo);
+        mapRepo.put(USER, userRepo);
+        mapRepo.put(REVIEW, reviewRepo);
     }
 
     public IBaseService<BaseDTO> getService(String key) {
         return (IBaseService<BaseDTO>) mapService.get(key);
     }
 
-    public Class<?> getClass(String key) {
+    public Class<? extends BaseDTO> getClass(String key) {
         return mapClass.get(key);
     }
 

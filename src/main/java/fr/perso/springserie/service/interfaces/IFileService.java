@@ -12,5 +12,5 @@ public interface IFileService {
 
     void saves(List<MultipartFile> files, String type);
 
-    ResponseEntity<?> writeExcel(List<Boolean> booleanList);
+    ResponseEntity<?> writeExcel(List<String> booleanList);
 }

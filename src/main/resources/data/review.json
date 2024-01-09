@@ -1,0 +1,14 @@
+[
+  {
+    "userId": 1,
+    "seriesId": 2,
+    "note": 5,
+    "comment": "Best shows"
+  },
+  {
+    "userId": 1,
+    "seriesId": 1,
+    "note": 5,
+    "comment": "Amazing shows"
+  }
+]
