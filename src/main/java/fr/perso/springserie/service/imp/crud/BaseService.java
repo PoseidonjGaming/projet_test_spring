@@ -82,8 +82,8 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                         exampleMatcher[0] = exampleMatcher[0].withMatcher(getPath(field.getName(), embeddedField.getName()), matcher ->
                                 matcher.stringMatcher(matcherType).ignoreCase()));
 
-            }
-            exampleMatcher[0] = exampleMatcher[0].withMatcher(field.getName(), matcher -> matcher.stringMatcher(matcherType).ignoreCase());
+            } else if (field.getType().equals(String.class))
+                exampleMatcher[0] = exampleMatcher[0].withMatcher(field.getName(), matcher -> matcher.stringMatcher(matcherType).ignoreCase());
         });
         return exampleMatcher[0];
     }
@@ -179,7 +179,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                         mapper.convert(searchDto.getDto(), entityClass),
                         getMatcher(searchDto.getDto(), searchDto.getMode(), searchDto.getType())),
                 getPageable(size, page)
-        ),searchDto);
+        ), searchDto);
     }
 
     @Override
