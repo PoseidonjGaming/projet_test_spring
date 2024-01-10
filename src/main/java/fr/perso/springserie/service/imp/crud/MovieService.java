@@ -17,16 +17,4 @@ public class MovieService extends BaseService<Movie, MovieDTO> implements IMovie
     protected MovieService(IBaseRepo<Movie> repository, IMapper mapper, MapService mapService) {
         super(repository, mapper, MovieDTO.class, Movie.class, mapService);
     }
-
-    @Override
-    protected Predicate<MovieDTO> predicate(SearchDTO<MovieDTO> searchDTO) {
-        return movieDTO -> {
-            if (searchDTO.getMode().equals(ExampleMatcher.MatchMode.ALL))
-                return filterList(movieDTO.getCategoryIds(), searchDTO.getDto().getCategoryIds()) &&
-                        filterList(movieDTO.getCharacterIds(), searchDTO.getDto().getCharacterIds());
-            else
-                return filterList(movieDTO.getCategoryIds(), searchDTO.getDto().getCategoryIds()) ||
-                        filterList(movieDTO.getCharacterIds(), searchDTO.getDto().getCharacterIds());
-        };
-    }
 }

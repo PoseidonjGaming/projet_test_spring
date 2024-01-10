@@ -17,15 +17,4 @@ public class CategoryService extends BaseService<Category, CategoryDTO> implemen
     protected CategoryService(IBaseRepo<Category> repository, IMapper mapper, MapService mapService) {
         super(repository, mapper, CategoryDTO.class, Category.class, mapService);
     }
-
-    @Override
-    protected Predicate<CategoryDTO> predicate(SearchDTO<CategoryDTO> searchDTO) {
-        return categoryDTO -> {
-            if(searchDTO.getMode().equals(ExampleMatcher.MatchMode.ALL))
-                return filterList(categoryDTO.getMovieIds(), searchDTO.getDto().getMovieIds()) &&
-                        filterList(categoryDTO.getSeriesIds(), searchDTO.getDto().getMovieIds());
-            else  return filterList(categoryDTO.getMovieIds(), searchDTO.getDto().getMovieIds()) ||
-                    filterList(categoryDTO.getSeriesIds(), searchDTO.getDto().getMovieIds());
-        };
-    }
 }

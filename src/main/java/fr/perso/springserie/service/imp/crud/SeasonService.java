@@ -23,8 +23,4 @@ public class SeasonService extends BaseService<Season, SeasonDTO> implements ISe
         return ExampleMatcher.matchingAll().withIgnoreNullValues().withIgnorePaths("id", "number");
     }
 
-    @Override
-    protected Predicate<SeasonDTO> predicate(SearchDTO<SeasonDTO> searchDTO) {
-        return seasonDTO -> filterList(seasonDTO.getEpisodeIds(), searchDTO.getDto().getEpisodeIds());
-    }
 }

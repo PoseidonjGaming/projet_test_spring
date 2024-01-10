@@ -17,9 +17,4 @@ public class ReviewService extends BaseService<Review, ReviewDTO> implements IRe
     protected ReviewService(IReviewRepo repository, IMapper mapper, MapService mapService) {
         super(repository, mapper, ReviewDTO.class, Review.class, mapService);
     }
-
-    @Override
-    protected Predicate<ReviewDTO> predicate(SearchDTO<ReviewDTO> searchDTO) {
-        return reviewDTO -> true;
-    }
 }

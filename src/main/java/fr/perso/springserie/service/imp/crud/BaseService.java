@@ -20,13 +20,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
+import static fr.perso.springserie.service.utility.ServiceUtility.*;
 
 public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> implements ICRUDService<D>, IBasePagedService<D>, IBaseListedService<D> {
 
@@ -52,7 +51,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     private PagedResponse<D> createPage(Page<E> pageRequest, SearchDTO<D> searchDTO) {
         List<D> list = mapper.convertList(pageRequest.getContent(), dtoClass);
         if (searchDTO != null) {
-            list = list.stream().filter(predicate(searchDTO)).toList();
+            list = list.stream().filter(d -> filtering(d, searchDTO)).toList();
         }
 
         return new PagedResponse<>(list, pageRequest.getTotalElements());
@@ -105,52 +104,8 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     }
 
-    protected abstract Predicate<D> predicate(SearchDTO<D> searchDTO);
+//    protected abstract Predicate<D> predicate(SearchDTO<D> searchDTO);
 
-    protected static <O> List<String> findField(O object, String searchedField) {
-        List<String> pathToField = new ArrayList<>();
-        Arrays.stream(object.getClass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Embedded.class))
-                .forEach(embeddedField -> {
-                    try {
-
-                        List<String> field = findField(embeddedField.getType().getDeclaredConstructor().newInstance(), searchedField);
-                        if (!field.isEmpty()) {
-                            pathToField.add(embeddedField.getName());
-                            pathToField.addAll(field);
-                        }
-
-
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                             NoSuchMethodException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-
-        Arrays.stream(object.getClass().getDeclaredFields()).filter(field -> !field.isAnnotationPresent(Embedded.class))
-                .forEach(field -> {
-                    if (field.getName().equals(searchedField))
-                        pathToField.add(field.getName());
-                });
-        if (!object.getClass().equals(Object.class)) {
-            browseField(object.getClass().getSuperclass(), field -> {
-                if (!field.getType().isPrimitive()) {
-                    try {
-                        pathToField.addAll(findField(field.getType().getDeclaredConstructor().newInstance(), searchedField));
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                             NoSuchMethodException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                } else {
-                    if (pathToField.isEmpty())
-                        pathToField.add(field.getName());
-                }
-
-            });
-        }
-
-        return pathToField;
-    }
 
     protected static boolean equalsId(int entityId, int searchedId) {
         if (searchedId > 0)
@@ -211,7 +166,31 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                 Example.of(
                         mapper.convert(searchDto.getDto(), entityClass),
                         getMatcher(searchDto.getDto(), searchDto.getMode(), searchDto.getType())
-                )), dtoClass).stream().filter(predicate(searchDto)).toList();
+                )), dtoClass).stream().filter(dto -> filtering(dto, searchDto)).toList();
+    }
+
+    protected boolean filtering(D dto, SearchDTO<D> searchDto) {
+        final boolean[] filtered = {true};
+        browseField(dtoClass, field -> {
+            if (field.getName().endsWith("Id") && field.getType().equals(int.class)) {
+                filtered[0] = (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) ? filtered[0] &&
+                        equalsId(Integer.parseInt(get(field, dto).toString()), Integer.parseInt(get(field, searchDto.getDto()).toString())) :
+                        filtered[0] ||
+                                equalsId(Integer.parseInt(get(field, dto)), Integer.parseInt(get(field, searchDto.getDto())));
+            } else if (field.getType().equals(List.class)) {
+                filtered[0] = (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) ? filtered[0] &&
+                        filterList(get(field, dto), get(field, searchDto.getDto())) :
+                        filtered[0] ||
+                                filterList(get(field, dto), get(field, searchDto.getDto()));
+            }else if(field.getType().equals(LocalDate.class)){
+                filtered[0] = (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) ? filtered[0] &&
+                        isBetween(get(field, dto), searchDto.getStartDate(), searchDto.getEndDate()) :
+                        filtered[0] ||
+                                isBetween(get(field, dto), searchDto.getStartDate(), searchDto.getEndDate());
+            }
+        });
+
+        return filtered[0];
     }
 
 

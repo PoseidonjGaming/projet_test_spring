@@ -17,16 +17,4 @@ public class CharacterService extends BaseService<Character, CharacterDTO> imple
     protected CharacterService(IBaseRepo<Character> repository, IMapper mapper, MapService mapService) {
         super(repository, mapper, CharacterDTO.class, Character.class, mapService);
     }
-
-    @Override
-    protected Predicate<CharacterDTO> predicate(SearchDTO<CharacterDTO> searchDTO) {
-        return characterDTO -> {
-            if(searchDTO.getMode().equals(ExampleMatcher.MatchMode.ALL))
-                return filterList(characterDTO.getMovieIds(), searchDTO.getDto().getMovieIds()) &&
-                        filterList(characterDTO.getSeriesIds(), searchDTO.getDto().getSeriesIds());
-            else
-                return filterList(characterDTO.getMovieIds(), searchDTO.getDto().getMovieIds()) ||
-                        filterList(characterDTO.getSeriesIds(), searchDTO.getDto().getSeriesIds());
-        };
-    }
 }

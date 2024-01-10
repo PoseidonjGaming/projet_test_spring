@@ -16,9 +16,4 @@ public class ActorService extends BaseService<Actor, ActorDTO> implements IActor
     protected ActorService(IBaseRepo<Actor> repository, IMapper mapper, MapService mapService) {
         super(repository, mapper, ActorDTO.class, Actor.class, mapService);
     }
-
-    @Override
-    protected Predicate<ActorDTO> predicate(SearchDTO<ActorDTO> searchDTO) {
-        return actorDTO -> true;
-    }
 }

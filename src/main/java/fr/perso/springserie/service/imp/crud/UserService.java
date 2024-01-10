@@ -60,11 +60,6 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     }
 
     @Override
-    protected Predicate<UserDTO> predicate(SearchDTO<UserDTO> searchDTO) {
-        return userDTO -> filterList(userDTO.getRoles(), userDTO.getRoles());
-    }
-
-    @Override
     public void saves(List<UserDTO> userDTOS) {
         userDTOS.forEach(userDTO -> userDTO.setPassword(encoder.encode(userDTO.getPassword())));
         super.saves(userDTOS);

@@ -35,48 +35,11 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
         this.seriesRepo = seriesRepo;
     }
 
-    @Override
-    protected Predicate<EpisodeDTO> predicate(SearchDTO<EpisodeDTO> searchDTO) {
-        return episodeDTO -> {
-            if (searchDTO.getMode().equals(ExampleMatcher.MatchMode.ALL)) {
-                return isBetween(episodeDTO.getReleaseDate(), searchDTO.getStartDate(), searchDTO.getEndDate())
-                        && equalsId(episodeDTO.getSeriesId(), searchDTO.getDto().getSeriesId()) ;
-            }else {
-                return isBetween(episodeDTO.getReleaseDate(),searchDTO.getStartDate(),searchDTO.getEndDate()) ||
-                        equalsId(episodeDTO.getSeriesId(), searchDTO.getDto().getSeriesId());
-            }
-        };
-    }
-
 
     @Override
     public List<EpisodeDTO> getBySeasonIdIn(List<Integer> id) {
         return (id.get(0) == 0) ? null : ((IEpisodeRepo) repository).findBySeasonIdIn(id).stream().map(e ->
                 mapper.convert(e, dtoClass)).toList();
-    }
-
-
-
-
-
-    @Override
-    public PagedResponse<EpisodeDTO> search(SearchDTO<EpisodeDTO> searchDto, int size, int page) {
-        PagedResponse<EpisodeDTO> search = super.search(searchDto, size, page);
-        search.setContent(search.getContent().stream().filter(predicate(searchDto)).toList());
-        return search;
-    }
-
-    @Override
-    public List<EpisodeDTO> sortSearch(SearchDTO<EpisodeDTO> searchDto, SortDTO sortDTO) {
-        List<EpisodeDTO> episodeDTOS = super.sortSearch(searchDto, sortDTO);
-        return episodeDTOS.stream().filter(predicate(searchDto)).toList();
-    }
-
-    @Override
-    public PagedResponse<EpisodeDTO> sortSearch(SearchDTO<EpisodeDTO> searchDto, SortDTO sortDTO, int size, int pageNumber) {
-        PagedResponse<EpisodeDTO> episodeDTOPagedResponse = super.sortSearch(searchDto, sortDTO, size, pageNumber);
-        episodeDTOPagedResponse.setContent(episodeDTOPagedResponse.getContent().stream().filter(predicate(searchDto)).toList());
-        return episodeDTOPagedResponse;
     }
 
     @Override
