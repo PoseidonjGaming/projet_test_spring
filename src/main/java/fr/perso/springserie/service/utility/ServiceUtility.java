@@ -1,6 +1,10 @@
 package fr.perso.springserie.service.utility;
 
+import fr.perso.springserie.model.dto.BaseDTO;
+import fr.perso.springserie.model.dto.special.SearchDTO;
 import jakarta.persistence.Embedded;
+import lombok.experimental.UtilityClass;
+import org.springframework.data.domain.ExampleMatcher;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -10,9 +14,8 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public abstract class ServiceUtility {
-    private ServiceUtility() {
-    }
+@UtilityClass
+public class ServiceUtility {
 
     public static <O> void browseField(Class<?> clazz, O object, BiConsumer<Field, O> consumer) {
         Arrays.stream(clazz.getDeclaredFields()).forEach(field -> consumer.accept(field, object));
@@ -83,5 +86,17 @@ public abstract class ServiceUtility {
         }
         return returned;
 
+    }
+
+    public static  <D extends BaseDTO> ExampleMatcher.MatchMode getMode(SearchDTO<D> searchDto, Class<D> dtoClass) {
+        boolean typeSearch = Arrays.stream(dtoClass.getDeclaredFields()).filter(field ->
+                        field.getType().equals(List.class) ||
+                                field.getName().endsWith("Ids") ||
+                                field.getName().endsWith("Id"))
+                .allMatch(field -> get(field, searchDto.getDto()) == null);
+        if (typeSearch) {
+            return searchDto.getMode();
+        }
+        return ExampleMatcher.MatchMode.ANY;
     }
 }

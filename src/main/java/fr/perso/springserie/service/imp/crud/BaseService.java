@@ -14,6 +14,7 @@ import fr.perso.springserie.service.interfaces.paged.IBasePagedService;
 import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
 import jakarta.persistence.Embedded;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.domain.*;
 
 import java.io.File;
@@ -23,7 +24,6 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.Predicate;
 
 import static fr.perso.springserie.service.utility.ServiceUtility.*;
 
@@ -87,6 +87,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         return exampleMatcher[0];
     }
 
+
     protected static boolean isBetween(LocalDate releaseDate, LocalDate startDate, LocalDate endDate) {
         if (startDate != null && endDate != null) {
             return (releaseDate.isEqual(startDate) || releaseDate.isEqual(endDate))
@@ -97,18 +98,15 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     }
 
     protected static <O> boolean filterList(List<O> entityList, List<O> compareTo) {
-        if ((entityList != null && !entityList.isEmpty()) && (compareTo != null && !compareTo.isEmpty())) {
+        if ((entityList != null) && (compareTo != null)) {
             return new HashSet<>(entityList).containsAll(compareTo);
         }
-        return true;
+        return false;
 
     }
 
-//    protected abstract Predicate<D> predicate(SearchDTO<D> searchDTO);
-
-
     protected static boolean equalsId(int entityId, int searchedId) {
-        if (searchedId > 0)
+        if (searchedId != 0)
             return entityId == searchedId;
         return true;
     }
@@ -165,28 +163,39 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         return mapper.convertList(repository.findAll(
                 Example.of(
                         mapper.convert(searchDto.getDto(), entityClass),
-                        getMatcher(searchDto.getDto(), searchDto.getMode(), searchDto.getType())
+                        getMatcher(searchDto.getDto(), getMode(searchDto, dtoClass), searchDto.getType())
                 )), dtoClass).stream().filter(dto -> filtering(dto, searchDto)).toList();
     }
 
     protected boolean filtering(D dto, SearchDTO<D> searchDto) {
         final boolean[] filtered = {true};
         browseField(dtoClass, field -> {
-            if (field.getName().endsWith("Id") && field.getType().equals(int.class)) {
-                filtered[0] = (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) ? filtered[0] &&
-                        equalsId(Integer.parseInt(get(field, dto).toString()), Integer.parseInt(get(field, searchDto.getDto()).toString())) :
-                        filtered[0] ||
-                                equalsId(Integer.parseInt(get(field, dto)), Integer.parseInt(get(field, searchDto.getDto())));
-            } else if (field.getType().equals(List.class)) {
-                filtered[0] = (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) ? filtered[0] &&
-                        filterList(get(field, dto), get(field, searchDto.getDto())) :
-                        filtered[0] ||
-                                filterList(get(field, dto), get(field, searchDto.getDto()));
-            }else if(field.getType().equals(LocalDate.class)){
-                filtered[0] = (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) ? filtered[0] &&
-                        isBetween(get(field, dto), searchDto.getStartDate(), searchDto.getEndDate()) :
-                        filtered[0] ||
-                                isBetween(get(field, dto), searchDto.getStartDate(), searchDto.getEndDate());
+            if (field.getName().endsWith("Id")) {
+                Integer id = get(field, dto);
+                Integer searchedId = get(field, searchDto.getDto());
+                if(id!=null && searchedId!=null){
+                    if (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) {
+                        filtered[0] = filtered[0] && equalsId(id, searchedId);
+                    } else {
+                        filtered[0] = filtered[0] || equalsId(id, searchedId);
+                    }
+                }
+
+            }
+
+
+            if (field.getName().endsWith("Ids") && field.getType().equals(List.class)) {
+                List<Integer> ids=get(field, dto);
+                List<Integer> searchIds=get(field, searchDto.getDto());
+                if (searchIds != null && ids!=null) {
+                    if (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) {
+                        filtered[0] = filtered[0] && filterList(get(field, dto), get(field, searchDto.getDto()));
+                    } else {
+                        filtered[0] = filtered[0] || filterList(get(field, dto), get(field, searchDto.getDto()));
+                    }
+                }
+
+
             }
         });
 

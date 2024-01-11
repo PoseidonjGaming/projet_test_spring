@@ -18,10 +18,10 @@ public class SeriesDTO extends BaseDTO {
     private String summary;
     private String poster;
     private String trailerUrl;
-    private int nextMovieId;
-    private int nextSeriesId;
-    private int previousMovieId;
-    private int previousSeriesId;
+    private Integer nextMovieId;
+    private Integer nextSeriesId;
+    private Integer previousMovieId;
+    private Integer previousSeriesId;
     private List<Integer> seasonIds;
     private List<Integer> categoryIds;
     private List<Integer> characterIds;

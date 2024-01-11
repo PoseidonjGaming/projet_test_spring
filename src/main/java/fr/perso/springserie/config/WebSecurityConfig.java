@@ -34,7 +34,7 @@ public class WebSecurityConfig {
     private static final String[] WHITE_LISTED_URLS = new String[]{
             "user/authenticate", "user/save",
             "series/list", "series/detail/**",
-            "file/load**", "season/bySeries/**",
+            "file/load", "season/bySeries/**",
             "episode/bySeasons/**", "user/generateuser",
             "category/list", "character/**",
             "series/byCategories", "series/filteredSearch",
@@ -43,7 +43,8 @@ public class WebSecurityConfig {
             "episode/byIds", "actor/detail/**",
             "movie/list", "movie/search",
             "episode/search", "episode/list",
-            "user/registration", "user/**"
+            "user/registration", "user/**",
+            "review/search"
     };
     private final JwtFilter jwtAuthFilter;
     private final JwtAuthenticationEntryPoint entryPoint;
