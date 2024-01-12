@@ -9,5 +9,16 @@
     "previousSeriesId": null,
     "nextMovieId": null,
     "previousMovieId": null
+  },
+  {
+    "name": "Kang Dynasty",
+    "releaseDate": "2027-01-01",
+    "summary": "",
+    "categoryIds": [],
+    "characterIds": [],
+    "nextSeriesId": null,
+    "previousSeriesId": null,
+    "nextMovieId": null,
+    "previousMovieId": null
   }
 ]

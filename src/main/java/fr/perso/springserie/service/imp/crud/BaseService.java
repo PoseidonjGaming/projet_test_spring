@@ -14,7 +14,6 @@ import fr.perso.springserie.service.interfaces.paged.IBasePagedService;
 import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
 import jakarta.persistence.Embedded;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.domain.*;
 
 import java.io.File;
@@ -173,7 +172,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
             if (field.getName().endsWith("Id")) {
                 Integer id = get(field, dto);
                 Integer searchedId = get(field, searchDto.getDto());
-                if(id!=null && searchedId!=null){
+                if (id != null && searchedId != null) {
                     if (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) {
                         filtered[0] = filtered[0] && equalsId(id, searchedId);
                     } else {
@@ -185,17 +184,15 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
 
             if (field.getName().endsWith("Ids") && field.getType().equals(List.class)) {
-                List<Integer> ids=get(field, dto);
-                List<Integer> searchIds=get(field, searchDto.getDto());
-                if (searchIds != null && ids!=null) {
+                List<Integer> ids = get(field, dto);
+                List<Integer> searchIds = get(field, searchDto.getDto());
+                if (searchIds != null && ids != null) {
                     if (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) {
-                        filtered[0] = filtered[0] && filterList(get(field, dto), get(field, searchDto.getDto()));
+                        filtered[0] = filtered[0] && filterList(ids, searchIds);
                     } else {
-                        filtered[0] = filtered[0] || filterList(get(field, dto), get(field, searchDto.getDto()));
+                        filtered[0] = filtered[0] || filterList(ids, searchIds);
                     }
                 }
-
-
             }
         });
 
