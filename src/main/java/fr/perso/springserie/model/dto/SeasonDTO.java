@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SeasonDTO extends BaseDTO {
-    private int seriesId;
-    private int number;
+    private Integer seriesId;
+    private Integer number;
     private List<Integer> episodeIds;
 }

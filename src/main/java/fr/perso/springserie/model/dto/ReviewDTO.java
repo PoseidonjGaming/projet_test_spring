@@ -10,8 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewDTO extends BaseDTO {
-    private int note;
+    private Integer note;
     private String comment;
-    private int userId;
-    private int seriesId;
+    private Integer userId;
+    private Integer seriesId;
 }

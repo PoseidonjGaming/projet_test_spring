@@ -18,7 +18,7 @@ public class Season extends BaseEntity {
 
     @ManyToOne
     private Series series;
-    private int number;
+    private Integer number;
 
     @OneToMany(mappedBy = "season", fetch = FetchType.EAGER)
     private List<Episode> episode;

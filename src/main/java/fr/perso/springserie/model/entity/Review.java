@@ -15,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Review extends BaseEntity{
 
-    private int note;
+    private Integer note;
     @Column(columnDefinition = "text")
     private String comment;
 

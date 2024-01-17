@@ -50,11 +50,11 @@ public class Mapper implements IMapper {
             mapEntityId(source, target, sourceField);
         } else if (sourceField.getType().equals(List.class)) {
             mapList(source, target, sourceField);
-        } else if (sourceField.getType().equals(int.class) && sourceField.getName().endsWith("Id")) {
+        } else if (sourceField.getType().equals(Integer.class) && sourceField.getName().endsWith("Id")) {
             mapEntity(source, target, sourceField);
         } else if (sourceField.isAnnotationPresent(Embedded.class)) {
             mapEmbedded(source, target, sourceField);
-         } else {
+        } else {
             transfert(source, target, sourceField, target.getClass());
         }
         Arrays.stream(target.getClass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Embedded.class)).forEach(targetField -> {
@@ -82,8 +82,10 @@ public class Mapper implements IMapper {
     private <S, T> void mapEntity(S source, T target, Field sourceField) {
         String entityName = sourceField.getName().substring(0, sourceField.getName().length() - 2);
         Field targetField = getField(entityName, target.getClass());
-        if (targetField != null) {
-            mapService.getRepo(targetField.getType().getSimpleName().toLowerCase()).findById(get(sourceField, source)).ifPresent(entity -> {
+        Integer id = get(sourceField, source);
+        if (targetField != null && id != null) {
+
+            mapService.getRepo(targetField.getType().getSimpleName().toLowerCase()).findById(id).ifPresent(entity -> {
                 set(entity, target, targetField);
             });
         }
@@ -139,7 +141,7 @@ public class Mapper implements IMapper {
 
     protected <O, T> void set(O source, T target, Field targetField) {
         try {
-            if(targetField!=null){
+            if (targetField != null) {
                 targetField.setAccessible(true);
                 targetField.set(target, source);
                 targetField.setAccessible(false);

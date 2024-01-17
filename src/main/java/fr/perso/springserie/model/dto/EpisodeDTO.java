@@ -15,6 +15,6 @@ public class EpisodeDTO extends BaseDTO {
     private String name;
     private String summary;
     private LocalDate releaseDate;
-    private int seasonId;
-    private int seriesId;
+    private Integer seasonId;
+    private Integer seriesId;
 }

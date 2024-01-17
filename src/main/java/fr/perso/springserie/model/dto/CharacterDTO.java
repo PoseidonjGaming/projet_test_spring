@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CharacterDTO extends BaseDTO {
     private String name;
-    private int actorId;
+    private Integer actorId;
     private List<Integer> seriesIds;
     private List<Integer> movieIds;
 }

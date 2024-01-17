@@ -19,8 +19,8 @@ public class MovieDTO extends BaseDTO {
 
     private List<Integer> categoryIds;
     private List<Integer> characterIds;
-    private int nextSeriesId;
-    private int previousSeriesId;
-    private int nextMovieId;
-    private int previousMovieId;
+    private Integer nextSeriesId;
+    private Integer previousSeriesId;
+    private Integer nextMovieId;
+    private Integer previousMovieId;
 }
