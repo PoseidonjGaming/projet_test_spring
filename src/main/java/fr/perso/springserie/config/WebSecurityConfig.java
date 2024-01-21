@@ -1,6 +1,5 @@
 package fr.perso.springserie.config;
 
-import fr.perso.springserie.security.JwtAuthenticationEntryPoint;
 import fr.perso.springserie.security.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,21 +34,20 @@ public class WebSecurityConfig {
             "category/list", "character/**",
             "series/sort", "series/detail/**",
             "series/byCategories", "series/search",
+            "series/list",
             "actor/byIds", "season/byIds",
             "episode/byIds", "actor/detail/**",
             "movie/sort", "movie/search",
             "episode/search", "episode/list",
             "user/registration", "user/**",
-            "review/search"
+            "review/search", "user/search"
     };
     private final JwtFilter jwtAuthFilter;
-    private final JwtAuthenticationEntryPoint entryPoint;
     private final UserDetailsService userDetailsService;
 
     @Lazy
-    public WebSecurityConfig(JwtFilter jwtAuthFilter, JwtAuthenticationEntryPoint entryPoint, UserDetailsService userDetailsService) {
+    public WebSecurityConfig(JwtFilter jwtAuthFilter, UserDetailsService userDetailsService) {
         this.jwtAuthFilter = jwtAuthFilter;
-        this.entryPoint = entryPoint;
         this.userDetailsService = userDetailsService;
     }
 
@@ -82,6 +80,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> {
                             try {
                                 auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                        .requestMatchers("user/search").hasAnyRole("user", "super_admin")
                                         .requestMatchers(WHITE_LISTED_URLS).permitAll()
                                         .anyRequest().hasRole("super_admin");
                             } catch (Exception e) {

@@ -3,5 +3,10 @@
     "username": "Admin",
     "password": "1234",
     "roles": ["ROLE_super_admin"]
+  },
+  {
+    "username": "user1",
+    "password": "test",
+    "roles": ["ROLE_user"]
   }
 ]

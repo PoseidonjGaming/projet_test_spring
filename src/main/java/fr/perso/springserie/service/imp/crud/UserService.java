@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 @Service
 public class UserService extends BaseService<User, UserDTO> implements IUserService, UserDetailsService {
@@ -67,7 +66,8 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
 
     @Override
     public UserDTO save(UserDTO dto) {
-        dto.setPassword(encoder.encode(dto.getPassword()));
+        if (dto.getPassword() != null)
+            dto.setPassword(encoder.encode(dto.getPassword()));
         return super.save(dto);
     }
 
@@ -88,6 +88,8 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
         userDTO.setRoles(List.of("ROLE_user"));
         save(userDTO);
     }
+
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

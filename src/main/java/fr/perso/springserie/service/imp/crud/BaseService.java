@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import static fr.perso.springserie.service.utility.SearchUtility.*;
 import static fr.perso.springserie.service.utility.ServiceUtility.*;
 
 public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> implements ICRUDService<D>, IBasePagedService<D>, IBaseListedService<D> {
@@ -86,30 +87,6 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         return exampleMatcher[0];
     }
 
-
-    protected static boolean isBetween(LocalDate releaseDate, LocalDate startDate, LocalDate endDate) {
-        if (startDate != null && endDate != null) {
-            return (releaseDate.isEqual(startDate) || releaseDate.isEqual(endDate))
-                    || (releaseDate.isAfter(startDate) && releaseDate.isBefore(endDate));
-        }
-        return true;
-
-    }
-
-    protected static <O> boolean filterList(List<O> entityList, List<O> compareTo) {
-        if ((entityList != null) && (compareTo != null)) {
-            return new HashSet<>(entityList).containsAll(compareTo);
-        }
-        return false;
-
-    }
-
-    protected static boolean equalsId(int entityId, int searchedId) {
-        if (searchedId != 0)
-            return entityId == searchedId;
-        return true;
-    }
-
     @Override
     public PagedResponse<D> getAll(int size, int page) {
         return createPage(repository.findAll(getPageable(size, page)), null);
@@ -166,38 +143,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                 )), dtoClass).stream().filter(dto -> filtering(dto, searchDto)).toList();
     }
 
-    protected boolean filtering(D dto, SearchDTO<D> searchDto) {
-        final boolean[] filtered = {true};
-        browseField(dtoClass, field -> {
-            if (field.getName().endsWith("Id")) {
-                Integer id = get(field, dto);
-                Integer searchedId = get(field, searchDto.getDto());
-                if (id != null && searchedId != null) {
-                    if (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) {
-                        filtered[0] = filtered[0] && equalsId(id, searchedId);
-                    } else {
-                        filtered[0] = filtered[0] || equalsId(id, searchedId);
-                    }
-                }
 
-            }
-
-
-            if (field.getName().endsWith("Ids") && field.getType().equals(List.class)) {
-                List<Integer> ids = get(field, dto);
-                List<Integer> searchIds = get(field, searchDto.getDto());
-                if (searchIds != null && ids != null) {
-                    if (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) {
-                        filtered[0] = filtered[0] && filterList(ids, searchIds);
-                    } else {
-                        filtered[0] = filtered[0] || filterList(ids, searchIds);
-                    }
-                }
-            }
-        });
-
-        return filtered[0];
-    }
 
 
     @Override

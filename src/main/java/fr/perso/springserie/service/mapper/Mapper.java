@@ -57,6 +57,7 @@ public class Mapper implements IMapper {
         } else {
             transfert(source, target, sourceField, target.getClass());
         }
+
         Arrays.stream(target.getClass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Embedded.class)).forEach(targetField -> {
             try {
                 Object embedded = targetField.getType().getDeclaredConstructor().newInstance();
