@@ -1,6 +1,5 @@
 package fr.perso.springserie.service.imp.crud;
 
-import fr.perso.springserie.model.dto.review.NamedReviewDTO;
 import fr.perso.springserie.model.dto.review.ReviewDTO;
 import fr.perso.springserie.model.entity.Review;
 import fr.perso.springserie.repository.IReviewRepo;
@@ -17,8 +16,5 @@ public class ReviewService extends BaseService<Review, ReviewDTO> implements IRe
         super(repository, mapper, ReviewDTO.class, Review.class, mapService);
     }
 
-    @Override
-    public List<NamedReviewDTO> getNamedReview(List<Integer> ids) {
-        return mapper.convertList(repository.findByIdIn(ids), NamedReviewDTO.class);
-    }
+
 }

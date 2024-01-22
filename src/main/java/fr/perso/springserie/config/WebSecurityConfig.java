@@ -42,6 +42,10 @@ public class WebSecurityConfig {
             "user/registration", "user/**",
             "review/search", "user/search"
     };
+
+    private static final String[] USER_ADMIN_ROUTES = new String[]{
+            "series/byIds", "user/search"
+    };
     private final JwtFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
 
@@ -79,8 +83,9 @@ public class WebSecurityConfig {
         return httpSecurity.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource())).csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
                             try {
+
                                 auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                        .requestMatchers("user/search").hasAnyRole("user", "super_admin")
+                                        .requestMatchers(USER_ADMIN_ROUTES).hasAnyRole("user", "super_admin")
                                         .requestMatchers(WHITE_LISTED_URLS).permitAll()
                                         .anyRequest().hasRole("super_admin");
                             } catch (Exception e) {
