@@ -1,4 +1,4 @@
-package fr.perso.springserie.model.dto;
+package fr.perso.springserie.model.dto.review;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,11 +7,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class ReviewDTO extends BaseDTO {
+@NoArgsConstructor
+public class NamedReviewDTO {
     private Integer note;
     private String comment;
-    private Integer userId;
-    private Integer seriesId;
+    private Integer username;
+    private Integer seriesName;
 }

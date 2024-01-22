@@ -1,6 +1,7 @@
 package fr.perso.springserie.task;
 
 import fr.perso.springserie.model.dto.*;
+import fr.perso.springserie.model.dto.review.ReviewDTO;
 import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.repository.*;
 import fr.perso.springserie.service.interfaces.crud.*;

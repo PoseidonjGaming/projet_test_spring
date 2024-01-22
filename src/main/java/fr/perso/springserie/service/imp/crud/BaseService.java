@@ -67,12 +67,12 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     protected ExampleMatcher getMatcher(D dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
         final ExampleMatcher[] exampleMatcher = new ExampleMatcher[1];
         if (mode.equals(ExampleMatcher.MatchMode.ALL)) {
-            exampleMatcher[0] = ExampleMatcher.matchingAll()
-                    .withIgnoreNullValues().withIgnorePaths("id");
+            exampleMatcher[0] = ExampleMatcher.matchingAll();
         } else {
-            exampleMatcher[0] = ExampleMatcher.matchingAny()
-                    .withIgnoreNullValues().withIgnorePaths("id");
+            exampleMatcher[0] = ExampleMatcher.matchingAny();
         }
+
+        exampleMatcher[0]=exampleMatcher[0].withIgnoreNullValues().withIgnorePaths("id");
 
 
         browseField(entityClass, mapper.convert(dto, entityClass), (field, entity) -> {
@@ -115,7 +115,8 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     public PagedResponse<D> sort(SortDTO sortDTO, int size, int page) {
         try {
             return createPage(repository.findAll(PageRequest.of(page, size, sortDTO.getDirection(),
-                    getPath(findField(entityClass.getDeclaredConstructor().newInstance(), sortDTO.getField()).toArray(new String[]{})))), null);
+                    getPath(findField(entityClass.getDeclaredConstructor().newInstance(), sortDTO.getField())
+                            .toArray(new String[]{})))), null);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
             throw new RuntimeException(e);
