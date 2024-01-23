@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Review extends BaseEntity{
+public class Review extends BaseEntity {
 
     private Integer note;
     @Column(columnDefinition = "text")

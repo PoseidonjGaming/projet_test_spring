@@ -13,5 +13,6 @@ public interface ICRUDService<D extends BaseDTO> {
     void save(File file);
 
     void saves(List<D> ds);
+
     void delete(int id);
 }

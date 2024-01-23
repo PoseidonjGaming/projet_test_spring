@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Transactional
-public class EpisodeMapper extends Mapper implements IMapper{
+public class EpisodeMapper extends Mapper implements IMapper {
     public EpisodeMapper(MapService mapService) {
         super(mapService);
     }
@@ -16,7 +16,7 @@ public class EpisodeMapper extends Mapper implements IMapper{
     @Override
     public <S, T> T convert(S source, Class<T> targetClass) {
         T convert = super.convert(source, targetClass);
-        if(source instanceof Episode episode && convert instanceof EpisodeDTO episodeDTO){
+        if (source instanceof Episode episode && convert instanceof EpisodeDTO episodeDTO) {
             episodeDTO.setSeriesId(episode.getSeason().getSeries().getId());
         }
         return convert;

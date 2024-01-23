@@ -6,5 +6,6 @@ import fr.perso.springserie.security.JwtUser;
 
 public interface IUserService extends IBaseService<UserDTO> {
     JwtResponse authenticate(JwtUser user);
+
     void registration(UserDTO userDTO);
 }

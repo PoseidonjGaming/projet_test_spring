@@ -1,7 +1,6 @@
 package fr.perso.springserie.service.imp.crud;
 
 import fr.perso.springserie.model.dto.SeasonDTO;
-import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.model.entity.Season;
 import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.service.interfaces.crud.ISeasonService;
@@ -9,8 +8,6 @@ import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
-
-import java.util.function.Predicate;
 
 @Service
 public class SeasonService extends BaseService<Season, SeasonDTO> implements ISeasonService {

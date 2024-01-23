@@ -1,9 +1,6 @@
 package fr.perso.springserie.service.imp.crud;
 
-import fr.perso.springserie.model.PagedResponse;
 import fr.perso.springserie.model.dto.EpisodeDTO;
-import fr.perso.springserie.model.dto.special.SearchDTO;
-import fr.perso.springserie.model.dto.special.SortDTO;
 import fr.perso.springserie.model.entity.Episode;
 import fr.perso.springserie.model.entity.Season;
 import fr.perso.springserie.model.entity.Series;
@@ -14,11 +11,9 @@ import fr.perso.springserie.repository.ISeriesRepo;
 import fr.perso.springserie.service.interfaces.crud.IEpisodeService;
 import fr.perso.springserie.service.mapper.EpisodeMapper;
 import fr.perso.springserie.task.MapService;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 @Service
 public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements IEpisodeService {

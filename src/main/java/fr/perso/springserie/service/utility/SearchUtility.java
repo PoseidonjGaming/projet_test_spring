@@ -14,13 +14,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-
 import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
 import static fr.perso.springserie.service.utility.ServiceUtility.get;
 
 @UtilityClass
 public class SearchUtility {
-
 
 
     public static <D extends BaseDTO> ExampleMatcher.MatchMode getMode(SearchDTO<D> searchDto, Class<D> dtoClass) {
@@ -50,12 +48,14 @@ public class SearchUtility {
                     }
                 });
     }
+
     public static String getPath(String... parts) {
         if (parts[0].isEmpty()) {
             return Arrays.stream(parts).skip(1).reduce((s, s2) -> s + "." + s2).orElse("");
         }
         return Arrays.stream(parts).reduce((s, s2) -> s + "." + s2).orElse("");
     }
+
     public static <O> List<String> findField(O object, String searchedField) {
         List<String> pathToField = new ArrayList<>();
         findInEmbedded(object, searchedField, pathToField);

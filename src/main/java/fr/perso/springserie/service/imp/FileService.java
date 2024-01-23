@@ -4,9 +4,7 @@ import fr.perso.springserie.model.dto.BaseDTO;
 import fr.perso.springserie.service.interfaces.IFileService;
 import fr.perso.springserie.service.interfaces.crud.IBaseService;
 import fr.perso.springserie.task.MapService;
-import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
@@ -16,24 +14,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
-
-import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
 
 @Service
 public class FileService implements IFileService {
 
     private final String root = System.getProperty("user.dir");
+    private final MapService mapService;
     @Value("${app.storageFolder}")
     private String fileRoot;
-
-    private final MapService mapService;
 
     @Lazy
     public FileService(MapService mapService) {

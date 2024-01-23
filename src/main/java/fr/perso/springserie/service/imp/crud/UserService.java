@@ -90,7 +90,6 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     }
 
 
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         List<UserDTO> results = search(new SearchDTO<>(new UserDTO(username),

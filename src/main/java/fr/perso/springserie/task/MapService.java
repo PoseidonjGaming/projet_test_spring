@@ -15,10 +15,6 @@ import java.util.Map;
 @Component
 public class MapService {
 
-    private final Map<String, IBaseService<? extends BaseDTO>> mapService;
-    private final Map<String, Class<? extends BaseDTO>> mapClass;
-    private final Map<String, IBaseRepo<? extends BaseEntity>> mapRepo;
-
     private static final String ACTOR = "actor";
     private static final String CHARACTER = "character";
     private static final String SERIES = "series";
@@ -27,7 +23,10 @@ public class MapService {
     private static final String EPISODE = "episode";
     private static final String MOVIE = "movie";
     private static final String USER = "user";
-    private static final String REVIEW="review";
+    private static final String REVIEW = "review";
+    private final Map<String, IBaseService<? extends BaseDTO>> mapService;
+    private final Map<String, Class<? extends BaseDTO>> mapClass;
+    private final Map<String, IBaseRepo<? extends BaseEntity>> mapRepo;
 
     @Autowired
     @Lazy

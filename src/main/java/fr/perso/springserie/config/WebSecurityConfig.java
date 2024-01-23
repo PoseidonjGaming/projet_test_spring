@@ -44,7 +44,7 @@ public class WebSecurityConfig {
     };
 
     private static final String[] USER_ADMIN_ROUTES = new String[]{
-            "series/byIds", "user/search"
+            "series/byIds","review/save", "review/delete/*"
     };
     private final JwtFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;

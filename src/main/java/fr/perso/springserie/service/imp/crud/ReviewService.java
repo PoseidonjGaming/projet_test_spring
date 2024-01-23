@@ -8,8 +8,6 @@ import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class ReviewService extends BaseService<Review, ReviewDTO> implements IReviewService {
     protected ReviewService(IReviewRepo repository, IMapper mapper, MapService mapService) {

@@ -1,16 +1,12 @@
 package fr.perso.springserie.service.imp.crud;
 
 import fr.perso.springserie.model.dto.MovieDTO;
-import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.model.entity.Movie;
 import fr.perso.springserie.repository.IBaseRepo;
 import fr.perso.springserie.service.interfaces.crud.IMovieService;
 import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
-
-import java.util.function.Predicate;
 
 @Service
 public class MovieService extends BaseService<Movie, MovieDTO> implements IMovieService {
