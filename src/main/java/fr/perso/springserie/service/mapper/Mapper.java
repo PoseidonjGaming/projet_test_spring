@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
 import static fr.perso.springserie.service.utility.ServiceUtility.get;
@@ -108,7 +110,7 @@ public class Mapper implements IMapper {
             if (targetField != null) {
                 List<BaseEntity> entities = get(sourceField, source);
                 if (entities != null)
-                    set(entities.stream().map(BaseEntity::getId).toList(), target, targetField);
+                    set(entities.stream().map(BaseEntity::getId).collect(Collectors.toList()), target, targetField);
             }
 
         } else {
@@ -117,6 +119,7 @@ public class Mapper implements IMapper {
                 List<Integer> ids = get(sourceField, source);
                 if (ids != null)
                     set(mapService.getRepo(targetField.getName()).findByIdIn(ids), target, targetField);
+
             }
         }
     }

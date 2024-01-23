@@ -1,5 +1,6 @@
 package fr.perso.springserie.service.imp.crud;
 
+import fr.perso.springserie.model.dto.SeriesDTO;
 import fr.perso.springserie.model.dto.UserDTO;
 import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.model.entity.User;
@@ -21,6 +22,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -87,6 +89,44 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     public void registration(UserDTO userDTO) {
         userDTO.setRoles(List.of("ROLE_user"));
         save(userDTO);
+    }
+
+    @Override
+    public List<SeriesDTO> addToWatchList(int seriesId, String username) {
+        SearchDTO<UserDTO> searchDTO = new SearchDTO<>(
+                new UserDTO(username),
+                ExampleMatcher.MatchMode.ALL,
+                ExampleMatcher.StringMatcher.EXACT,
+                null, null);
+        List<UserDTO> dtos = search(searchDTO);
+        if (dtos.size() == 1) {
+            UserDTO userDTO = dtos.get(0);
+            if (!userDTO.getSeriesIds().contains(seriesId)) {
+                userDTO.getSeriesIds().add(seriesId);
+            }
+            User user = repository.save(mapper.convert(userDTO, entityClass));
+            return mapper.convertList(user.getSeries(), SeriesDTO.class);
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<SeriesDTO> removeFromWatchList(int seriesId, String username) {
+        SearchDTO<UserDTO> searchDTO = new SearchDTO<>(
+                new UserDTO(username),
+                ExampleMatcher.MatchMode.ALL,
+                ExampleMatcher.StringMatcher.EXACT,
+                null, null);
+        List<UserDTO> dtos = search(searchDTO);
+        if (dtos.size() == 1) {
+            UserDTO userDTO = dtos.get(0);
+            if (userDTO.getSeriesIds().contains(seriesId)) {
+                userDTO.getSeriesIds().remove(seriesId);
+            }
+            User user = repository.save(mapper.convert(userDTO, entityClass));
+            return mapper.convertList(user.getSeries(), SeriesDTO.class);
+        }
+        return new ArrayList<>();
     }
 
 
