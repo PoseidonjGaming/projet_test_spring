@@ -2,5 +2,9 @@
   {
     "name": "Vision",
     "actorId": 1
+  },
+  {
+    "name": "Stephen Strange/Dr Strange",
+    "actorId": 2
   }
 ]

@@ -112,14 +112,9 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public PagedResponse<D> sort(SortDTO sortDTO, int size, int page) {
-        try {
-            return createPage(repository.findAll(PageRequest.of(page, size, sortDTO.getDirection(),
-                    getPath(findField(entityClass.getDeclaredConstructor().newInstance(), sortDTO.getField())
-                            .toArray(new String[]{})))), null);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                 NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+        return createPage(repository.findAll(PageRequest.of(page, size, sortDTO.getDirection(),
+                getPath(findField(entityClass, sortDTO.getField())
+                        .toArray(new String[]{})))), null);
     }
 
     @Override
@@ -146,13 +141,8 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public List<D> sort(SortDTO sortDTO) {
-        try {
-            String field = getPath(findField(entityClass.getDeclaredConstructor().newInstance(), sortDTO.getField()).toArray(new String[]{}));
-            return mapper.convertList(repository.findAll(Sort.by(sortDTO.getDirection(), field)), dtoClass);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                 NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+        return mapper.convertList(repository.findAll(Sort.by(sortDTO.getDirection(),
+                getPath(findField(entityClass, sortDTO.getField()).toArray(new String[]{})))), dtoClass);
 
     }
 
@@ -161,7 +151,10 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         return mapper.convertList(repository.findAll(
                         Example.of(mapper.convert(searchDto.getDto(), entityClass),
                                 getMatcher(searchDto.getDto(), searchDto.getMode(), searchDto.getType())),
-                        Sort.by(sortDTO.getDirection(), sortDTO.getField())),
+                        Sort.by(sortDTO.getDirection(),
+                                getPath(findField(entityClass, sortDTO.getField()).toArray(new String[]{}))
+                        )
+                ),
                 dtoClass
         );
     }

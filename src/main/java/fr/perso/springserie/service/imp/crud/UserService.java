@@ -129,6 +129,24 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
         return new ArrayList<>();
     }
 
+    @Override
+    public UserDTO searchByUsername(String username) {
+        List<UserDTO> users = search(
+                new SearchDTO<>(new UserDTO(username),
+                        ExampleMatcher.MatchMode.ALL,
+                        ExampleMatcher.StringMatcher.EXACT,
+                        null, null)
+        );
+
+        if(!users.isEmpty()){
+            users.get(0).erasePassword();
+            return users.get(0);
+        }
+
+
+        return null;
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

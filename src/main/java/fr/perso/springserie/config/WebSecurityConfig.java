@@ -28,25 +28,19 @@ import java.util.List;
 @EnableMethodSecurity
 public class WebSecurityConfig {
     private static final String[] WHITE_LISTED_URLS = new String[]{
-            "user/authenticate", "user/save",
-            "file/load", "season/bySeries/**",
-            "episode/bySeasons/**", "user/generateuser",
-            "category/list", "character/**",
-            "series/sort", "series/detail/**",
-            "series/byCategories", "series/search",
-            "series/list",
-            "actor/byIds", "season/byIds",
-            "episode/byIds", "actor/detail/**",
-            "movie/sort", "movie/search",
-            "episode/search", "episode/list",
-            "user/registration", "user/**",
-            "review/search", "user/search"
+            "user/authenticate", "user/save","user/search/*","user/search",
+            "file/load",
+            "series/sort/search", "series/sort",
+            "episode/sort/search",
+            "movie/sort/search", "movie/sort",
+            "review/search"
+
     };
 
     private static final String[] USER_ADMIN_ROUTES = new String[]{
-            "series/byIds","review/save", "review/delete/*"
+            "series/byIds", "review/save", "review/delete/*"
     };
-    public static final String[] USER_ROUTES=new String[]{
+    private static final String[] USER_ROUTES = new String[]{
             "user/watch/**"
     };
     private final JwtFilter jwtAuthFilter;
@@ -88,7 +82,9 @@ public class WebSecurityConfig {
                             try {
 
                                 auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                        .requestMatchers(USER_ROUTES).hasRole("user")
                                         .requestMatchers(USER_ADMIN_ROUTES).hasAnyRole("user", "super_admin")
+
                                         .requestMatchers(WHITE_LISTED_URLS).permitAll()
                                         .anyRequest().hasRole("super_admin");
                             } catch (Exception e) {

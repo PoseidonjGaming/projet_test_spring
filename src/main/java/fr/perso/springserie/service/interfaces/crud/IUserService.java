@@ -14,4 +14,5 @@ public interface IUserService extends IBaseService<UserDTO> {
 
     List<SeriesDTO> addToWatchList(int seriesId, String username);
     List<SeriesDTO> removeFromWatchList(Integer seriesId, String username);
+    UserDTO searchByUsername(String username);
 }

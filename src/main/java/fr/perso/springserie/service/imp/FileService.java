@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -50,10 +51,15 @@ public class FileService implements IFileService {
         try (Stream<Path> files = Files.find(Paths.get(root, fileRoot), 3,
                 (p, a) -> p.getFileName().toString().equals(filename))) {
 
-            Path pathParent = files.toList().get(0);
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG)
-                    .body(Files.readAllBytes(pathParent));
+            List<Path> fileList=files.toList();
+            if(!fileList.isEmpty()){
+                Path pathParent = fileList.get(0);
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(Files.readAllBytes(pathParent));
+            }else
+                return ResponseEntity.notFound().build();
+
         } catch (IOException e) {
             return ResponseEntity.notFound().build();
         }

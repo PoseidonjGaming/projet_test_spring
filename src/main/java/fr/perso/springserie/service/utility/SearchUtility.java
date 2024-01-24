@@ -33,18 +33,13 @@ public class SearchUtility {
         return ExampleMatcher.MatchMode.ANY;
     }
 
-    static <O> void findInEmbedded(O object, String searchedField, List<String> pathToField) {
-        Arrays.stream(object.getClass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Embedded.class))
+    static <O> void findInEmbedded(Class<O> clazz, String searchedField, List<String> pathToField) {
+        Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Embedded.class))
                 .forEach(embeddedField -> {
-                    try {
-                        List<String> field = findField(embeddedField.getType().getDeclaredConstructor().newInstance(), searchedField);
-                        if (!field.isEmpty()) {
-                            pathToField.add(embeddedField.getName());
-                            pathToField.addAll(field);
-                        }
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                             NoSuchMethodException e) {
-                        throw new RuntimeException(e);
+                    List<String> field = findField(embeddedField.getType(), searchedField);
+                    if (!field.isEmpty()) {
+                        pathToField.add(embeddedField.getName());
+                        pathToField.addAll(field);
                     }
                 });
     }
@@ -56,31 +51,26 @@ public class SearchUtility {
         return Arrays.stream(parts).reduce((s, s2) -> s + "." + s2).orElse("");
     }
 
-    public static <O> List<String> findField(O object, String searchedField) {
+    public static <O> List<String> findField(Class<O> clazz, String searchedField) {
         List<String> pathToField = new ArrayList<>();
-        findInEmbedded(object, searchedField, pathToField);
+        findInEmbedded(clazz, searchedField, pathToField);
 
-        Arrays.stream(object.getClass().getDeclaredFields()).filter(field -> !field.isAnnotationPresent(Embedded.class))
+        Arrays.stream(clazz.getDeclaredFields()).filter(field -> !field.isAnnotationPresent(Embedded.class))
                 .forEach(field -> {
                     if (field.getName().equals(searchedField))
                         pathToField.add(field.getName());
                 });
-        if (!object.getClass().equals(Object.class)) {
-            findInSuperClass(object, searchedField, pathToField);
+        if (!clazz.equals(Object.class)) {
+            findInSuperClass(clazz, searchedField, pathToField);
         }
 
         return pathToField;
     }
 
-    static <O> void findInSuperClass(O object, String searchedField, List<String> pathToField) {
-        browseField(object.getClass().getSuperclass(), field -> {
+    static <O> void findInSuperClass(Class<O> clazz, String searchedField, List<String> pathToField) {
+        browseField(clazz.getSuperclass(), field -> {
             if (!field.getType().isPrimitive()) {
-                try {
-                    pathToField.addAll(findField(field.getType().getDeclaredConstructor().newInstance(), searchedField));
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                         NoSuchMethodException e) {
-                    throw new RuntimeException(e);
-                }
+                pathToField.addAll(findField(field.getType(), searchedField));
 
             } else {
                 if (pathToField.isEmpty())
