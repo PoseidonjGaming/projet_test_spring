@@ -13,5 +13,5 @@ public interface IUserService extends IBaseService<UserDTO> {
     void registration(UserDTO userDTO);
 
     List<SeriesDTO> addToWatchList(int seriesId, String username);
-    List<SeriesDTO> removeFromWatchList(int seriesId, String username);
+    List<SeriesDTO> removeFromWatchList(Integer seriesId, String username);
 }

@@ -111,7 +111,7 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     }
 
     @Override
-    public List<SeriesDTO> removeFromWatchList(int seriesId, String username) {
+    public List<SeriesDTO> removeFromWatchList(Integer seriesId, String username) {
         SearchDTO<UserDTO> searchDTO = new SearchDTO<>(
                 new UserDTO(username),
                 ExampleMatcher.MatchMode.ALL,

@@ -47,7 +47,7 @@ public class WebSecurityConfig {
             "series/byIds","review/save", "review/delete/*"
     };
     public static final String[] USER_ROUTES=new String[]{
-            "user/add/watch/*"
+            "user/watch/**"
     };
     private final JwtFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;

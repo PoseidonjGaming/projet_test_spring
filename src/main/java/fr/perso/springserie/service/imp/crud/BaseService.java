@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static fr.perso.springserie.service.utility.SearchUtility.*;
 import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
@@ -139,7 +140,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                 Example.of(
                         mapper.convert(searchDto.getDto(), entityClass),
                         getMatcher(searchDto.getDto(), getMode(searchDto, dtoClass), searchDto.getType())
-                )), dtoClass).stream().filter(dto -> filtering(dto, searchDto)).toList();
+                )), dtoClass).stream().filter(dto -> filtering(dto, searchDto)).collect(Collectors.toList());
     }
 
 

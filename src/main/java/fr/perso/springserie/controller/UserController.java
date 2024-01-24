@@ -33,12 +33,12 @@ public class UserController extends BaseController<UserDTO, IUserService> {
         service.registration(user);
     }
 
-    @GetMapping("/add/watch/{seriesId}")
+    @GetMapping("/watch/add/{seriesId}")
     public ResponseEntity<List<SeriesDTO>> addWatch(@PathVariable int seriesId, String username){
         return ResponseEntity.ok(service.addToWatchList(seriesId, username));
     }
 
-    @GetMapping("/remove/watch/{seriesId}")
+    @GetMapping("/watch/remove/{seriesId}")
     public ResponseEntity<List<SeriesDTO>> removeWatch(@PathVariable int seriesId, String username){
         return ResponseEntity.ok(service.removeFromWatchList(seriesId, username));
     }
