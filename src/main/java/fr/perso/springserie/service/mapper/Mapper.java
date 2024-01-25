@@ -13,13 +13,11 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
-import static fr.perso.springserie.service.utility.ServiceUtility.get;
+import static fr.perso.springserie.service.utility.ServiceUtility.*;
 
 @Service
 @Transactional
@@ -156,16 +154,5 @@ public class Mapper implements IMapper {
         }
     }
 
-    protected <O> Field getField(String name, Class<O> sourceClass) {
-        if (sourceClass != null) {
-            try {
-                return sourceClass.getDeclaredField(name);
-            } catch (NoSuchFieldException e) {
-                return null;
-            }
-        }
-        return null;
 
-
-    }
 }

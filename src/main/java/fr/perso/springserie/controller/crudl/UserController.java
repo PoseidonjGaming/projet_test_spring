@@ -1,6 +1,5 @@
-package fr.perso.springserie.controller;
+package fr.perso.springserie.controller.crudl;
 
-import fr.perso.springserie.model.dto.SeriesDTO;
 import fr.perso.springserie.model.dto.UserDTO;
 import fr.perso.springserie.security.JwtResponse;
 import fr.perso.springserie.security.JwtUser;
@@ -8,7 +7,6 @@ import fr.perso.springserie.service.interfaces.crud.IUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 @RestController
@@ -29,7 +27,7 @@ public class UserController extends BaseController<UserDTO, IUserService> {
     }
     @PostMapping("/authenticate")
     public ResponseEntity<JwtResponse> authenticate(@RequestBody JwtUser user) {
-        return ResponseEntity.ofNullable(service.authenticate(user));
+        return ResponseEntity.ofNullable(service.authentication(user));
     }
 
     @PostMapping("/registration")
@@ -37,13 +35,5 @@ public class UserController extends BaseController<UserDTO, IUserService> {
         service.registration(user);
     }
 
-    @GetMapping("/watch/add/{seriesId}")
-    public ResponseEntity<List<SeriesDTO>> addWatch(@PathVariable int seriesId, String username){
-        return ResponseEntity.ok(service.addToWatchList(seriesId, username));
-    }
 
-    @GetMapping("/watch/remove/{seriesId}")
-    public ResponseEntity<List<SeriesDTO>> removeWatch(@PathVariable int seriesId, String username){
-        return ResponseEntity.ok(service.removeFromWatchList(seriesId, username));
-    }
 }

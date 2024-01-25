@@ -8,11 +8,10 @@ import fr.perso.springserie.security.JwtUser;
 import java.util.List;
 
 public interface IUserService extends IBaseService<UserDTO> {
-    JwtResponse authenticate(JwtUser user);
-
+    JwtResponse authentication(JwtUser user);
     void registration(UserDTO userDTO);
 
-    List<SeriesDTO> addToWatchList(int seriesId, String username);
-    List<SeriesDTO> removeFromWatchList(Integer seriesId, String username);
+    List<Integer> addToWatchList(String type, int id, String username);
+    List<Integer> removeFromWatchList(String type, Integer seriesId, String username);
     UserDTO searchByUsername(String username);
 }

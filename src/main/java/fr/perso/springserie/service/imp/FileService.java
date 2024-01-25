@@ -7,6 +7,7 @@ import fr.perso.springserie.task.MapService;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,7 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public ResponseEntity<?> load(String filename) {
+    public ResponseEntity<byte[]> load(String filename) {
         try (Stream<Path> files = Files.find(Paths.get(root, fileRoot), 3,
                 (p, a) -> p.getFileName().toString().equals(filename))) {
 
@@ -72,12 +73,10 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public ResponseEntity<?> writeExcel(List<String> classList) {
+    public ResponseEntity<byte[]> writeExcel(List<String> classList) {
 
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
-            classList.forEach(aClass -> {
-                writeSheet(mapService.getClass(aClass), workbook, mapService.getService(aClass));
-            });
+            classList.forEach(aClass -> writeSheet(mapService.getClass(aClass), workbook, mapService.getService(aClass)));
             String filename = "data.xlsx";
             FileOutputStream outputStream = new FileOutputStream(Path.of(root, fileRoot, "files", filename).toFile());
             workbook.write(outputStream);
@@ -85,7 +84,7 @@ public class FileService implements IFileService {
             return load(filename);
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 

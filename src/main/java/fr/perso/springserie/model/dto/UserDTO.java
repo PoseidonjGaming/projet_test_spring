@@ -19,6 +19,7 @@ public class UserDTO extends BaseDTO {
     private String password;
     private String avatarFile;
     private List<Integer> seriesIds;
+    private List<Integer> movieIds;
 
     public UserDTO(String username) {
         this.username = username;

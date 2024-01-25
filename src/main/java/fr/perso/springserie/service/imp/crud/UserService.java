@@ -1,10 +1,10 @@
 package fr.perso.springserie.service.imp.crud;
 
-import fr.perso.springserie.model.dto.SeriesDTO;
+import fr.perso.springserie.interceptor.exception.InvalidCredentials;
 import fr.perso.springserie.model.dto.UserDTO;
 import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.model.entity.User;
-import fr.perso.springserie.repository.IBaseRepo;
+import fr.perso.springserie.repository.IUserRepo;
 import fr.perso.springserie.security.JwtResponse;
 import fr.perso.springserie.security.JwtUser;
 import fr.perso.springserie.security.JwtUtil;
@@ -22,9 +22,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static fr.perso.springserie.service.utility.ServiceUtility.get;
+import static fr.perso.springserie.service.utility.ServiceUtility.getField;
 
 @Service
 public class UserService extends BaseService<User, UserDTO> implements IUserService, UserDetailsService {
@@ -34,22 +36,23 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     private final PasswordEncoder encoder;
 
     @Lazy
-    public UserService(IBaseRepo<User> repository, UserMapper mapper, MapService mapService,
+    public UserService(IUserRepo repository, UserMapper mapper, MapService mapService,
                        JwtUtil jwtTokenUtil, AuthenticationManager authenticationManager, PasswordEncoder encoder) {
         super(repository, mapper, UserDTO.class, User.class, mapService);
         this.jwtTokenUtil = jwtTokenUtil;
         this.authenticationManager = authenticationManager;
         this.encoder = encoder;
+
     }
 
-    private void authenticateManager(String username, String password) {
+    private void authenticateManager(String username, String password) throws InvalidCredentials {
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);
 
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (Exception e) {
-            throw new RuntimeException("Invalid Credentials");
+            throw new InvalidCredentials();
         }
     }
 
@@ -74,13 +77,14 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     }
 
     @Override
-    public JwtResponse authenticate(JwtUser user) {
+    public JwtResponse authentication(JwtUser user) {
         List<UserDTO> results = search(new SearchDTO<>(mapper.convert(user, UserDTO.class),
                 ExampleMatcher.MatchMode.ALL, ExampleMatcher.StringMatcher.EXACT,
                 null, null));
         if (!results.isEmpty()) {
             authenticateManager(user.getUsername(), user.getPassword());
             return new JwtResponse(jwtTokenUtil.generateToken(results.get(0)));
+
         }
         return null;
     }
@@ -92,42 +96,25 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     }
 
     @Override
-    public List<SeriesDTO> addToWatchList(int seriesId, String username) {
-        SearchDTO<UserDTO> searchDTO = new SearchDTO<>(
-                new UserDTO(username),
-                ExampleMatcher.MatchMode.ALL,
-                ExampleMatcher.StringMatcher.EXACT,
-                null, null);
-        List<UserDTO> dtos = search(searchDTO);
-        if (dtos.size() == 1) {
-            UserDTO userDTO = dtos.get(0);
-            if (!userDTO.getSeriesIds().contains(seriesId)) {
-                userDTO.getSeriesIds().add(seriesId);
-            }
-            User user = repository.save(mapper.convert(userDTO, entityClass));
-            return mapper.convertList(user.getSeries(), SeriesDTO.class);
+    public List<Integer> addToWatchList(String type, int id, String username) {
+        UserDTO dto = searchByUsername(username);
+        List<Integer> ids = get(getField(type.concat("Ids"), dtoClass), dto);
+        if (!ids.contains(id)) {
+            ids.add(id);
         }
-        return new ArrayList<>();
+        repository.save(mapper.convert(dto, this.entityClass));
+        return ids;
     }
 
     @Override
-    public List<SeriesDTO> removeFromWatchList(Integer seriesId, String username) {
-        SearchDTO<UserDTO> searchDTO = new SearchDTO<>(
-                new UserDTO(username),
-                ExampleMatcher.MatchMode.ALL,
-                ExampleMatcher.StringMatcher.EXACT,
-                null, null);
-        List<UserDTO> dtos = search(searchDTO);
-        if (dtos.size() == 1) {
-            UserDTO userDTO = dtos.get(0);
-            if (userDTO.getSeriesIds().contains(seriesId)) {
-                userDTO.getSeriesIds().remove(seriesId);
-            }
-            User user = repository.save(mapper.convert(userDTO, entityClass));
-            return mapper.convertList(user.getSeries(), SeriesDTO.class);
-        }
-        return new ArrayList<>();
+    public List<Integer> removeFromWatchList(String type, Integer id, String username) {
+        UserDTO userDTO = searchByUsername(username);
+        List<Integer> ids = get(getField(type.concat("Ids"), dtoClass), userDTO);
+        ids.remove(id);
+        repository.save(mapper.convert(userDTO, entityClass));
+        return ids;
     }
+
 
     @Override
     public UserDTO searchByUsername(String username) {
@@ -138,7 +125,7 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
                         null, null)
         );
 
-        if(!users.isEmpty()){
+        if (!users.isEmpty()) {
             users.get(0).erasePassword();
             return users.get(0);
         }

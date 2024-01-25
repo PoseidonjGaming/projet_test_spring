@@ -27,4 +27,6 @@ public class User extends BaseEntity {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Series> series;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Movie> movie;
 }

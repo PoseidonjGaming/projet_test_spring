@@ -1,4 +1,4 @@
-package fr.perso.springserie.controller;
+package fr.perso.springserie.controller.crudl;
 
 import fr.perso.springserie.model.PagedResponse;
 import fr.perso.springserie.model.dto.BaseDTO;

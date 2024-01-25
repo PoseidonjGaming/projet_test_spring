@@ -1,4 +1,4 @@
-package fr.perso.springserie.controller;
+package fr.perso.springserie.controller.crudl;
 
 import fr.perso.springserie.model.dto.ActorDTO;
 import fr.perso.springserie.service.interfaces.crud.IActorService;

@@ -8,7 +8,7 @@ import java.util.List;
 public interface IFileService {
     void save(MultipartFile file, String type);
 
-    ResponseEntity<?> load(String filename);
+    ResponseEntity<byte[]> load(String filename);
 
     void saves(List<MultipartFile> files, String type);
 

@@ -6,6 +6,8 @@ import fr.perso.springserie.task.MapService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import static fr.perso.springserie.service.utility.ServiceUtility.getField;
+
 @Service
 @Transactional
 public class UserMapper extends Mapper implements IMapper {

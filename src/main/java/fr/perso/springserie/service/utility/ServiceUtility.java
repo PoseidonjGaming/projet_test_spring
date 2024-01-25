@@ -31,4 +31,17 @@ public class ServiceUtility {
         return returned;
 
     }
+
+    public static <O> Field getField(String name, Class<O> sourceClass) {
+        if (sourceClass != null) {
+            try {
+                return sourceClass.getDeclaredField(name);
+            } catch (NoSuchFieldException e) {
+                return null;
+            }
+        }
+        return null;
+
+
+    }
 }
