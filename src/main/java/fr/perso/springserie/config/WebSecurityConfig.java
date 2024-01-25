@@ -28,7 +28,7 @@ import java.util.List;
 @EnableMethodSecurity
 public class WebSecurityConfig {
     private static final String[] WHITE_LISTED_URLS = new String[]{
-            "user/authenticate", "user/save","user/search/*","user/search",
+            "user/authenticate", "user/save", "user/search/*", "user/search",
             "file/load",
             "series/sort/search", "series/sort",
             "episode/sort/search",
@@ -38,7 +38,7 @@ public class WebSecurityConfig {
     };
 
     private static final String[] USER_ADMIN_ROUTES = new String[]{
-            "series/byIds", "review/save", "review/delete/*"
+            "series/byIds", "movie/byIds", "review/save", "review/delete/*"
     };
     private static final String[] USER_ROUTES = new String[]{
             "watchlist/**"
@@ -82,9 +82,8 @@ public class WebSecurityConfig {
                             try {
 
                                 auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                        .requestMatchers(USER_ROUTES).hasRole("user")
                                         .requestMatchers(USER_ADMIN_ROUTES).hasAnyRole("user", "super_admin")
-
+                                        .requestMatchers(USER_ROUTES).hasRole("user")
                                         .requestMatchers(WHITE_LISTED_URLS).permitAll()
                                         .anyRequest().hasRole("super_admin");
                             } catch (Exception e) {

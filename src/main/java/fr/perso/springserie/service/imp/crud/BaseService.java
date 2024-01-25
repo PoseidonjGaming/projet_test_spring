@@ -156,7 +156,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                         )
                 ),
                 dtoClass
-        );
+        ).stream().filter(dto -> filtering(dto, searchDto)).toList();
     }
 
     @Override
