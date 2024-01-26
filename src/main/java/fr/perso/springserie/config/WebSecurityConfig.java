@@ -30,10 +30,11 @@ public class WebSecurityConfig {
     private static final String[] WHITE_LISTED_URLS = new String[]{
             "user/authenticate", "user/save", "user/search/*", "user/search",
             "file/load",
-            "series/sort/search", "series/sort",
+            "series/sort/search", "series/sort", "series/list",
             "episode/sort/search",
             "movie/sort/search", "movie/sort",
-            "review/search"
+            "review/search",
+            "category/list"
 
     };
 
