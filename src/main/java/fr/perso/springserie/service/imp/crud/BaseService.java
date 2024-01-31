@@ -14,16 +14,16 @@ import fr.perso.springserie.service.interfaces.paged.IBasePagedService;
 import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
 import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
 import org.springframework.data.domain.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static fr.perso.springserie.service.utility.SearchUtility.*;
+import static fr.perso.springserie.service.utility.SearchUtility.filtering;
+import static fr.perso.springserie.service.utility.SearchUtility.findField;
 import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
 
 public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> implements ICRUDService<D>, IBasePagedService<D>, IBaseListedService<D> {
@@ -63,7 +63,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         return new PagedResponse<>(list, pageRequest.getTotalElements());
     }
 
-    protected ExampleMatcher getMatcher(D dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
+    protected ExampleMatcher getMatcher(ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
         final ExampleMatcher[] exampleMatcher = new ExampleMatcher[1];
         if (mode.equals(ExampleMatcher.MatchMode.ALL)) {
             exampleMatcher[0] = ExampleMatcher.matchingAll();
@@ -73,17 +73,23 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
         exampleMatcher[0] = exampleMatcher[0].withIgnoreNullValues().withIgnorePaths("id");
 
+        getSpecifiers(exampleMatcher, entityClass, matcherType);
 
-        browseField(entityClass, mapper.convert(dto, entityClass), (field, entity) -> {
-            if (field.getAnnotation(Embedded.class) != null) {
-                browseField(field.getType(), embeddedField ->
-                        exampleMatcher[0] = exampleMatcher[0].withMatcher(getPath(field.getName(), embeddedField.getName()), matcher ->
-                                matcher.stringMatcher(matcherType).ignoreCase()));
-
-            } else if (field.getType().equals(String.class))
-                exampleMatcher[0] = exampleMatcher[0].withMatcher(field.getName(), matcher -> matcher.stringMatcher(matcherType).ignoreCase());
-        });
         return exampleMatcher[0];
+    }
+
+    private void getSpecifiers(ExampleMatcher[] matcher, Class<?> clazz, ExampleMatcher.StringMatcher stringMatcher) {
+        browseField(clazz, field -> {
+            if (field.isAnnotationPresent(Embedded.class)) {
+                getSpecifiers(matcher, field.getType(), stringMatcher);
+            } else if (field.getType().isAnnotationPresent(Entity.class) || field.getType().equals(List.class)) {
+                List<String> pathField = findField(entityClass, field.getName());
+                matcher[0] = matcher[0].withIgnorePaths(getPath(pathField.toArray(new String[]{})));
+            } else if (field.getType().equals(String.class)) {
+                matcher[0] = matcher[0].withMatcher(
+                        getPath(findField(entityClass, field.getName()).toArray(new String[]{})), matcher1 -> matcher1.stringMatcher(stringMatcher));
+            }
+        });
     }
 
     @Override
@@ -105,7 +111,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     public PagedResponse<D> search(SearchDTO<D> searchDto, int size, int page) {
         return createPage(repository.findAll(Example.of(
                         mapper.convert(searchDto.getDto(), entityClass),
-                        getMatcher(searchDto.getDto(), searchDto.getMode(), searchDto.getType())),
+                        getMatcher(searchDto.getMode(), searchDto.getType())),
                 getPageable(size, page)
         ), searchDto);
     }
@@ -134,8 +140,8 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         return mapper.convertList(repository.findAll(
                 Example.of(
                         mapper.convert(searchDto.getDto(), entityClass),
-                        getMatcher(searchDto.getDto(), getMode(searchDto, dtoClass), searchDto.getType())
-                )), dtoClass).stream().filter(dto -> filtering(dto, searchDto)).collect(Collectors.toList());
+                        getMatcher(searchDto.getMode(), searchDto.getType())
+                )), dtoClass).stream().filter(dto -> filtering(dto, searchDto)).toList();
     }
 
 
@@ -150,7 +156,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     public List<D> sortSearch(SearchDTO<D> searchDto, SortDTO sortDTO) {
         return mapper.convertList(repository.findAll(
                         Example.of(mapper.convert(searchDto.getDto(), entityClass),
-                                getMatcher(searchDto.getDto(), searchDto.getMode(), searchDto.getType())),
+                                getMatcher(searchDto.getMode(), searchDto.getType())),
                         Sort.by(sortDTO.getDirection(),
                                 getPath(findField(entityClass, sortDTO.getField()).toArray(new String[]{}))
                         )
@@ -183,7 +189,10 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     @Override
     public void saves(List<D> ds) {
         List<D> list = ds.stream()
-                .filter(dto -> !search(new SearchDTO<>(dto, ExampleMatcher.MatchMode.ALL, ExampleMatcher.StringMatcher.EXACT, null, null)).isEmpty()).toList();
+                .filter(dto -> !search(new SearchDTO<>(dto,
+                        ExampleMatcher.MatchMode.ALL,
+                        ExampleMatcher.StringMatcher.EXACT,
+                        null, null)).isEmpty()).toList();
         if (list.isEmpty()) {
             repository.saveAll(mapper.convertList(ds, entityClass));
         }

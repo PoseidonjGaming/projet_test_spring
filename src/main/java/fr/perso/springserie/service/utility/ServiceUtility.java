@@ -32,6 +32,19 @@ public class ServiceUtility {
 
     }
 
+    public static <O, T> void set(O source, T target, Field targetField) {
+        try {
+            if (targetField != null) {
+                targetField.setAccessible(true);
+                targetField.set(target, source);
+                targetField.setAccessible(false);
+            }
+
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static <O> Field getField(String name, Class<O> sourceClass) {
         if (sourceClass != null) {
             try {

@@ -1,6 +1,5 @@
 package fr.perso.springserie.controller;
 
-import fr.perso.springserie.model.dto.SeriesDTO;
 import fr.perso.springserie.service.interfaces.crud.IUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

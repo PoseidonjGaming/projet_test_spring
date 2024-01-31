@@ -1,5 +1,6 @@
 package fr.perso.springserie.service.interfaces;
 
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,5 +13,7 @@ public interface IFileService {
 
     void saves(List<MultipartFile> files, String type);
 
-    ResponseEntity<?> writeExcel(List<String> booleanList);
+    ResponseEntity<Resource> writeExcel(List<String> booleanList);
+
+    void readExcel(MultipartFile file);
 }

@@ -7,7 +7,6 @@ import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.ExampleMatcher;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import static fr.perso.springserie.service.utility.ServiceUtility.getField;
+import static fr.perso.springserie.service.utility.ServiceUtility.set;
 
 @Service
 @Transactional

@@ -22,9 +22,10 @@ public class UserController extends BaseController<UserDTO, IUserService> {
     }
 
     @GetMapping("/search/{username}")
-    public ResponseEntity<UserDTO> getByUsername(@PathVariable String username){
+    public ResponseEntity<UserDTO> getByUsername(@PathVariable String username) {
         return ResponseEntity.ofNullable(service.searchByUsername(username));
     }
+
     @PostMapping("/authenticate")
     public ResponseEntity<JwtResponse> authenticate(@RequestBody JwtUser user) {
         return ResponseEntity.ofNullable(service.authentication(user));

@@ -16,7 +16,7 @@ public class SeasonService extends BaseService<Season, SeasonDTO> implements ISe
     }
 
     @Override
-    protected ExampleMatcher getMatcher(SeasonDTO dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
+    protected ExampleMatcher getMatcher(ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
         return ExampleMatcher.matchingAll().withIgnoreNullValues().withIgnorePaths("id", "number");
     }
 

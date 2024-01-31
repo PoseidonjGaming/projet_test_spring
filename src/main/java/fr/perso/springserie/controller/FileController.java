@@ -1,6 +1,7 @@
 package fr.perso.springserie.controller;
 
 import fr.perso.springserie.service.interfaces.IFileService;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +37,14 @@ public class FileController {
     }
 
     @PostMapping("/export")
-    public ResponseEntity<?> test(@RequestBody List<String> classList) {
+    public ResponseEntity<Resource> exportXlsx(@RequestBody List<String> classList) {
         return service.writeExcel(classList);
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<HttpStatus> importXlsx(@RequestBody MultipartFile file) {
+        service.readExcel(file);
+        return ResponseEntity.ok().build();
     }
 
 

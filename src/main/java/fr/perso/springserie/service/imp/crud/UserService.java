@@ -57,7 +57,7 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     }
 
     @Override
-    protected ExampleMatcher getMatcher(UserDTO dto, ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
+    protected ExampleMatcher getMatcher(ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
         return ExampleMatcher.matchingAll()
                 .withIgnorePaths("roles", "password", "id")
                 .withIgnoreNullValues().withMatcher("username", matcher -> matcher.exact().caseSensitive());
