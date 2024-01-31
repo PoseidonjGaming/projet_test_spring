@@ -12,6 +12,7 @@ import fr.perso.springserie.service.interfaces.crud.IUserService;
 import fr.perso.springserie.service.mapper.UserMapper;
 import fr.perso.springserie.task.MapService;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 
+import static fr.perso.springserie.service.utility.SearchUtility.getUserMatcher;
 import static fr.perso.springserie.service.utility.ServiceUtility.get;
 import static fr.perso.springserie.service.utility.ServiceUtility.getField;
 
@@ -57,10 +59,10 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     }
 
     @Override
-    protected ExampleMatcher getMatcher(ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
-        return ExampleMatcher.matchingAll()
-                .withIgnorePaths("roles", "password", "id")
-                .withIgnoreNullValues().withMatcher("username", matcher -> matcher.exact().caseSensitive());
+    public List<UserDTO> search(SearchDTO<UserDTO> searchDto) {
+        return mapper.convertList(repository.findAll(Example.of(
+                mapper.convert(searchDto.getDto(), entityClass),
+                getUserMatcher())), dtoClass);
     }
 
     @Override

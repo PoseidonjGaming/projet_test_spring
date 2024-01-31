@@ -14,10 +14,4 @@ public class SeasonService extends BaseService<Season, SeasonDTO> implements ISe
     protected SeasonService(ISeasonRepo repository, IMapper mapper, MapService mapService) {
         super(repository, mapper, SeasonDTO.class, Season.class, mapService);
     }
-
-    @Override
-    protected ExampleMatcher getMatcher(ExampleMatcher.MatchMode mode, ExampleMatcher.StringMatcher matcherType) {
-        return ExampleMatcher.matchingAll().withIgnoreNullValues().withIgnorePaths("id", "number");
-    }
-
 }
