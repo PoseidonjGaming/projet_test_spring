@@ -1,43 +1,25 @@
 package fr.perso.springserie.service.imp;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import fr.perso.springserie.interceptor.exception.FieldException;
 import fr.perso.springserie.interceptor.exception.FileException;
-import fr.perso.springserie.model.dto.BaseDTO;
-import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.service.interfaces.IFileService;
-import fr.perso.springserie.service.interfaces.crud.IBaseService;
 import fr.perso.springserie.task.MapService;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
-import jxl.write.*;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.OffsetTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static fr.perso.springserie.service.utility.FileUtility.*;
-import static fr.perso.springserie.service.utility.ServiceUtility.*;
+import static fr.perso.springserie.service.utility.FileUtility.createFolder;
 
 @Service
 public class FileService implements IFileService {

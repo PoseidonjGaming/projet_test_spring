@@ -6,7 +6,6 @@ import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.service.interfaces.crud.ISeasonService;
 import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 @Service
