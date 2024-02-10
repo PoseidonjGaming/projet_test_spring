@@ -13,7 +13,7 @@ public interface IFileService {
 
     void saves(List<MultipartFile> files, String type);
 
-    ResponseEntity<Resource> writeExcel(List<String> booleanList);
+    ResponseEntity<byte[]> writeExcel(List<String> booleanList);
 
     void readExcel(MultipartFile file);
 }

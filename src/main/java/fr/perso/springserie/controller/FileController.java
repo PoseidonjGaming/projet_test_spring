@@ -1,13 +1,19 @@
 package fr.perso.springserie.controller;
 
 import fr.perso.springserie.service.interfaces.IFileService;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/file")
@@ -36,8 +42,8 @@ public class FileController {
         return service.load(filename);
     }
 
-    @PostMapping("/export")
-    public ResponseEntity<Resource> exportXlsx(@RequestBody List<String> classList) {
+    @PostMapping(value = "/export", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<byte[]> exportXlsx(@RequestBody List<String> classList) {
         return service.writeExcel(classList);
     }
 
@@ -45,6 +51,11 @@ public class FileController {
     public ResponseEntity<HttpStatus> importXlsx(@RequestBody MultipartFile file) {
         service.readExcel(file);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<LocalDate> test(){
+        return ResponseEntity.ok(LocalDate.ofEpochDay(44211));
     }
 
 

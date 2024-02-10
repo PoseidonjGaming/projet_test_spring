@@ -2,6 +2,7 @@ package fr.perso.springserie.service.imp.crud;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import fr.perso.springserie.interceptor.exception.FileException;
 import fr.perso.springserie.model.PagedResponse;
 import fr.perso.springserie.model.dto.BaseDTO;
 import fr.perso.springserie.model.dto.special.SearchDTO;
@@ -143,7 +144,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         try {
             saves(objectMapper.readValue(file, objectMapper.getTypeFactory().constructCollectionType(List.class, dtoClass)));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new FileException(e);
         }
     }
 
