@@ -1,5 +1,6 @@
 package fr.perso.springserie.service.mapper;
 
+import fr.perso.springserie.interceptor.exception.GenericException;
 import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.task.MapService;
 import jakarta.persistence.Embedded;
@@ -39,7 +40,7 @@ public class Mapper implements IMapper {
             return target;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            throw new GenericException(e);
         }
 
     }
@@ -65,7 +66,7 @@ public class Mapper implements IMapper {
                 set(embedded, target, targetField);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                      NoSuchMethodException e) {
-                throw new RuntimeException(e);
+                throw new GenericException(e);
             }
         });
 
@@ -86,9 +87,9 @@ public class Mapper implements IMapper {
         Integer id = get(sourceField, source);
         if (targetField != null && id != null) {
 
-            mapService.getRepo(targetField.getType().getSimpleName().toLowerCase()).findById(id).ifPresent(entity -> {
-                set(entity, target, targetField);
-            });
+            mapService.getRepo(targetField.getType().getSimpleName().toLowerCase()).findById(id).ifPresent(entity ->
+                set(entity, target, targetField)
+            );
         }
     }
 
@@ -108,7 +109,7 @@ public class Mapper implements IMapper {
             if (targetField != null) {
                 List<BaseEntity> entities = get(sourceField, source);
                 if (entities != null)
-                    set(entities.stream().map(BaseEntity::getId).collect(Collectors.toList()), target, targetField);
+                    set(entities.stream().map(BaseEntity::getId).toList(), target, targetField);
             }
 
         } else {

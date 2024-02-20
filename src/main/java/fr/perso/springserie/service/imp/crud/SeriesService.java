@@ -2,6 +2,7 @@ package fr.perso.springserie.service.imp.crud;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.perso.springserie.interceptor.exception.GenericException;
 import fr.perso.springserie.model.dto.SeriesDTO;
 import fr.perso.springserie.model.entity.Series;
 import fr.perso.springserie.repository.ISeriesRepo;
@@ -32,7 +33,7 @@ public class SeriesService extends BaseService<Series, SeriesDTO> implements ISe
         try {
             seriesObj = objectMapper.readValue(series, SeriesDTO.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new GenericException(e);
         }
         if (file != null && !file.isEmpty()) {
             fileService.save(file, "series");

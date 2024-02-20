@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
-public class ProjectEmbeddable {
+public class ProjectEmbeddable implements Serializable {
     @Column(nullable = false)
     private String name;
     private LocalDate releaseDate;

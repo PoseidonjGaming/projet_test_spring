@@ -1,6 +1,6 @@
 package fr.perso.springserie.service.imp.crud;
 
-import fr.perso.springserie.interceptor.exception.InvalidCredentials;
+import fr.perso.springserie.interceptor.exception.GenericException;
 import fr.perso.springserie.model.dto.UserDTO;
 import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.model.entity.User;
@@ -47,14 +47,14 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
 
     }
 
-    private void authenticateManager(String username, String password) throws InvalidCredentials {
+    private void authenticateManager(String username, String password) throws GenericException {
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);
 
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (Exception e) {
-            throw new InvalidCredentials();
+            throw new GenericException(e);
         }
     }
 

@@ -1,6 +1,5 @@
 package fr.perso.springserie.service.utility;
 
-import fr.perso.springserie.interceptor.exception.FileException;
 import lombok.experimental.UtilityClass;
 
 import java.io.IOException;

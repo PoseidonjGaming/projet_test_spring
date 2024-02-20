@@ -1,5 +1,6 @@
 package fr.perso.springserie.service.utility;
 
+import fr.perso.springserie.interceptor.exception.GenericException;
 import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
@@ -26,7 +27,7 @@ public class ServiceUtility {
             returned = (O) field.get(object);
             field.setAccessible(false);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new GenericException(e);
         }
         return returned;
 
@@ -41,7 +42,7 @@ public class ServiceUtility {
             }
 
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new GenericException(e);
         }
     }
 

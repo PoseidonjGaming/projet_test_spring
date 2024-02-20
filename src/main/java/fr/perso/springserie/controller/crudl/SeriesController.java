@@ -2,6 +2,7 @@ package fr.perso.springserie.controller.crudl;
 
 import fr.perso.springserie.model.dto.SeriesDTO;
 import fr.perso.springserie.service.interfaces.crud.ISeriesService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ public class SeriesController extends BaseController<SeriesDTO, ISeriesService> 
     }
 
     @PostMapping(value = "/save", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> save(@RequestPart("file") MultipartFile file, @RequestPart("series") String series) {
+    public ResponseEntity<HttpStatus> save(@RequestPart("file") MultipartFile file, @RequestPart("series") String series) {
         service.saveWithFile(file, series);
         return ResponseEntity.ok().build();
     }

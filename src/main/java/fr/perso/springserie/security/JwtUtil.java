@@ -26,10 +26,6 @@ public class JwtUtil implements Serializable {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    public Date getIssuedAtDateFromToken(String token) {
-        return getClaimFromToken(token, Claims::getIssuedAt);
-    }
-
     private Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
@@ -48,21 +44,6 @@ public class JwtUtil implements Serializable {
         return expiration.before(new Date());
     }
 
-    private Boolean ignoreTokenExpiration(String token) {
-        // here you specify tokens, for that the expiration is ignored
-        return false;
-    }
-
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, userDetails.getUsername());
-    }
-
-
-    public String generateToken(String username, Map<String, Object> claims) {
-        return doGenerateToken(claims, username);
-    }
-
     public String generateToken(UserDTO user) {
         Map<String, Object> claims = new HashMap<>();
         addClaim("Role", user.getRoles().get(0), claims);
@@ -78,16 +59,7 @@ public class JwtUtil implements Serializable {
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000)).signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
-    public Boolean canTokenBeRefreshed(String token) {
-        return (!isTokenExpired(token) || ignoreTokenExpiration(token));
-    }
 
-    public Boolean checkAvailableToken(String token) {
-        if (getAllClaimsFromToken(token).get("Role").equals("Mail"))
-            return !isTokenExpired(token);
-        else
-            return false;
-    }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);

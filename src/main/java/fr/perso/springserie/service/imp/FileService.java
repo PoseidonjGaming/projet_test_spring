@@ -1,6 +1,6 @@
 package fr.perso.springserie.service.imp;
 
-import fr.perso.springserie.interceptor.exception.FileException;
+import fr.perso.springserie.interceptor.exception.GenericException;
 import fr.perso.springserie.model.dto.BaseDTO;
 import fr.perso.springserie.service.interfaces.IFileService;
 import fr.perso.springserie.task.MapService;
@@ -48,7 +48,7 @@ public class FileService implements IFileService {
         try {
             file.transferTo(path.toFile());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GenericException(e);
         }
     }
 
@@ -66,7 +66,7 @@ public class FileService implements IFileService {
                             .contentType(MediaType.IMAGE_JPEG)
                             .body(Files.readAllBytes(file)));
                 } catch (IOException e) {
-                    throw new FileException(e);
+                    throw new GenericException(e);
                 }
             }, () -> response.set(ResponseEntity.notFound().build()));
 
@@ -100,7 +100,7 @@ public class FileService implements IFileService {
             workbook.finish();
 
         } catch (IOException e) {
-            throw new FileException(e);
+            throw new GenericException(e);
         }
 
         return null;

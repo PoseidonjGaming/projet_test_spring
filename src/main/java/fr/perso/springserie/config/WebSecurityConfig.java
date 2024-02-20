@@ -1,5 +1,6 @@
 package fr.perso.springserie.config;
 
+import fr.perso.springserie.interceptor.exception.GenericException;
 import fr.perso.springserie.security.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -88,7 +89,7 @@ public class WebSecurityConfig {
                                         .requestMatchers(WHITE_LISTED_URLS).permitAll()
                                         .anyRequest().hasRole("super_admin");
                             } catch (Exception e) {
-                                throw new RuntimeException(e);
+                                throw new GenericException(e);
                             }
                         }
                 ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
