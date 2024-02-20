@@ -1,8 +1,11 @@
 package fr.perso.springserie.service.imp;
 
 import fr.perso.springserie.interceptor.exception.FileException;
+import fr.perso.springserie.model.dto.BaseDTO;
 import fr.perso.springserie.service.interfaces.IFileService;
 import fr.perso.springserie.task.MapService;
+import org.dhatim.fastexcel.Workbook;
+import org.dhatim.fastexcel.Worksheet;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -80,6 +84,25 @@ public class FileService implements IFileService {
 
     @Override
     public ResponseEntity<byte[]> writeExcel(@NotNull List<String> classList) {
+        try (OutputStream stream = Files.newOutputStream(Paths.get(root, resourcePath, "datas.xlsx"))) {
+            Workbook workbook = new Workbook(stream, "SpringSeries", "1.0");
+            Worksheet sheet = workbook.newWorksheet("series");
+            sheet.width(0, 25);
+
+            sheet.range(0, 0, 2, 1).style().fontName("Arial").wrapText(true).set();
+            sheet.value(0, 0, "Id");
+
+            List<BaseDTO> seriesDTOS = mapService.getService("series").getAll();
+
+            for (int i = 0; i < seriesDTOS.size(); i++) {
+                sheet.value(i + 1, 0, seriesDTOS.get(i).getId());
+            }
+            workbook.finish();
+
+        } catch (IOException e) {
+            throw new FileException(e);
+        }
+
         return null;
     }
 
