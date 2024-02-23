@@ -1,5 +1,6 @@
 package fr.perso.springserie.service.utility;
 
+import fr.perso.springserie.interceptor.exception.GenericException;
 import lombok.experimental.UtilityClass;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ public class FileUtility {
             try {
                 Files.createDirectories(path);
             } catch (IOException e) {
-                throw new FileException(e);
+                throw new GenericException(e);
             }
         }
     }

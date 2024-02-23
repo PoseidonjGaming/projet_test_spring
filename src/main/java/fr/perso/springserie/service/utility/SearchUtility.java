@@ -50,6 +50,7 @@ public class SearchUtility {
                                                             ExampleMatcher.StringMatcher stringMatcher) {
         browseField(clazz, field -> {
             if (field.isAnnotationPresent(Embedded.class)) {
+                matcher[0]=matcher[0].withIgnorePaths(getPath(findField(entityClass, field.getName()).toArray(new String[]{})));
                 getSpecifiers(matcher, field.getType(), entityClass, stringMatcher);
             } else if (field.getType().isAnnotationPresent(Entity.class) || field.getType().equals(List.class)) {
                 List<String> pathField = findField(entityClass, field.getName());
