@@ -16,7 +16,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static fr.perso.springserie.service.utility.ServiceUtility.*;
 
@@ -33,7 +32,6 @@ public class Mapper implements IMapper {
 
     @Override
     public <S, T> T convert(S source, Class<T> targetClass) {
-
         try {
             T target = targetClass.getDeclaredConstructor().newInstance();
             browseField(source.getClass(), target, (field, object) -> map(source.getClass(), source, object, field));
@@ -42,7 +40,6 @@ public class Mapper implements IMapper {
                  NoSuchMethodException e) {
             throw new GenericException(e);
         }
-
     }
 
 
@@ -86,9 +83,8 @@ public class Mapper implements IMapper {
         Field targetField = getField(entityName, target.getClass());
         Integer id = get(sourceField, source);
         if (targetField != null && id != null) {
-
             mapService.getRepo(targetField.getType().getSimpleName().toLowerCase()).findById(id).ifPresent(entity ->
-                set(entity, target, targetField)
+                    set(entity, target, targetField)
             );
         }
     }
@@ -124,13 +120,16 @@ public class Mapper implements IMapper {
     }
 
     private boolean isMapped(Field targetField) {
-        return (targetField.isAnnotationPresent(OneToMany.class) && targetField.getAnnotation(OneToMany.class).mappedBy().isEmpty()) ||
-                (targetField.isAnnotationPresent(ManyToMany.class) && targetField.getAnnotation(ManyToMany.class).mappedBy().isEmpty());
+        return (targetField.isAnnotationPresent(OneToMany.class)
+                && targetField.getAnnotation(OneToMany.class).mappedBy().isEmpty()) ||
+                (targetField.isAnnotationPresent(ManyToMany.class)
+                        && targetField.getAnnotation(ManyToMany.class).mappedBy().isEmpty());
     }
 
 
     private <S, T> void transfert(S source, T target, Field sourceField, Class<?> targetClass) {
-        if (source.getClass().getSuperclass().equals(sourceField.getDeclaringClass()) || source.getClass().equals(sourceField.getDeclaringClass())) {
+        if (source.getClass().getSuperclass().equals(sourceField.getDeclaringClass())
+                || source.getClass().equals(sourceField.getDeclaringClass())) {
             Field targetField = getField(sourceField.getName(), targetClass);
             if (targetField != null) {
                 set(get(sourceField, source), target, targetField);

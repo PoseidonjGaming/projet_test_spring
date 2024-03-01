@@ -9,7 +9,7 @@ import fr.perso.springserie.repository.IEpisodeRepo;
 import fr.perso.springserie.repository.ISeasonRepo;
 import fr.perso.springserie.repository.ISeriesRepo;
 import fr.perso.springserie.service.interfaces.crud.IEpisodeService;
-import fr.perso.springserie.service.mapper.EpisodeMapper;
+import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
 
     protected EpisodeService(IBaseRepo<Episode> repository,
                              ISeasonRepo seasonRepo, ISeriesRepo seriesRepo,
-                             EpisodeMapper mapper, MapService mapService) {
+                             IMapper mapper, MapService mapService) {
         super(repository, mapper, EpisodeDTO.class, Episode.class, mapService);
         this.seasonRepo = seasonRepo;
         this.seriesRepo = seriesRepo;

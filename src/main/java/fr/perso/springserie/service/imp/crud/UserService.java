@@ -9,7 +9,7 @@ import fr.perso.springserie.security.JwtResponse;
 import fr.perso.springserie.security.JwtUser;
 import fr.perso.springserie.security.JwtUtil;
 import fr.perso.springserie.service.interfaces.crud.IUserService;
-import fr.perso.springserie.service.mapper.UserMapper;
+import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Example;
@@ -38,7 +38,7 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     private final PasswordEncoder encoder;
 
     @Lazy
-    public UserService(IUserRepo repository, UserMapper mapper, MapService mapService,
+    public UserService(IUserRepo repository, IMapper mapper, MapService mapService,
                        JwtUtil jwtTokenUtil, AuthenticationManager authenticationManager, PasswordEncoder encoder) {
         super(repository, mapper, UserDTO.class, User.class, mapService);
         this.jwtTokenUtil = jwtTokenUtil;
