@@ -36,7 +36,7 @@ public class JwtUtil implements Serializable {
     }
 
     public Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Jwts.parser().decryptWith(Jwts.SIG.HS256.key().build()).build().parseSignedClaims(token).getPayload();
     }
 
     public Boolean isTokenExpired(String token) {
