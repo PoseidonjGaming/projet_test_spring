@@ -1,9 +1,13 @@
 package fr.perso.springserie.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import fr.perso.springserie.model.JsonType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Columns;
+import org.hibernate.annotations.Type;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,7 +18,9 @@ import java.util.List;
 @AllArgsConstructor
 public class SeriesDTO extends BaseDTO {
     private String name;
+    @JsonType(type = "date")
     private LocalDate releaseDate;
+    @JsonType(type = "text")
     private String summary;
     private String poster;
     private String trailerUrl;

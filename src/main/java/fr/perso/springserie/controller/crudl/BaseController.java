@@ -6,10 +6,12 @@ import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.model.dto.special.SortDTO;
 import fr.perso.springserie.model.dto.special.SortSearchDTO;
 import fr.perso.springserie.service.interfaces.crud.IBaseService;
+import org.springframework.data.repository.support.Repositories;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public abstract class BaseController<D extends BaseDTO, S extends IBaseService<D>> {
@@ -26,6 +28,11 @@ public abstract class BaseController<D extends BaseDTO, S extends IBaseService<D
     protected Consumer<D> getConsumer() {
         return d -> {
         };
+    }
+
+    @GetMapping("/structure")
+    public ResponseEntity<Map<String,String>> getStructure(){
+        return ResponseEntity.ok(service.getStructure());
     }
 
     @GetMapping("/list")

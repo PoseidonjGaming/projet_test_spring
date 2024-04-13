@@ -7,6 +7,8 @@ import fr.perso.springserie.service.interfaces.crud.IUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @RestController
@@ -34,6 +36,13 @@ public class UserController extends BaseController<UserDTO, IUserService> {
     @PostMapping("/registration")
     public void registration(@RequestBody UserDTO user) {
         service.registration(user);
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<Map<String, String>> test(){
+        Map<String, String> map=new HashMap<>();
+        map.put("title", "String");
+        return ResponseEntity.ok(map);
     }
 
 

@@ -29,7 +29,7 @@ import java.util.List;
 @EnableMethodSecurity
 public class WebSecurityConfig {
     private static final String[] WHITE_LISTED_URLS = new String[]{
-            "user/authenticate", "user/save", "user/search/*", "user/search",
+            "user/authenticate", "user/save", "user/search/*", "user/test",
             "file/load", "file/test",
             "series/sort/search", "series/sort", "series/list",
             "episode/sort/search",

@@ -3,11 +3,13 @@ package fr.perso.springserie.security;
 import fr.perso.springserie.model.dto.UserDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -37,7 +39,7 @@ public class JwtUtil implements Serializable {
     }
 
     public Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().decryptWith(Jwts.SIG.HS256.key().build()).build().parseSignedClaims(token).getPayload();
+        Jwts.parser().decryptWith()
     }
 
     public Boolean isTokenExpired(String token) {
@@ -56,10 +58,13 @@ public class JwtUtil implements Serializable {
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().signWith(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)))
+        return Jwts.builder()
+                .signWith(new SecretKeySpec(secret.getBytes(), Jwts.SIG.HS256.key().build().getAlgorithm()))
                 .claims().add(claims).subject(subject)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000)).and().compact();
+                .expiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000)).and()
+                .header()
+                .type("JWT").and().compact();
     }
 
 

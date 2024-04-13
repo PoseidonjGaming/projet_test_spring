@@ -3,6 +3,7 @@ package fr.perso.springserie.service.imp.crud;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.perso.springserie.interceptor.exception.GenericException;
+import fr.perso.springserie.model.JsonType;
 import fr.perso.springserie.model.PagedResponse;
 import fr.perso.springserie.model.dto.BaseDTO;
 import fr.perso.springserie.model.dto.special.SearchDTO;
@@ -10,6 +11,7 @@ import fr.perso.springserie.model.dto.special.SortDTO;
 import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.repository.IBaseRepo;
 import fr.perso.springserie.service.interfaces.ICRUDService;
+import fr.perso.springserie.service.interfaces.crud.IBaseService;
 import fr.perso.springserie.service.interfaces.listed.IBaseListedService;
 import fr.perso.springserie.service.interfaces.paged.IBasePagedService;
 import fr.perso.springserie.service.mapper.IMapper;
@@ -18,11 +20,14 @@ import org.springframework.data.domain.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static fr.perso.springserie.service.utility.SearchUtility.*;
+import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
 
-public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> implements ICRUDService<D>, IBasePagedService<D>, IBaseListedService<D> {
+public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> implements IBaseService<D> {
 
     protected final IBaseRepo<E> repository;
     protected final IMapper mapper;
@@ -90,6 +95,23 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         List<D> temp = sortSearch(searchDto, sortDTO);
         List<D> response = temp.stream().skip((long) size * pageNumber).limit(size).toList();
         return new PagedResponse<>(response, temp.size());
+    }
+
+    @Override
+    public Map<String, String> getStructure() {
+        Map<String, String> structure=new HashMap<>();
+        browseField(dtoClass, field -> {
+            if(field.isAnnotationPresent(JsonType.class)){
+                structure.put(field.getName(), field.getAnnotation(JsonType.class).type());
+            }else{
+                if(field.getName().endsWith("Id") && field.getType().equals(Integer.class)){
+                    structure.put(field.getName(), "foreign_id");
+                } else if (field.getName().endsWith("Ids")) {
+                    structure.put(field.getName(), "ids");
+                }
+            }
+        });
+        return structure;
     }
 
     @Override

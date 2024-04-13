@@ -47,11 +47,4 @@ public class FileController {
         service.readExcel(file);
         return ResponseEntity.ok().build();
     }
-
-    @GetMapping("/test")
-    public ResponseEntity<LocalDate> test() {
-        return ResponseEntity.ok(LocalDate.ofEpochDay(44211));
-    }
-
-
 }
