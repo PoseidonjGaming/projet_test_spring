@@ -3,15 +3,12 @@ package fr.perso.springserie.security;
 import fr.perso.springserie.model.dto.UserDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +36,9 @@ public class JwtUtil implements Serializable {
     }
 
     public Claims getAllClaimsFromToken(String token) {
-        Jwts.parser().decryptWith()
+        return Jwts.parser()
+                .verifyWith(new SecretKeySpec(secret.getBytes(), Jwts.SIG.HS256.key().build().getAlgorithm()))
+                .build().parseSignedClaims(token).getPayload();
     }
 
     public Boolean isTokenExpired(String token) {
