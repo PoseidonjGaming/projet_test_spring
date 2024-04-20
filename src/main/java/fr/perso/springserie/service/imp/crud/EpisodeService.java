@@ -14,6 +14,7 @@ import fr.perso.springserie.task.MapService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements IEpisodeService {
@@ -61,5 +62,12 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
         }
         episodeDTO.setSeasonId(seasonRepo.save(season).getId());
         return super.save(episodeDTO);
+    }
+
+    @Override
+    public Map<String, String> getTypes() {
+        Map<String,String> types=super.getTypes();
+        types.put("seriesId", "series");
+        return types;
     }
 }

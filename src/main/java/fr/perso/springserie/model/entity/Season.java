@@ -1,5 +1,6 @@
 package fr.perso.springserie.model.entity;
 
+import fr.perso.springserie.model.JsonType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"series_id", "number"}))
+@JsonType(display = "number")
 public class Season extends BaseEntity {
 
     @ManyToOne

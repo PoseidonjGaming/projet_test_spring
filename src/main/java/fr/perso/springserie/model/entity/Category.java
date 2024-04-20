@@ -1,5 +1,6 @@
 package fr.perso.springserie.model.entity;
 
+import fr.perso.springserie.model.JsonType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,6 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonType(display = "name")
 public class Category extends BaseEntity {
 
     @Column(nullable = false)

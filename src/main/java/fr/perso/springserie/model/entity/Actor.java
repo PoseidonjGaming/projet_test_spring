@@ -1,5 +1,6 @@
 package fr.perso.springserie.model.entity;
 
+import fr.perso.springserie.model.JsonType;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonType(display = "name")
 public class Actor extends BaseEntity {
     private String lastname;
     private String firstname;

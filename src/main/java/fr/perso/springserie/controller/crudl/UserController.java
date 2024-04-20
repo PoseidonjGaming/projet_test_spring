@@ -39,8 +39,8 @@ public class UserController extends BaseController<UserDTO, IUserService> {
     }
 
     @GetMapping("/test")
-    public ResponseEntity<Map<String, String>> test(){
-        Map<String, String> map=new HashMap<>();
+    public ResponseEntity<Map<String, String>> test() {
+        Map<String, String> map = new HashMap<>();
         map.put("title", "String");
         return ResponseEntity.ok(map);
     }

@@ -10,17 +10,19 @@ import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.model.dto.special.SortDTO;
 import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.repository.IBaseRepo;
-import fr.perso.springserie.service.interfaces.ICRUDService;
 import fr.perso.springserie.service.interfaces.crud.IBaseService;
-import fr.perso.springserie.service.interfaces.listed.IBaseListedService;
-import fr.perso.springserie.service.interfaces.paged.IBasePagedService;
 import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
 import org.springframework.data.domain.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.lang.reflect.ParameterizedType;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -99,19 +101,101 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public Map<String, String> getStructure() {
-        Map<String, String> structure=new HashMap<>();
-        browseField(dtoClass, field -> {
-            if(field.isAnnotationPresent(JsonType.class)){
+        Map<String, String> structure = new LinkedHashMap<>();
+        Class<?> superClass = dtoClass.getSuperclass();
+        while (!superClass.equals(Object.class)) {
+            structure.putAll(getStructure(superClass));
+            superClass = superClass.getSuperclass();
+        }
+
+        structure.putAll(getStructure(dtoClass));
+
+        return structure;
+    }
+
+    private Map<String, String> getStructure(Class<?> clazz) {
+        Map<String, String> structure = new LinkedHashMap<>();
+        browseField(clazz, field -> {
+            if (field.isAnnotationPresent(JsonType.class)) {
                 structure.put(field.getName(), field.getAnnotation(JsonType.class).type());
-            }else{
-                if(field.getName().endsWith("Id") && field.getType().equals(Integer.class)){
+            } else {
+                if (field.getName().endsWith("Id") && field.getType().equals(Integer.class)) {
                     structure.put(field.getName(), "foreign_id");
                 } else if (field.getName().endsWith("Ids")) {
                     structure.put(field.getName(), "ids");
+                } else if (field.getType().equals(LocalDate.class)) {
+                    structure.put(field.getName(), "date");
+                } else {
+                    structure.put(field.getName(), field.getType().getSimpleName());
                 }
             }
         });
+
         return structure;
+    }
+
+    @Override
+    public Map<String, String> getTypes() {
+        Map<String, String> types = new LinkedHashMap<>();
+
+        Class<?> superClass = entityClass.getSuperclass();
+        while (!superClass.equals(Object.class)) {
+            types.putAll(getTypes(superClass));
+            superClass = superClass.getSuperclass();
+        }
+
+        types.putAll(getTypes(entityClass));
+        return types;
+    }
+
+    private Map<String, String> getTypes(Class<?> clazz) {
+        Map<String, String> types = new LinkedHashMap<>();
+        browseField(clazz, field -> {
+            if (field.isAnnotationPresent(Embedded.class)) {
+                types.putAll(getTypes(field.getType()));
+            } else {
+                if (field.getType().isAnnotationPresent(Entity.class)) {
+                    types.put(field.getName().concat("Id"), field.getType().getSimpleName().toLowerCase());
+                } else {
+                    if(field.getType().equals(List.class)){
+                        Class<?> genericType= (Class<?>) ((ParameterizedType) field.getGenericType())
+                                .getActualTypeArguments()[0];
+                        types.put(field.getName().concat("Ids"), genericType.getSimpleName().toLowerCase());
+                    }else{
+                        types.put(field.getName(), field.getType().getSimpleName().toLowerCase());
+                    }
+
+                }
+
+            }
+        });
+
+        return types;
+    }
+
+    @Override
+    public Map<String, String> getDisplay() {
+        return getDisplay(entityClass);
+    }
+
+    private Map<String, String> getDisplay(Class<?> clazz) {
+        Map<String, String> display = new LinkedHashMap<>();
+
+        Arrays.stream(clazz.getDeclaredFields()).filter(field ->
+                        field.isAnnotationPresent(Embedded.class)
+                                || field.getType().isAnnotationPresent(Entity.class))
+                .forEach(field -> {
+                    if (field.isAnnotationPresent(Embedded.class)) {
+                        display.putAll(getDisplay(field.getType()));
+                    } else {
+                        if (!display.containsKey(field.getType().getSimpleName()))
+                            display.put(field.getName().concat("Id"),
+                                    field.getType().getAnnotation(JsonType.class).display());
+                    }
+                });
+
+        display.put("current", entityClass.getAnnotation(JsonType.class).display());
+        return display;
     }
 
     @Override

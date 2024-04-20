@@ -1,5 +1,6 @@
 package fr.perso.springserie.model.entity;
 
+import fr.perso.springserie.model.JsonType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonType(display = "name")
 public class Episode extends BaseEntity {
 
     @Column(nullable = false)

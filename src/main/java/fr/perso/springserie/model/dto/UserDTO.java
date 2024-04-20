@@ -1,7 +1,6 @@
 package fr.perso.springserie.model.dto;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +28,8 @@ public class UserDTO extends BaseDTO {
 
     public List<String> getRoles() {
         Gson gson = new Gson();
-        return gson.fromJson(roles, new TypeToken<List<String>>(){}.getType());
+        return gson.fromJson(roles, new TypeToken<List<String>>() {
+        }.getType());
     }
 
     public void setRoles(List<String> roles) {

@@ -6,7 +6,6 @@ import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.model.dto.special.SortDTO;
 import fr.perso.springserie.model.dto.special.SortSearchDTO;
 import fr.perso.springserie.service.interfaces.crud.IBaseService;
-import org.springframework.data.repository.support.Repositories;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,8 +30,18 @@ public abstract class BaseController<D extends BaseDTO, S extends IBaseService<D
     }
 
     @GetMapping("/structure")
-    public ResponseEntity<Map<String,String>> getStructure(){
+    public ResponseEntity<Map<String, String>> getStructure() {
         return ResponseEntity.ok(service.getStructure());
+    }
+
+    @GetMapping("/type")
+    public ResponseEntity<Map<String, String>> getTypes() {
+        return ResponseEntity.ok(service.getTypes());
+    }
+
+    @GetMapping("/display")
+    public ResponseEntity<Map<String, String>> getDisplay() {
+        return ResponseEntity.ok(service.getDisplay());
     }
 
     @GetMapping("/list")

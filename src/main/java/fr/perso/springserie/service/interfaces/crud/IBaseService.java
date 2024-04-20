@@ -9,4 +9,8 @@ import java.util.Map;
 
 public interface IBaseService<D extends BaseDTO> extends ICRUDService<D>, IBasePagedService<D>, IBaseListedService<D> {
     Map<String, String> getStructure();
+
+    Map<String, String> getTypes();
+
+    Map<String, String> getDisplay();
 }
