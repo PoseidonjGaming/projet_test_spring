@@ -15,9 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 public class SeriesDTO extends BaseDTO {
     private String name;
-    private LocalDate releaseDate;
     @JsonType(type = "text")
     private String summary;
+    private LocalDate releaseDate;
     @JsonType(type = "file")
     private String poster;
     private String trailerUrl;

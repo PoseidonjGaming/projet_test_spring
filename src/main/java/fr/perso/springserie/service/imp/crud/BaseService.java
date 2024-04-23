@@ -15,16 +15,15 @@ import fr.perso.springserie.service.mapper.IMapper;
 import fr.perso.springserie.task.MapService;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
 import org.springframework.data.domain.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static fr.perso.springserie.service.utility.SearchUtility.*;
 import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
@@ -114,6 +113,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     }
 
     private Map<String, String> getStructure(Class<?> clazz) {
+        List<Field> fields=getEntityField(entityClass);
         Map<String, String> structure = new LinkedHashMap<>();
         browseField(clazz, field -> {
             if (field.isAnnotationPresent(JsonType.class)) {
@@ -122,7 +122,8 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                 if (field.getName().endsWith("Id") && field.getType().equals(Integer.class)) {
                     structure.put(field.getName(), "foreign_id");
                 } else if (field.getName().endsWith("Ids")) {
-                    structure.put(field.getName(), "ids");
+                    mappedBy(field, fields, structure);
+
                 } else if (field.getType().equals(LocalDate.class)) {
                     structure.put(field.getName(), "date");
                 } else {
@@ -133,6 +134,30 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
         return structure;
     }
+
+    private static void mappedBy(Field field, List<Field> fields, Map<String, String> structure) {
+        fields.stream().filter(entityField->
+                entityField.getName().equals(field.getName().replace("Ids","")))
+                .findFirst().ifPresent(entityField->{
+                    if(entityField.isAnnotationPresent(ManyToMany.class) &&
+                            entityField.getAnnotation(ManyToMany.class).mappedBy().isBlank()){
+                        structure.put(field.getName(), "ids");
+                    }
+                });
+    }
+
+    protected List<Field> getEntityField(Class<?> entityClass){
+        List<Field> fields=new ArrayList<>();
+        Arrays.stream(entityClass.getDeclaredFields()).forEach(field->{
+            if(field.isAnnotationPresent(Embedded.class)){
+                fields.addAll(getEntityField(field.getType()));
+            }else{
+                fields.add(field);
+            }
+        });
+        return fields;
+    }
+
 
     @Override
     public Map<String, String> getTypes() {
@@ -157,11 +182,10 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                 if (field.getType().isAnnotationPresent(Entity.class)) {
                     types.put(field.getName().concat("Id"), field.getType().getSimpleName().toLowerCase());
                 } else {
-                    if(field.getType().equals(List.class)){
-                        Class<?> genericType= (Class<?>) ((ParameterizedType) field.getGenericType())
-                                .getActualTypeArguments()[0];
+                    if (field.getType().equals(List.class)) {
+                        Class<?> genericType = getTypeArgument(field);
                         types.put(field.getName().concat("Ids"), genericType.getSimpleName().toLowerCase());
-                    }else{
+                    } else {
                         types.put(field.getName(), field.getType().getSimpleName().toLowerCase());
                     }
 
@@ -173,6 +197,11 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         return types;
     }
 
+    private Class<?> getTypeArgument(Field field) {
+        return (Class<?>) ((ParameterizedType) field.getGenericType())
+                .getActualTypeArguments()[0];
+    }
+
     @Override
     public Map<String, String> getDisplay() {
         return getDisplay(entityClass);
@@ -181,18 +210,23 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     private Map<String, String> getDisplay(Class<?> clazz) {
         Map<String, String> display = new LinkedHashMap<>();
 
-        Arrays.stream(clazz.getDeclaredFields()).filter(field ->
-                        field.isAnnotationPresent(Embedded.class)
-                                || field.getType().isAnnotationPresent(Entity.class))
-                .forEach(field -> {
-                    if (field.isAnnotationPresent(Embedded.class)) {
-                        display.putAll(getDisplay(field.getType()));
-                    } else {
-                        if (!display.containsKey(field.getType().getSimpleName()))
-                            display.put(field.getName().concat("Id"),
-                                    field.getType().getAnnotation(JsonType.class).display());
+        browseField(clazz, field -> {
+            if (field.isAnnotationPresent(Embedded.class)) {
+                display.putAll(getDisplay(field.getType()));
+            } else {
+                if (!display.containsKey(field.getType().getSimpleName())) {
+                    if (field.getType().equals(List.class)) {
+                        display.put(field.getName().concat("Ids"),
+                                getTypeArgument(field).getAnnotation(JsonType.class).display());
+                    } else if (field.getType().isAnnotationPresent(Entity.class)) {
+                        display.put(field.getName().concat("Id"),
+                                field.getType().getAnnotation(JsonType.class).display());
                     }
-                });
+                }
+
+
+            }
+        });
 
         display.put("current", entityClass.getAnnotation(JsonType.class).display());
         return display;
