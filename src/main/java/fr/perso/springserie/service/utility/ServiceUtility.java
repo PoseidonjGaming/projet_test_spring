@@ -1,10 +1,13 @@
 package fr.perso.springserie.service.utility;
 
 import fr.perso.springserie.interceptor.exception.GenericException;
+import jakarta.persistence.Embedded;
 import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -58,4 +61,17 @@ public class ServiceUtility {
 
 
     }
+
+    public static Map<String, String> getMap(Class<?> clazz, BiConsumer<Field, Map<String, String>> consumer) {
+        Map<String, String> map = new LinkedHashMap<>();
+        browseField(clazz, field -> {
+            if (field.isAnnotationPresent(Embedded.class)) {
+                map.putAll(getMap(field.getType(), consumer));
+            } else {
+                consumer.accept(field, map);
+            }
+        });
+        return map;
+    }
+
 }

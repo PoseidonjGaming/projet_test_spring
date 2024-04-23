@@ -24,9 +24,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 import static fr.perso.springserie.service.utility.SearchUtility.*;
-import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
+import static fr.perso.springserie.service.utility.ServiceUtility.getMap;
 
 public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> implements IBaseService<D> {
 
@@ -102,20 +103,9 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     public Map<String, String> getStructure() {
         Map<String, String> structure = new LinkedHashMap<>();
         Class<?> superClass = dtoClass.getSuperclass();
-        while (!superClass.equals(Object.class)) {
-            structure.putAll(getStructure(superClass));
-            superClass = superClass.getSuperclass();
-        }
+        List<Field> fields = getEntityField(entityClass);
 
-        structure.putAll(getStructure(dtoClass));
-
-        return structure;
-    }
-
-    private Map<String, String> getStructure(Class<?> clazz) {
-        List<Field> fields=getEntityField(entityClass);
-        Map<String, String> structure = new LinkedHashMap<>();
-        browseField(clazz, field -> {
+        BiConsumer<Field, Map<String, String>> consumer = (field, map) -> {
             if (field.isAnnotationPresent(JsonType.class)) {
                 structure.put(field.getName(), field.getAnnotation(JsonType.class).type());
             } else {
@@ -130,28 +120,35 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
                     structure.put(field.getName(), field.getType().getSimpleName());
                 }
             }
-        });
+        };
+
+        while (!superClass.equals(Object.class)) {
+            structure.putAll(getMap(superClass, consumer));
+            superClass = superClass.getSuperclass();
+        }
+
+        structure.putAll(getMap(dtoClass, consumer));
 
         return structure;
     }
 
     private static void mappedBy(Field field, List<Field> fields, Map<String, String> structure) {
-        fields.stream().filter(entityField->
-                entityField.getName().equals(field.getName().replace("Ids","")))
-                .findFirst().ifPresent(entityField->{
-                    if(entityField.isAnnotationPresent(ManyToMany.class) &&
-                            entityField.getAnnotation(ManyToMany.class).mappedBy().isBlank()){
+        fields.stream().filter(entityField ->
+                        entityField.getName().equals(field.getName().replace("Ids", "")))
+                .findFirst().ifPresent(entityField -> {
+                    if (entityField.isAnnotationPresent(ManyToMany.class) &&
+                            entityField.getAnnotation(ManyToMany.class).mappedBy().isBlank()) {
                         structure.put(field.getName(), "ids");
                     }
                 });
     }
 
-    protected List<Field> getEntityField(Class<?> entityClass){
-        List<Field> fields=new ArrayList<>();
-        Arrays.stream(entityClass.getDeclaredFields()).forEach(field->{
-            if(field.isAnnotationPresent(Embedded.class)){
+    protected List<Field> getEntityField(Class<?> entityClass) {
+        List<Field> fields = new ArrayList<>();
+        Arrays.stream(entityClass.getDeclaredFields()).forEach(field -> {
+            if (field.isAnnotationPresent(Embedded.class)) {
                 fields.addAll(getEntityField(field.getType()));
-            }else{
+            } else {
                 fields.add(field);
             }
         });
@@ -162,72 +159,46 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     @Override
     public Map<String, String> getTypes() {
         Map<String, String> types = new LinkedHashMap<>();
-
         Class<?> superClass = entityClass.getSuperclass();
-        while (!superClass.equals(Object.class)) {
-            types.putAll(getTypes(superClass));
-            superClass = superClass.getSuperclass();
-        }
 
-        types.putAll(getTypes(entityClass));
-        return types;
-    }
-
-    private Map<String, String> getTypes(Class<?> clazz) {
-        Map<String, String> types = new LinkedHashMap<>();
-        browseField(clazz, field -> {
-            if (field.isAnnotationPresent(Embedded.class)) {
-                types.putAll(getTypes(field.getType()));
+        BiConsumer<Field, Map<String, String>> biConsumer = (field, map) -> {
+            if (field.getType().isAnnotationPresent(Entity.class)) {
+                types.put(field.getName().concat("Id"), field.getType().getSimpleName().toLowerCase());
             } else {
-                if (field.getType().isAnnotationPresent(Entity.class)) {
-                    types.put(field.getName().concat("Id"), field.getType().getSimpleName().toLowerCase());
+                if (field.getType().equals(List.class)) {
+                    Class<?> genericType = (Class<?>) ((ParameterizedType) field.getGenericType())
+                            .getActualTypeArguments()[0];
+                    types.put(field.getName().concat("Ids"), genericType.getSimpleName().toLowerCase());
                 } else {
-                    if (field.getType().equals(List.class)) {
-                        Class<?> genericType = getTypeArgument(field);
-                        types.put(field.getName().concat("Ids"), genericType.getSimpleName().toLowerCase());
-                    } else {
-                        types.put(field.getName(), field.getType().getSimpleName().toLowerCase());
-                    }
-
+                    types.put(field.getName(), field.getType().getSimpleName().toLowerCase());
                 }
 
             }
-        });
+        };
 
+        while (!superClass.equals(Object.class)) {
+            types.putAll(getMap(superClass, biConsumer));
+            superClass = superClass.getSuperclass();
+        }
+
+        types.putAll(getMap(entityClass, biConsumer));
         return types;
-    }
-
-    private Class<?> getTypeArgument(Field field) {
-        return (Class<?>) ((ParameterizedType) field.getGenericType())
-                .getActualTypeArguments()[0];
     }
 
     @Override
     public Map<String, String> getDisplay() {
-        return getDisplay(entityClass);
-    }
-
-    private Map<String, String> getDisplay(Class<?> clazz) {
-        Map<String, String> display = new LinkedHashMap<>();
-
-        browseField(clazz, field -> {
-            if (field.isAnnotationPresent(Embedded.class)) {
-                display.putAll(getDisplay(field.getType()));
-            } else {
-                if (!display.containsKey(field.getType().getSimpleName())) {
-                    if (field.getType().equals(List.class)) {
-                        display.put(field.getName().concat("Ids"),
-                                getTypeArgument(field).getAnnotation(JsonType.class).display());
-                    } else if (field.getType().isAnnotationPresent(Entity.class)) {
-                        display.put(field.getName().concat("Id"),
-                                field.getType().getAnnotation(JsonType.class).display());
-                    }
+        Map<String, String> display = getMap(entityClass, (field, map) -> {
+            if (!map.containsKey(field.getType().getSimpleName())) {
+                if (field.getType().equals(List.class)) {
+                    map.put(field.getName().concat("Ids"),
+                            ((Class<?>) ((ParameterizedType) field.getGenericType())
+                                    .getActualTypeArguments()[0]).getAnnotation(JsonType.class).display());
+                } else if (field.getType().isAnnotationPresent(Entity.class)) {
+                    map.put(field.getName().concat("Id"),
+                            field.getType().getAnnotation(JsonType.class).display());
                 }
-
-
             }
         });
-
         display.put("current", entityClass.getAnnotation(JsonType.class).display());
         return display;
     }
