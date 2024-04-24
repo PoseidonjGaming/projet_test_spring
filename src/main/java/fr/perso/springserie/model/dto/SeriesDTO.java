@@ -21,11 +21,6 @@ public class SeriesDTO extends BaseDTO {
     @JsonType(type = "file")
     private String poster;
     private String trailerUrl;
-    private Integer nextMovieId;
-    private Integer nextSeriesId;
-    private Integer previousMovieId;
-    private Integer previousSeriesId;
-    private List<Integer> seasonIds;
     private List<Integer> categoryIds;
     private List<Integer> characterIds;
 }

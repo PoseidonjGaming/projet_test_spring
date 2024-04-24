@@ -1,13 +1,13 @@
 package fr.perso.springserie.model.entity;
 
 import fr.perso.springserie.model.JsonType;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @Entity
 @Table(name = "\"character\"")
@@ -20,10 +20,6 @@ public class Character extends BaseEntity {
 
     private String name;
 
-    @ManyToMany(mappedBy = "project.character", fetch = FetchType.EAGER)
-    private List<Series> series;
-    @ManyToMany(mappedBy = "project.character", fetch = FetchType.EAGER)
-    private List<Movie> movie;
     @ManyToOne
     private Actor actor;
 }

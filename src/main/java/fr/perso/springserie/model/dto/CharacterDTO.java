@@ -14,6 +14,4 @@ import java.util.List;
 public class CharacterDTO extends BaseDTO {
     private String name;
     private Integer actorId;
-    private List<Integer> seriesIds;
-    private List<Integer> movieIds;
 }

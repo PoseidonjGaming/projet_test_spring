@@ -62,17 +62,6 @@ public class SearchUtility {
         });
     }
 
-    static <O> void findInEmbedded(Class<O> clazz, String searchedField, List<String> pathToField) {
-        Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Embedded.class))
-                .forEach(embeddedField -> {
-                    List<String> field = findField(embeddedField.getType(), searchedField);
-                    if (!field.isEmpty()) {
-                        pathToField.add(embeddedField.getName());
-                        pathToField.addAll(field);
-                    }
-                });
-    }
-
     public static String getPath(String... parts) {
         if (parts[0].isEmpty()) {
             return Arrays.stream(parts).skip(1).reduce((s, s2) -> s + "." + s2).orElse("");
@@ -82,31 +71,45 @@ public class SearchUtility {
 
     public static <O> List<String> findField(Class<O> clazz, String searchedField) {
         List<String> pathToField = new ArrayList<>();
-        findInEmbedded(clazz, searchedField, pathToField);
-
-        Arrays.stream(clazz.getDeclaredFields()).filter(field -> !field.isAnnotationPresent(Embedded.class))
-                .forEach(field -> {
-                    if (field.getName().equals(searchedField))
-                        pathToField.add(field.getName());
-                });
-        if (!clazz.equals(Object.class)) {
-            findInSuperClass(clazz, searchedField, pathToField);
+        String value;
+        if (searchedField.endsWith("Id")) {
+            value = searchedField.replace("Id", "");
+        } else {
+            value = searchedField;
         }
 
-        return pathToField;
-    }
+        Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.getName().equals(value)).findFirst()
+                .ifPresent(field -> pathToField.add(field.getName()));
 
-    static <O> void findInSuperClass(Class<O> clazz, String searchedField, List<String> pathToField) {
-        browseField(clazz.getSuperclass(), field -> {
-            if (!field.getType().isPrimitive()) {
-                pathToField.addAll(findField(field.getType(), searchedField));
-
-            } else {
-                if (pathToField.isEmpty())
-                    pathToField.add(field.getName());
+        if(pathToField.isEmpty()){
+            Class<?> superClass=clazz.getSuperclass();
+            while (!superClass.equals(Object.class)){
+                pathToField.addAll(findField(superClass, value));
+                superClass=superClass.getSuperclass();
             }
+        }
 
-        });
+        if (pathToField.isEmpty()) {
+            Arrays.stream(clazz.getDeclaredFields())
+                    .filter(field -> field.isAnnotationPresent(Embedded.class)
+                            || field.getType().isAnnotationPresent(Entity.class))
+                    .forEach(field -> {
+                        List<String> path = findField(field.getType(), value);
+                        if (!path.isEmpty() && pathToField.isEmpty()) {
+                            pathToField.add(field.getName());
+                            pathToField.addAll(path);
+                        }
+                    });
+        }
+
+
+
+
+//        if(searchedField.endsWith("Id")){
+//            pathToField.add("id");
+//        }
+
+        return pathToField;
     }
 
     public static <D extends BaseDTO> boolean filtering(D dto, SearchDTO<D> searchDto) {

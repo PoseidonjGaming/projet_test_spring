@@ -14,5 +14,4 @@ import java.util.List;
 public class SeasonDTO extends BaseDTO {
     private Integer seriesId;
     private Integer number;
-    private List<Integer> episodeIds;
 }

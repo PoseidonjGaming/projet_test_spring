@@ -50,6 +50,16 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         return Pageable.ofSize(size).withPage(page);
     }
 
+    private static void mappedBy(Field field, List<Field> fields, Map<String, String> structure) {
+        fields.stream().filter(entityField ->
+                        entityField.getName().equals(field.getName().replace("Ids", "")))
+                .findFirst().ifPresent(entityField -> {
+                    if (entityField.isAnnotationPresent(ManyToMany.class) &&
+                            entityField.getAnnotation(ManyToMany.class).mappedBy().isBlank()) {
+                        structure.put(field.getName(), "ids");
+                    }
+                });
+    }
 
     private PagedResponse<D> createPage(Page<E> pageRequest, SearchDTO<D> searchDTO) {
         List<D> list = mapper.convertList(pageRequest.getContent(), dtoClass);
@@ -59,7 +69,6 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
         return new PagedResponse<>(list, pageRequest.getTotalElements());
     }
-
 
     @Override
     public PagedResponse<D> getAll(int size, int page) {
@@ -130,17 +139,6 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         structure.putAll(getMap(dtoClass, consumer));
 
         return structure;
-    }
-
-    private static void mappedBy(Field field, List<Field> fields, Map<String, String> structure) {
-        fields.stream().filter(entityField ->
-                        entityField.getName().equals(field.getName().replace("Ids", "")))
-                .findFirst().ifPresent(entityField -> {
-                    if (entityField.isAnnotationPresent(ManyToMany.class) &&
-                            entityField.getAnnotation(ManyToMany.class).mappedBy().isBlank()) {
-                        structure.put(field.getName(), "ids");
-                    }
-                });
     }
 
     protected List<Field> getEntityField(Class<?> entityClass) {

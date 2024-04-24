@@ -20,7 +20,6 @@ import java.util.List;
 import static fr.perso.springserie.service.utility.ServiceUtility.*;
 
 @Service
-@Transactional
 @Primary
 public class Mapper implements IMapper {
 

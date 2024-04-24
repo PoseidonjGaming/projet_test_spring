@@ -16,11 +16,6 @@ public class MovieDTO extends BaseDTO {
     private String summary;
     private LocalDate releaseDate;
     private String poster;
-
     private List<Integer> categoryIds;
     private List<Integer> characterIds;
-    private Integer nextSeriesId;
-    private Integer previousSeriesId;
-    private Integer nextMovieId;
-    private Integer previousMovieId;
 }

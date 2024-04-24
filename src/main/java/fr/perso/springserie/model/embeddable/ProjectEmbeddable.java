@@ -2,9 +2,10 @@ package fr.perso.springserie.model.embeddable;
 
 import fr.perso.springserie.model.entity.Category;
 import fr.perso.springserie.model.entity.Character;
-import fr.perso.springserie.model.entity.Movie;
-import fr.perso.springserie.model.entity.Series;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,12 +33,4 @@ public class ProjectEmbeddable implements Serializable {
     private List<Category> category;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Character> character;
-    @OneToOne
-    private Series nextSeries;
-    @OneToOne
-    private Series previousSeries;
-    @OneToOne
-    private Movie nextMovie;
-    @OneToOne
-    private Movie previousMovie;
 }

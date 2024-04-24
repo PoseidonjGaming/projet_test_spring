@@ -1,13 +1,14 @@
 package fr.perso.springserie.model.entity;
 
 import fr.perso.springserie.model.JsonType;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -21,7 +22,4 @@ public class Season extends BaseEntity {
     @ManyToOne
     private Series series;
     private Integer number;
-
-    @OneToMany(mappedBy = "season", fetch = FetchType.EAGER)
-    private List<Episode> episode;
 }
