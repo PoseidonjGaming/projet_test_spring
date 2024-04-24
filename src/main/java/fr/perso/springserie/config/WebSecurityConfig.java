@@ -32,10 +32,11 @@ public class WebSecurityConfig {
             "user/authenticate", "user/save", "user/search/*", "user/test",
             "file/load", "file/test",
             "series/sort/search", "series/sort", "series/list",
-            "episode/sort/search",
+            "episode/sort/search", "episode/list","episode/test",
             "movie/sort/search", "movie/sort",
             "review/search",
-            "category/list"
+            "category/list",
+            "*/structure",
 
     };
 
