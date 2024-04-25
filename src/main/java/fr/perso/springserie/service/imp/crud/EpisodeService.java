@@ -29,8 +29,6 @@ public class EpisodeService extends BaseService<Episode, EpisodeDTO> implements 
                 mapper.convert(e, dtoClass)).toList();
     }
 
-
-
     @Override
     public Map<String, String> getTypes() {
         Map<String, String> types = super.getTypes();

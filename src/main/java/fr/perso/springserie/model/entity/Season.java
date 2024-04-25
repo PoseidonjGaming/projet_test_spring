@@ -15,10 +15,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"series_id", "number"}))
+@Table(uniqueConstraints = {@UniqueConstraint(name = "unique_season",columnNames = {"number", "series_id"})})
 @JsonType(display = "number")
 public class Season extends BaseEntity {
-
     @ManyToOne
     private Series series;
     private Integer number;

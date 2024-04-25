@@ -102,13 +102,6 @@ public class SearchUtility {
                     });
         }
 
-
-
-
-//        if(searchedField.endsWith("Id")){
-//            pathToField.add("id");
-//        }
-
         return pathToField;
     }
 

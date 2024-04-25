@@ -19,10 +19,8 @@ import static fr.perso.springserie.service.utility.SearchUtility.getPath;
 @RestController
 @RequestMapping("/season")
 public class SeasonController extends BaseController<SeasonDTO, ISeasonService> {
-    private final ISeasonRepo repository;
-    protected SeasonController(ISeasonService service, ISeasonRepo repository) {
+    protected SeasonController(ISeasonService service) {
         super(service);
-        this.repository = repository;
     }
 
 
