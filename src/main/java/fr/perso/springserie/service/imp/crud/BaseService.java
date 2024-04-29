@@ -11,7 +11,7 @@ import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.repository.IBaseRepository;
 import fr.perso.springserie.service.interfaces.crud.IBaseService;
 import fr.perso.springserie.service.mapper.IMapper;
-import fr.perso.springserie.task.MapService;
+import fr.perso.springserie.service.MapService;
 import fr.perso.springserie.utility.annotation.Json;
 import org.springframework.data.domain.*;
 

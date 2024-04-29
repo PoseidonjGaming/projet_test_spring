@@ -4,7 +4,7 @@ import fr.perso.springserie.model.dto.ActorDTO;
 import fr.perso.springserie.model.entity.Actor;
 import fr.perso.springserie.repository.IBaseRepository;
 import fr.perso.springserie.service.mapper.IMapper;
-import fr.perso.springserie.task.MapService;
+import fr.perso.springserie.service.MapService;
 import org.springframework.stereotype.Service;
 
 @Service

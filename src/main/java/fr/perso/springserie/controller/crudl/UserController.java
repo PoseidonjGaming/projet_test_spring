@@ -39,7 +39,7 @@ public class UserController extends BaseController<UserDTO, IUserService> {
     }
 
     @GetMapping("/test")
-    public ResponseEntity<List<User>> test(){
+    public ResponseEntity<List<User>> test() {
         return ResponseEntity.ok(userRepository.findAll());
     }
 }

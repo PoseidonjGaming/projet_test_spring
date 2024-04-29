@@ -13,6 +13,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Json(display = "name")
-public class Category extends BaseEntity{
+public class Category extends BaseEntity {
     private String name;
 }

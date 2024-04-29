@@ -1,13 +1,10 @@
 package fr.perso.springserie.model.dto;
 
-import fr.perso.springserie.model.entity.BaseEntity;
-import fr.perso.springserie.utility.annotation.Entity;
 import fr.perso.springserie.utility.annotation.Json;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
 
 @Getter
 @Setter

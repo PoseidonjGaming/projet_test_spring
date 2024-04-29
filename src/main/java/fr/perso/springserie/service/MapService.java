@@ -1,4 +1,4 @@
-package fr.perso.springserie.task;
+package fr.perso.springserie.service;
 
 import fr.perso.springserie.model.dto.BaseDTO;
 import fr.perso.springserie.model.entity.Character;
@@ -24,15 +24,14 @@ public class MapService {
     private static final String MOVIE = "movie";
     private static final String USER = "user";
     private static final String REVIEW = "review";
-    private final Map<String, IBaseService<? extends BaseDTO>> mapService;
     private final Map<String, IBaseRepository<? extends BaseEntity>> mapRepo;
 
     @Autowired
     @Lazy
     public MapService(IBaseRepository<Series> seriesRepo, IBaseRepository<Category> categoryRepo,
-                      IBaseRepository<Character> characterRepo,IBaseRepository<Actor> actorRepository,
-                      IBaseRepository<Season> seasonRepository, IBaseRepository<Episode> episodeRepository) {
-        mapService = new HashMap<>();
+                      IBaseRepository<Character> characterRepo, IBaseRepository<Actor> actorRepository,
+                      IBaseRepository<Season> seasonRepository, IBaseRepository<Episode> episodeRepository,
+                      IBaseRepository<Movie> movieRepository, IBaseRepository<User> userRepository) {
 
         mapRepo = new HashMap<>();
         mapRepo.put(SERIES, seriesRepo);
@@ -42,10 +41,6 @@ public class MapService {
         mapRepo.put(SEASON, seasonRepository);
         mapRepo.put(EPISODE, episodeRepository);
 
-    }
-
-    public IBaseService<? extends BaseDTO> getService(String key) {
-        return mapService.get(key);
     }
 
     public IBaseRepository<? extends BaseEntity> getRepo(String key) {

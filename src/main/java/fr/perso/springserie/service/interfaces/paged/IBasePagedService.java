@@ -1,7 +1,7 @@
 package fr.perso.springserie.service.interfaces.paged;
 
-import fr.perso.springserie.model.dto.PagedResponse;
 import fr.perso.springserie.model.dto.BaseDTO;
+import fr.perso.springserie.model.dto.PagedResponse;
 import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.model.dto.special.SortDTO;
 

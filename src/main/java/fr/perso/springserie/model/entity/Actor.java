@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Json(display = "firstname")
-public class Actor extends BaseEntity{
+public class Actor extends BaseEntity {
     private String lastname;
     private String firstname;
 }

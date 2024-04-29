@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document
-@CompoundIndex(name="season_unx",def = "{'seriesId': 1, 'number': 1}", unique = true)
+@CompoundIndex(name = "season_unx", def = "{'seriesId': 1, 'number': 1}", unique = true)
 @Json(display = "number")
 public class Season extends BaseEntity {
     private String seriesId;

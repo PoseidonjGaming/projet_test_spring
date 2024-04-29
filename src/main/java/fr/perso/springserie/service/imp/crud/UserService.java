@@ -11,7 +11,7 @@ import fr.perso.springserie.security.JwtUtil;
 import fr.perso.springserie.security.UserRole;
 import fr.perso.springserie.service.interfaces.crud.IUserService;
 import fr.perso.springserie.service.mapper.IMapper;
-import fr.perso.springserie.task.MapService;
+import fr.perso.springserie.service.MapService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Example;

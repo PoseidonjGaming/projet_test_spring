@@ -16,5 +16,6 @@ public interface IBaseRepository<E extends BaseEntity> extends MongoRepository<E
     List<E> findByIdIn(List<Integer> ids, Example<E> example);
 
     Page<E> findByIdIn(List<Integer> ids, Pageable pageable);
-    Page<E> findByIdIn(List<Integer> ids, Example<E> example,Pageable pageable);
+
+    Page<E> findByIdIn(List<Integer> ids, Example<E> example, Pageable pageable);
 }

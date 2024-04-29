@@ -2,7 +2,7 @@ package fr.perso.springserie.service.mapper;
 
 import fr.perso.springserie.interceptor.exception.GenericException;
 import fr.perso.springserie.model.entity.BaseEntity;
-import fr.perso.springserie.task.MapService;
+import fr.perso.springserie.service.MapService;
 import fr.perso.springserie.utility.annotation.Entity;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -71,7 +71,7 @@ public class Mapper implements IMapper {
                     set(entities.stream().map(BaseEntity::getId).toList(), target, targetField);
             }
 
-        } else if(sourceField.getName().endsWith("Ids")) {
+        } else if (sourceField.getName().endsWith("Ids")) {
             Field targetField = getField(sourceField.getName().substring(0, (sourceField.getName().length() - 3)), target.getClass());
             if (targetField != null) {
                 List<Integer> ids = get(sourceField, source);
@@ -79,8 +79,8 @@ public class Mapper implements IMapper {
                     set(mapService.getRepo(targetField.getName()).findByIdIn(ids), target, targetField);
 
             }
-        }else{
-            transfert(source, target, sourceField,target.getClass());
+        } else {
+            transfert(source, target, sourceField, target.getClass());
         }
     }
 

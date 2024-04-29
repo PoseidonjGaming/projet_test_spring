@@ -14,6 +14,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CharacterDTO extends BaseDTO {
     private String name;
-    @Json(type = "actor",display = "lastname")
+    @Json(type = "actor", display = "lastname")
     private String actorId;
 }
