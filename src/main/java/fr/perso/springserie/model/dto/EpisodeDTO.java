@@ -1,5 +1,6 @@
 package fr.perso.springserie.model.dto;
 
+import fr.perso.springserie.utility.annotation.Json;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,12 +10,13 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class EpisodeDTO extends BaseDTO {
     private String name;
+    @Json(type = "text")
     private String summary;
     private LocalDate releaseDate;
-    private Integer seasonId;
-    private Integer seriesId;
+    @Json(type = "season", display = "number")
+    private String seasonId;
 }

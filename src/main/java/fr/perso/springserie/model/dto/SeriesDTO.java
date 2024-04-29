@@ -1,6 +1,6 @@
 package fr.perso.springserie.model.dto;
 
-import fr.perso.springserie.model.JsonType;
+import fr.perso.springserie.utility.annotation.Json;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,18 +9,20 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.List;
 
-@Getter
 @Setter
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class SeriesDTO extends BaseDTO {
     private String name;
-    @JsonType(type = "text")
-    private String summary;
     private LocalDate releaseDate;
-    @JsonType(type = "file")
+    @Json(type = "text")
+    private String summary;
+    @Json(type = "file")
     private String poster;
     private String trailerUrl;
-    private List<Integer> categoryIds;
-    private List<Integer> characterIds;
+    @Json(type = "category", display = "name")
+    private List<String> categoryIds;
+    @Json(type = "character", display = "name")
+    private List<String> characterIds;
 }

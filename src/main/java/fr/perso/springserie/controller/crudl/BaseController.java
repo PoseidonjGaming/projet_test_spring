@@ -1,7 +1,7 @@
 package fr.perso.springserie.controller.crudl;
 
-import fr.perso.springserie.model.PagedResponse;
 import fr.perso.springserie.model.dto.BaseDTO;
+import fr.perso.springserie.model.dto.PagedResponse;
 import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.model.dto.special.SortDTO;
 import fr.perso.springserie.model.dto.special.SortSearchDTO;
@@ -57,7 +57,7 @@ public abstract class BaseController<D extends BaseDTO, S extends IBaseService<D
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<D> getById(@PathVariable int id) {
+    public ResponseEntity<D> getById(@PathVariable String id) {
         return ResponseEntity.ofNullable(service.getById(id));
     }
 
@@ -121,7 +121,7 @@ public abstract class BaseController<D extends BaseDTO, S extends IBaseService<D
     }
 
     @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable int id) {
+    public void delete(@PathVariable String id) {
         service.delete(id);
     }
 }

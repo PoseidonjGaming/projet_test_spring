@@ -92,7 +92,7 @@ public class FileService implements IFileService {
             sheet.range(0, 0, 2, 1).style().fontName("Arial").wrapText(true).set();
             sheet.value(0, 0, "Id");
 
-            List<BaseDTO> seriesDTOS = mapService.getService("series").getAll();
+            List<? extends BaseDTO> seriesDTOS = mapService.getService("series").getAll();
 
             for (int i = 0; i < seriesDTOS.size(); i++) {
                 sheet.value(i + 1, 0, seriesDTOS.get(i).getId());

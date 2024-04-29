@@ -1,17 +1,20 @@
 package fr.perso.springserie.model.dto;
 
+import fr.perso.springserie.model.entity.BaseEntity;
+import fr.perso.springserie.utility.annotation.Entity;
+import fr.perso.springserie.utility.annotation.Json;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class SeasonDTO extends BaseDTO {
-    private Integer seriesId;
+    @Json(type = "series", display = "name")
+    private String seriesId;
     private Integer number;
 }

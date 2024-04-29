@@ -1,26 +1,38 @@
 package fr.perso.springserie.controller.crudl;
 
 import fr.perso.springserie.model.dto.SeriesDTO;
-import fr.perso.springserie.service.interfaces.crud.ISeriesService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import fr.perso.springserie.model.entity.Series;
+import fr.perso.springserie.repository.IBaseRepository;
+import fr.perso.springserie.service.interfaces.crud.IBaseService;
+import fr.perso.springserie.service.mapper.IMapper;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/series")
-public class SeriesController extends BaseController<SeriesDTO, ISeriesService> {
-    protected SeriesController(ISeriesService service) {
+public class SeriesController extends BaseController<SeriesDTO, IBaseService<SeriesDTO>> {
+    private final IBaseRepository<Series> repo;
+    private final IMapper mapper;
+
+    protected SeriesController(IBaseService<SeriesDTO> service, IBaseRepository<Series> repo, IMapper mapper) {
         super(service);
+        this.repo = repo;
+        this.mapper = mapper;
     }
 
-    @PostMapping(value = "/save", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<HttpStatus> save(@RequestPart("file") MultipartFile file, @RequestPart("series") String series) {
-        service.saveWithFile(file, series);
-        return ResponseEntity.ok().build();
+    @GetMapping("/test")
+    public ResponseEntity<List<SeriesDTO>> test() {
+        ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreNullValues().withMatcher("name", matcher1 ->
+                matcher1.stringMatcher(ExampleMatcher.StringMatcher.CONTAINING).ignoreCase());
+        SeriesDTO seriesDTO = new SeriesDTO();
+        seriesDTO.setName("l");
+        Example<Series> example = Example.of(mapper.convert(seriesDTO, Series.class), matcher);
+        return ResponseEntity.ok(mapper.convertList(repo.findAll(example), SeriesDTO.class));
     }
 }

@@ -1,24 +1,23 @@
 package fr.perso.springserie.model.entity;
 
-import fr.perso.springserie.model.JsonType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import fr.perso.springserie.utility.annotation.Entity;
+import fr.perso.springserie.utility.annotation.Json;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = {@UniqueConstraint(name = "unique_season",columnNames = {"number", "series_id"})})
-@JsonType(display = "number")
+@NoArgsConstructor
+@Document
+@CompoundIndex(name="season_unx",def = "{'seriesId': 1, 'number': 1}", unique = true)
+@Json(display = "number")
 public class Season extends BaseEntity {
-    @ManyToOne
-    private Series series;
+    private String seriesId;
     private Integer number;
 }

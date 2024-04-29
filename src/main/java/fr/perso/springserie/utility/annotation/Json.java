@@ -1,4 +1,4 @@
-package fr.perso.springserie.model;
+package fr.perso.springserie.utility.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JsonType {
+public @interface Json {
     String type() default "string";
 
     String display() default "";

@@ -1,17 +1,19 @@
 package fr.perso.springserie.model.dto;
 
+import fr.perso.springserie.utility.annotation.Entity;
+import fr.perso.springserie.utility.annotation.Json;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
+@Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class CharacterDTO extends BaseDTO {
     private String name;
-    private Integer actorId;
+    @Json(type = "actor",display = "lastname")
+    private String actorId;
 }

@@ -1,6 +1,5 @@
-package fr.perso.springserie.model;
+package fr.perso.springserie.model.dto;
 
-import fr.perso.springserie.model.dto.BaseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

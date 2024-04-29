@@ -1,21 +1,23 @@
 package fr.perso.springserie.model.dto;
 
-import lombok.*;
+import fr.perso.springserie.utility.annotation.Json;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
-@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class MovieDTO extends BaseDTO {
     private String name;
-    private String summary;
     private LocalDate releaseDate;
+    @Json(type = "text")
+    private String summary;
     private String poster;
-    private List<Integer> categoryIds;
-    private List<Integer> characterIds;
+    private String trailerUrl;
+
 }

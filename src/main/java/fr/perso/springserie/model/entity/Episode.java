@@ -1,9 +1,7 @@
 package fr.perso.springserie.model.entity;
 
-import fr.perso.springserie.model.JsonType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
+import fr.perso.springserie.utility.annotation.Entity;
+import fr.perso.springserie.utility.annotation.Json;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,18 +14,10 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonType(display = "name")
+@Json(display = "name")
 public class Episode extends BaseEntity {
-
-    @Column(nullable = false)
     private String name;
-
-    @Column(columnDefinition = "text")
     private String summary;
-
     private LocalDate releaseDate;
-
-    @ManyToOne
-    private Season season;
-
+    private String seasonId;
 }

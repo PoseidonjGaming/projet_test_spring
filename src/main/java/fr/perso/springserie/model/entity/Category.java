@@ -1,8 +1,7 @@
 package fr.perso.springserie.model.entity;
 
-import fr.perso.springserie.model.JsonType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import fr.perso.springserie.utility.annotation.Entity;
+import fr.perso.springserie.utility.annotation.Json;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,11 +10,9 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@JsonType(display = "name")
-public class Category extends BaseEntity {
-
-    @Column(nullable = false)
+@NoArgsConstructor
+@Json(display = "name")
+public class Category extends BaseEntity{
     private String name;
 }

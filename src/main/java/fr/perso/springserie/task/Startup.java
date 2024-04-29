@@ -22,17 +22,17 @@ public class Startup implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        String[] order = {"user", "actor", "character", "category", "series", "season", "episode", "movie", "review"};
-
-        try (Stream<Path> files = Files.list(Paths.get(System.getProperty("user.dir"), "src/main/resources/data"))) {
-            List<Path> paths = files.toList();
-            for (String s : order) {
-                paths.stream().filter(path -> path.getFileName().toString().startsWith(s)).findFirst().ifPresent(path ->
-
-                        mapService.getService(s).save(path.toFile()));
-            }
-        } catch (IOException e) {
-            e.fillInStackTrace();
-        }
+//        String[] order = {"user", "actor", "character", "category", "series", "season", "episode", "movie", "review"};
+//
+//        try (Stream<Path> files = Files.list(Paths.get(System.getProperty("user.dir"), "src/main/resources/data"))) {
+//            List<Path> paths = files.toList();
+//            for (String s : order) {
+//                paths.stream().filter(path -> path.getFileName().toString().startsWith(s)).findFirst().ifPresent(path ->
+//
+//                        mapService.getService(s).save(path.toFile()));
+//            }
+//        } catch (IOException e) {
+//            e.fillInStackTrace();
+//        }
     }
 }

@@ -4,24 +4,13 @@
     "releaseDate": "2021-01-15",
     "summary": "Trois semaines après la fin des évènements liés à Thanos, Wanda Maximoff est bouleversée par la mort de son compagnon, le synthézoïde Vision. Elle se rend alors dans la petite ville de Westview dans le New Jersey, où Vision et elle avaient l'intention de s'installer, et y crée un univers fictif dans lequel elle contrôle l'esprit de tous les habitants. Elle y développe un univers de sitcom dont chaque épisode avance d'une décennie à partir des années 1950, et y fait revivre Vision, avec qui elle a des jumeaux, Tommy et Billy.\n\nVision commence à soupçonner que leur vie n'est pas aussi normale qu'elle en a l'air. Il y a également la « voisine encombrante » Agnès, qui va tirer des ficelles de différents scénarios des sitcoms de Wanda dans un but bien précis, se révélant être la sorcière Agatha Harkness. À l'extérieur du champ de force qui entoure Westview — de forme hexagonale (le « Hex ») —, le directeur du S.W.O.R.D. Tyler Hayward, et le FBI s'activent pour tenter de percer le mystère, avec l'aide de Monica Rambeau, de l'astrophysicienne Darcy Lewis, et de l'agent du FBI Jimmy Woo. ",
     "poster": "affiche wandavision.jpg",
-    "trailerUrl": "",
-    "categoryIds": [
-      1,
-      3
-    ],
-    "characterIds": [
-      1
-    ]
+    "trailerUrl": ""
   },
   {
     "name": "Loki",
     "releaseDate": "2021-06-09",
     "summary": "Alors que Loki a été tué par Thanos dans Avengers : Infinity War, l'histoire prend place plus tôt, en 2012, dans un nexus créé par le Casse temporel des Avengers après que le Loki de 2012 s'est échappé avec le Tesseract. Après son évasion, il est emmené auprès du Tribunal des Variations Anachroniques (ou TVA, Time Variance Authority en VO), un organisme qui agit pour arrêter toute personne qui tenterait d'altérer le passé ou le futur et qui protège l'Éternel Flux Temporel. L'agent du TVA, Mobius M. Mobius lui demande, pour le meilleur et pour le pire, sa collaboration afin de retrouver une version alternative de lui-même qui crée le chaos à des époques variées du temps dans une lutte sans merci contre le TVA. Celle-ci s'avère être Sylvie, son Variant féminin, dont il tombera amoureux. Tous deux s'allieront et partiront à la recherche du créateur du TVA.  ",
     "poster": "affiche loki.jpg",
-    "trailerUrl": "",
-    "categoryIds": [
-      3,
-      4
-    ]
+    "trailerUrl": ""
   }
 ]

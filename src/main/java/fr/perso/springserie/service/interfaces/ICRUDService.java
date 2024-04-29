@@ -6,7 +6,7 @@ import java.io.File;
 import java.util.List;
 
 public interface ICRUDService<D extends BaseDTO> {
-    D getById(int id);
+    D getById(String id);
 
     D save(D dto);
 
@@ -14,5 +14,5 @@ public interface ICRUDService<D extends BaseDTO> {
 
     void saves(List<D> ds);
 
-    void delete(int id);
+    void delete(String id);
 }

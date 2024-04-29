@@ -3,18 +3,13 @@ package fr.perso.springserie.service.mapper;
 import fr.perso.springserie.interceptor.exception.GenericException;
 import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.task.MapService;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.transaction.Transactional;
+import fr.perso.springserie.utility.annotation.Entity;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
-import java.util.Arrays;
 import java.util.List;
 
 import static fr.perso.springserie.service.utility.ServiceUtility.*;
@@ -47,44 +42,13 @@ public class Mapper implements IMapper {
             mapEntityId(source, target, sourceField);
         } else if (sourceField.getType().equals(List.class)) {
             mapList(source, target, sourceField);
-        } else if (sourceField.getType().equals(Integer.class) && sourceField.getName().endsWith("Id")) {
-            mapEntity(source, target, sourceField);
-        } else if (sourceField.isAnnotationPresent(Embedded.class)) {
-            mapEmbedded(source, target, sourceField);
         } else {
             transfert(source, target, sourceField, target.getClass());
         }
 
-        Arrays.stream(target.getClass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Embedded.class)).forEach(targetField -> {
-            try {
-                Object embedded = targetField.getType().getDeclaredConstructor().newInstance();
-                browseField(source.getClass(), field -> map(sourceClass, source, embedded, field));
-                set(embedded, target, targetField);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                     NoSuchMethodException e) {
-                throw new GenericException(e);
-            }
-        });
-
         Class<?> superClass = sourceClass.getSuperclass();
         if (!superClass.equals(Object.class)) {
             browseField(superClass, target, (superField, o) -> map(superClass, source, o, superField));
-        }
-    }
-
-    private <S, T> void mapEmbedded(S source, T target, Field sourceField) {
-        Object embedded = get(sourceField, source);
-        browseField(sourceField.getType(), field -> map(source.getClass(), embedded, target, field));
-    }
-
-    private <S, T> void mapEntity(S source, T target, Field sourceField) {
-        String entityName = sourceField.getName().substring(0, sourceField.getName().length() - 2);
-        Field targetField = getField(entityName, target.getClass());
-        Integer id = get(sourceField, source);
-        if (targetField != null && id != null) {
-            mapService.getRepo(targetField.getType().getSimpleName().toLowerCase()).findById(id).ifPresent(entity ->
-                    set(entity, target, targetField)
-            );
         }
     }
 
@@ -107,22 +71,17 @@ public class Mapper implements IMapper {
                     set(entities.stream().map(BaseEntity::getId).toList(), target, targetField);
             }
 
-        } else {
+        } else if(sourceField.getName().endsWith("Ids")) {
             Field targetField = getField(sourceField.getName().substring(0, (sourceField.getName().length() - 3)), target.getClass());
-            if (targetField != null && isMapped(targetField)) {
+            if (targetField != null) {
                 List<Integer> ids = get(sourceField, source);
                 if (ids != null)
                     set(mapService.getRepo(targetField.getName()).findByIdIn(ids), target, targetField);
 
             }
+        }else{
+            transfert(source, target, sourceField,target.getClass());
         }
-    }
-
-    private boolean isMapped(Field targetField) {
-        return (targetField.isAnnotationPresent(OneToMany.class)
-                && targetField.getAnnotation(OneToMany.class).mappedBy().isEmpty()) ||
-                (targetField.isAnnotationPresent(ManyToMany.class)
-                        && targetField.getAnnotation(ManyToMany.class).mappedBy().isEmpty());
     }
 
 

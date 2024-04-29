@@ -3,8 +3,7 @@ package fr.perso.springserie.service.utility;
 import fr.perso.springserie.model.dto.BaseDTO;
 import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.model.entity.BaseEntity;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
+import fr.perso.springserie.utility.annotation.Entity;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.ExampleMatcher;
 
@@ -49,15 +48,12 @@ public class SearchUtility {
                                                             Class<?> clazz, Class<E> entityClass,
                                                             ExampleMatcher.StringMatcher stringMatcher) {
         browseField(clazz, field -> {
-            if (field.isAnnotationPresent(Embedded.class)) {
-                matcher[0] = matcher[0].withIgnorePaths(getPath(findField(entityClass, field.getName()).toArray(new String[]{})));
-                getSpecifiers(matcher, field.getType(), entityClass, stringMatcher);
-            } else if (field.getType().isAnnotationPresent(Entity.class) || field.getType().equals(List.class)) {
+            if (field.getType().isAnnotationPresent(Entity.class) || field.getType().equals(List.class)) {
                 List<String> pathField = findField(entityClass, field.getName());
                 matcher[0] = matcher[0].withIgnorePaths(getPath(pathField.toArray(new String[]{})));
             } else if (field.getType().equals(String.class)) {
                 matcher[0] = matcher[0].withMatcher(
-                        getPath(findField(entityClass, field.getName()).toArray(new String[]{})), matcher1 -> matcher1.stringMatcher(stringMatcher));
+                        getPath(findField(entityClass, field.getName()).toArray(new String[]{})), matcher1 -> matcher1.stringMatcher(stringMatcher).ignoreCase());
             }
         });
     }
@@ -71,30 +67,23 @@ public class SearchUtility {
 
     public static <O> List<String> findField(Class<O> clazz, String searchedField) {
         List<String> pathToField = new ArrayList<>();
-        String value;
-        if (searchedField.endsWith("Id")) {
-            value = searchedField.replace("Id", "");
-        } else {
-            value = searchedField;
-        }
 
-        Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.getName().equals(value)).findFirst()
+        Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.getName().equals(searchedField)).findFirst()
                 .ifPresent(field -> pathToField.add(field.getName()));
 
-        if(pathToField.isEmpty()){
-            Class<?> superClass=clazz.getSuperclass();
-            while (!superClass.equals(Object.class)){
-                pathToField.addAll(findField(superClass, value));
-                superClass=superClass.getSuperclass();
+        if (pathToField.isEmpty()) {
+            Class<?> superClass = clazz.getSuperclass();
+            while (!superClass.equals(Object.class)) {
+                pathToField.addAll(findField(superClass, searchedField));
+                superClass = superClass.getSuperclass();
             }
         }
 
         if (pathToField.isEmpty()) {
             Arrays.stream(clazz.getDeclaredFields())
-                    .filter(field -> field.isAnnotationPresent(Embedded.class)
-                            || field.getType().isAnnotationPresent(Entity.class))
+                    .filter(field -> field.getType().isAnnotationPresent(Entity.class))
                     .forEach(field -> {
-                        List<String> path = findField(field.getType(), value);
+                        List<String> path = findField(field.getType(), searchedField);
                         if (!path.isEmpty() && pathToField.isEmpty()) {
                             pathToField.add(field.getName());
                             pathToField.addAll(path);
@@ -108,10 +97,6 @@ public class SearchUtility {
     public static <D extends BaseDTO> boolean filtering(D dto, SearchDTO<D> searchDto) {
         final boolean[] filtered = {true};
         browseField(dto.getClass(), field -> {
-            if (field.getName().endsWith("Id")) {
-                filterId(dto, searchDto, field, filtered);
-            }
-
             if (field.getName().endsWith("Ids") && field.getType().equals(List.class)) {
                 filterList(dto, searchDto, field, filtered);
             }
@@ -141,22 +126,6 @@ public class SearchUtility {
         } else {
             filtered[0] = filtered[0] || contains(ids, searchIds);
         }
-    }
-
-    private static <D extends BaseDTO> void filterId(D dto, SearchDTO<D> searchDto, Field field, boolean[] filtered) {
-        Integer id = get(field, dto);
-        Integer searchedId = get(field, searchDto.getDto());
-        if (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) {
-            filtered[0] = filtered[0] && equalsId(id, searchedId);
-        } else {
-            filtered[0] = filtered[0] || equalsId(id, searchedId);
-        }
-    }
-
-    public static boolean equalsId(Integer entityId, Integer searchedId) {
-        if (entityId != null && searchedId != null)
-            return entityId.equals(searchedId);
-        return true;
     }
 
 

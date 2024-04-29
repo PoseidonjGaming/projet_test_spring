@@ -1,16 +1,20 @@
 package fr.perso.springserie.repository;
 
 import fr.perso.springserie.model.entity.BaseEntity;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.List;
 
 @NoRepositoryBean
-public interface IBaseRepo<E extends BaseEntity> extends JpaRepository<E, Integer> {
+public interface IBaseRepository<E extends BaseEntity> extends MongoRepository<E, String> {
     List<E> findByIdIn(List<Integer> ids);
 
+    List<E> findByIdIn(List<Integer> ids, Example<E> example);
+
     Page<E> findByIdIn(List<Integer> ids, Pageable pageable);
+    Page<E> findByIdIn(List<Integer> ids, Example<E> example,Pageable pageable);
 }
