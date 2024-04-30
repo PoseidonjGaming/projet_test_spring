@@ -1,16 +1,21 @@
 package fr.perso.springserie.service.mapper;
 
 import fr.perso.springserie.interceptor.exception.GenericException;
-import fr.perso.springserie.model.entity.BaseEntity;
-import fr.perso.springserie.service.MapService;
+import fr.perso.springserie.model.entity.Character;
+import fr.perso.springserie.model.entity.*;
+import fr.perso.springserie.repository.IBaseRepository;
 import fr.perso.springserie.utility.annotation.Entity;
+import fr.perso.springserie.utility.annotation.Json;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static fr.perso.springserie.service.utility.ServiceUtility.*;
 
@@ -18,10 +23,33 @@ import static fr.perso.springserie.service.utility.ServiceUtility.*;
 @Primary
 public class Mapper implements IMapper {
 
-    private final MapService mapService;
+    private static final String ACTOR = "actor";
+    private static final String CHARACTER = "character";
+    private static final String SERIES = "series";
+    private static final String SEASON = "season";
+    private static final String CATEGORY = "category";
+    private static final String EPISODE = "episode";
+    private static final String MOVIE = "movie";
+    private static final String USER = "user";
+    private static final String REVIEW = "review";
+    private final Map<String, IBaseRepository<? extends BaseEntity>> mapRepo;
 
-    public Mapper(MapService mapService) {
-        this.mapService = mapService;
+
+    public Mapper(IBaseRepository<Series> seriesRepo, IBaseRepository<Category> categoryRepo,
+                  IBaseRepository<Character> characterRepo, IBaseRepository<Actor> actorRepository,
+                  IBaseRepository<Season> seasonRepository, IBaseRepository<Episode> episodeRepository,
+                  IBaseRepository<Movie> movieRepository, IBaseRepository<User> userRepository,
+                  IBaseRepository<Review> reviewRepository) {
+        mapRepo = new HashMap<>();
+        mapRepo.put(SERIES, seriesRepo);
+        mapRepo.put(CATEGORY, categoryRepo);
+        mapRepo.put(CHARACTER, characterRepo);
+        mapRepo.put(ACTOR, actorRepository);
+        mapRepo.put(SEASON, seasonRepository);
+        mapRepo.put(EPISODE, episodeRepository);
+        mapRepo.put(MOVIE, movieRepository);
+        mapRepo.put(USER, userRepository);
+        mapRepo.put(REVIEW, reviewRepository);
     }
 
     @Override
@@ -63,25 +91,22 @@ public class Mapper implements IMapper {
 
     private <S, T> void mapList(S source, T target, Field sourceField) {
         Class<?> listType = (Class<?>) ((ParameterizedType) sourceField.getGenericType()).getActualTypeArguments()[0];
+        Field targetField = getField(sourceField.getName().concat("Ids"), target.getClass());
+        if (Objects.isNull(targetField)) {
+            targetField = getField(sourceField.getName(), target.getClass());
+        }
+
         if (listType.isAnnotationPresent(Entity.class)) {
-            Field targetField = getField(sourceField.getName().concat("Ids"), target.getClass());
-            if (targetField != null) {
-                List<BaseEntity> entities = get(sourceField, source);
-                if (entities != null)
-                    set(entities.stream().map(BaseEntity::getId).toList(), target, targetField);
-            }
+            List<BaseEntity> entities = get(sourceField, source);
+            if (entities != null)
+                set(entities.stream().map(BaseEntity::getId).toList(), target, targetField);
 
-        } else if (sourceField.getName().endsWith("Ids")) {
-            Field targetField = getField(sourceField.getName().substring(0, (sourceField.getName().length() - 3)), target.getClass());
-            if (targetField != null) {
-                List<Integer> ids = get(sourceField, source);
-                if (ids != null)
-                    set(mapService.getRepo(targetField.getName()).findByIdIn(ids), target, targetField);
-
-            }
-        } else {
+        } else if(sourceField.isAnnotationPresent(Json.class)){
+            set(mapRepo.get(sourceField.getAnnotation(Json.class).type()).findByIdIn(get(sourceField, source)), target, targetField);
+        }else{
             transfert(source, target, sourceField, target.getClass());
         }
+
     }
 
 

@@ -62,7 +62,7 @@ public abstract class BaseController<D extends BaseDTO, S extends IBaseService<D
     }
 
     @PostMapping("/byIds")
-    public ResponseEntity<List<D>> getByIds(@RequestBody List<Integer> ids) {
+    public ResponseEntity<List<D>> getByIds(@RequestBody List<String> ids) {
         List<D> list = service.getByIds(ids);
         formatDTO(list);
         return ResponseEntity.ok(list);

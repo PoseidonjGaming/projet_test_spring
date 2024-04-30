@@ -10,12 +10,12 @@ import org.springframework.data.repository.NoRepositoryBean;
 import java.util.List;
 
 @NoRepositoryBean
-public interface IBaseRepository<E extends BaseEntity> extends MongoRepository<E, String> {
-    List<E> findByIdIn(List<Integer> ids);
+public interface IBaseRepository<E extends BaseEntity> extends MongoRepository<E, String>{
+    List<E> findByIdIn(List<String> ids);
 
-    List<E> findByIdIn(List<Integer> ids, Example<E> example);
+    List<E> findByIdIn(List<String> ids, Example<E> example);
 
-    Page<E> findByIdIn(List<Integer> ids, Pageable pageable);
+    Page<E> findByIdIn(List<String> ids, Pageable pageable);
 
-    Page<E> findByIdIn(List<Integer> ids, Example<E> example, Pageable pageable);
+    Page<E> findByIdIn(List<String> ids, Example<E> example, Pageable pageable);
 }

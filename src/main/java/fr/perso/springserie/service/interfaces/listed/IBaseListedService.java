@@ -9,7 +9,7 @@ import java.util.List;
 public interface IBaseListedService<D extends BaseDTO> {
     List<D> getAll();
 
-    List<D> getByIds(List<Integer> ids);
+    List<D> getByIds(List<String> ids);
 
     List<D> search(SearchDTO<D> searchDto);
 

@@ -5,13 +5,13 @@ import fr.perso.springserie.model.dto.UserDTO;
 import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.model.entity.User;
 import fr.perso.springserie.repository.IBaseRepository;
+import fr.perso.springserie.repository.ISeriesRepository;
 import fr.perso.springserie.security.JwtResponse;
 import fr.perso.springserie.security.JwtUser;
 import fr.perso.springserie.security.JwtUtil;
 import fr.perso.springserie.security.UserRole;
 import fr.perso.springserie.service.interfaces.crud.IUserService;
 import fr.perso.springserie.service.mapper.IMapper;
-import fr.perso.springserie.service.MapService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Example;
@@ -24,7 +24,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static fr.perso.springserie.service.utility.SearchUtility.getUserMatcher;
 
@@ -36,9 +38,10 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     private final PasswordEncoder encoder;
 
     @Lazy
-    protected UserService(IBaseRepository<User> repository, IMapper mapper, MapService mapService,
-                          JwtUtil jwtTokenUtil, AuthenticationManager authenticationManager, PasswordEncoder encoder) {
-        super(repository, mapper, UserDTO.class, User.class, mapService);
+    protected UserService(IBaseRepository<User> repository, IMapper mapper, JwtUtil jwtTokenUtil,
+                          AuthenticationManager authenticationManager, PasswordEncoder encoder,
+                          ISeriesRepository seriesRepository) {
+        super(repository, mapper, UserDTO.class, User.class);
         this.jwtTokenUtil = jwtTokenUtil;
         this.authenticationManager = authenticationManager;
         this.encoder = encoder;
@@ -118,6 +121,24 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
 
     @Override
     public UserDTO searchByUsername(String username) {
-        return null;
+        return mapper.convert(repository.findOne(Example.of(
+                mapper.convert(new UserDTO(username), entityClass), getUserMatcher())).orElse(null), dtoClass);
+    }
+
+    @Override
+    public void addWatchlist(String username, String id, String type) {
+        UserDTO user = searchByUsername(username);
+        if (type.equals("series")) {
+            if (Objects.isNull(user.getSeriesWatchList())) {
+                user.setSeriesWatchList(new ArrayList<>());
+            }
+        } else {
+            if (Objects.isNull(user.getSeriesWatchList())) {
+                user.setMoviesWatchlist(new ArrayList<>());
+            }
+        }
+
+        user.getSeriesWatchList().add(id);
+        repository.save(mapper.convert(user, entityClass));
     }
 }

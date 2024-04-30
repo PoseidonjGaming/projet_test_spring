@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.util.List;
 
@@ -20,4 +21,10 @@ public class User extends BaseEntity {
     private List<String> roles;
     private String password;
     private String avatarFile;
+    @DBRef
+    private List<Review> review;
+    @DBRef
+    private List<Series> seriesWatchList;
+    @DBRef
+    private List<Movie> moviesWatchlist;
 }

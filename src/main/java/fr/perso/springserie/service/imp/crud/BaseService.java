@@ -11,7 +11,6 @@ import fr.perso.springserie.model.entity.BaseEntity;
 import fr.perso.springserie.repository.IBaseRepository;
 import fr.perso.springserie.service.interfaces.crud.IBaseService;
 import fr.perso.springserie.service.mapper.IMapper;
-import fr.perso.springserie.service.MapService;
 import fr.perso.springserie.utility.annotation.Json;
 import org.springframework.data.domain.*;
 
@@ -20,7 +19,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,16 +33,14 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     protected final IMapper mapper;
     protected final Class<D> dtoClass;
     protected final Class<E> entityClass;
-    protected final MapService mapService;
 
     private final E entity;
 
-    protected BaseService(IBaseRepository<E> repository, IMapper mapper, Class<D> dtoClass, Class<E> entityClass, MapService mapService) {
+    protected BaseService(IBaseRepository<E> repository, IMapper mapper, Class<D> dtoClass, Class<E> entityClass) {
         this.repository = repository;
         this.mapper = mapper;
         this.dtoClass = dtoClass;
         this.entityClass = entityClass;
-        this.mapService = mapService;
         try {
             entity = entityClass.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
@@ -55,12 +51,6 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     private static Pageable getPageable(int size, int page) {
         return Pageable.ofSize(size).withPage(page);
-    }
-
-    private static void mappedBy(Field field, List<Field> fields, Map<String, String> structure) {
-        fields.stream().filter(entityField ->
-                        entityField.getName().equals(field.getName().replace("Ids", "")))
-                .findFirst().ifPresent(entityField -> structure.put(field.getName(), "ids"));
     }
 
     private PagedResponse<D> createPage(Page<E> pageRequest, SearchDTO<D> searchDTO) {
@@ -78,12 +68,12 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     }
 
     @Override
-    public List<D> getByIds(List<Integer> ids) {
+    public List<D> getByIds(List<String> ids) {
         return mapper.convertList(repository.findByIdIn(ids, Example.of(entity)), dtoClass);
     }
 
     @Override
-    public PagedResponse<D> getByIds(List<Integer> ids, int size, int page) {
+    public PagedResponse<D> getByIds(List<String> ids, int size, int page) {
         return createPage(repository.findByIdIn(ids, Example.of(entity), getPageable(size, page)), null);
     }
 
@@ -113,22 +103,16 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     public Map<String, String> getStructure() {
         Map<String, String> structure = new LinkedHashMap<>();
         Class<?> superClass = dtoClass.getSuperclass();
-        List<Field> fields = getEntityField(entityClass);
 
         BiConsumer<Field, Map<String, String>> consumer = (field, map) -> {
-            if (field.isAnnotationPresent(Json.class)) {
-                structure.put(field.getName(), field.getAnnotation(Json.class).type());
+            if (field.getType().getSuperclass().equals(Number.class)) {
+                map.put(field.getName(), "number");
+            } else if (field.getType().equals(LocalDate.class)) {
+                map.put(field.getName(), "date");
+            } else if (field.isAnnotationPresent(Json.class)) {
+                map.put(field.getName(), field.getAnnotation(Json.class).type());
             } else {
-                if (field.getName().endsWith("Id")) {
-                    structure.put(field.getName(), "foreign_id");
-                } else if (field.getName().endsWith("Ids")) {
-                    mappedBy(field, fields, structure);
-
-                } else if (field.getType().equals(LocalDate.class)) {
-                    structure.put(field.getName(), "date");
-                } else {
-                    structure.put(field.getName(), field.getType().getSimpleName());
-                }
+                map.put(field.getName(), field.getType().getSimpleName().toLowerCase());
             }
         };
 
@@ -140,10 +124,6 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         structure.putAll(getMap(dtoClass, consumer));
 
         return structure;
-    }
-
-    protected List<Field> getEntityField(Class<?> entityClass) {
-        return Arrays.asList(entityClass.getDeclaredFields());
     }
 
 
@@ -172,10 +152,8 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     @Override
     public Map<String, String> getDisplay() {
         Map<String, String> display = getMap(dtoClass, (field, map) -> {
-            if (!map.containsKey(field.getType().getSimpleName())) {
-                if (field.isAnnotationPresent(Json.class)) {
-                    map.put(field.getName(), field.getAnnotation(Json.class).display());
-                }
+            if (!map.containsKey(field.getType().getSimpleName()) && field.isAnnotationPresent(Json.class)) {
+                map.put(field.getName(), field.getAnnotation(Json.class).display());
             }
         });
         display.put("current", entityClass.getAnnotation(Json.class).display());

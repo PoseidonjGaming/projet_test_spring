@@ -29,22 +29,19 @@ import java.util.List;
 @EnableMethodSecurity
 public class WebSecurityConfig {
     private static final String[] WHITE_LISTED_URLS = new String[]{
-            "user/authenticate", "user/registration", "user/save", "user/search/*", "user/test",
+            "user/authenticate", "user/registration", "user/save", "user/search/*",
             "file/load", "file/test",
-            "series/sort/search", "series/sort", "series/list",
+            "series/sort/search", "series/sort", "series/list","series/detail/*",
             "episode/sort/search", "episode/list", "episode/test",
             "movie/sort/search", "movie/sort",
-            "review/search",
             "category/list",
-            "*/structure",
-
     };
 
     private static final String[] USER_ADMIN_ROUTES = new String[]{
             "series/byIds", "movie/byIds", "review/save", "review/delete/*"
     };
     private static final String[] USER_ROUTES = new String[]{
-            "watchlist/**"
+            "user/watchlist/**", "review/search/*"
     };
     private final JwtFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;

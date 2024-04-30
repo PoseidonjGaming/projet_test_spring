@@ -25,7 +25,6 @@ public class Series extends BaseEntity {
     private String summary;
     private String poster;
     private String trailerUrl;
-    private String type;
     @DBRef
     private List<Category> category;
     @DBRef

@@ -39,7 +39,7 @@ public class SearchUtility {
 
     public static ExampleMatcher getUserMatcher() {
         return ExampleMatcher.matchingAll()
-                .withIgnorePaths("roles", "password", "id")
+                .withIgnorePaths("roles", "password", "id", "review", "seriesWatchList", "moviesWatchlist")
                 .withIgnoreNullValues().withMatcher("username", matcher -> matcher.exact().caseSensitive());
     }
 

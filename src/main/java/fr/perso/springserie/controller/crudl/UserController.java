@@ -1,25 +1,19 @@
 package fr.perso.springserie.controller.crudl;
 
 import fr.perso.springserie.model.dto.UserDTO;
-import fr.perso.springserie.model.entity.User;
-import fr.perso.springserie.repository.IUserRepository;
 import fr.perso.springserie.security.JwtResponse;
 import fr.perso.springserie.security.JwtUser;
 import fr.perso.springserie.service.interfaces.crud.IUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/user")
 public class UserController extends BaseController<UserDTO, IUserService> {
 
-    private final IUserRepository userRepository;
 
-    protected UserController(IUserService service, IUserRepository userRepository) {
+    protected UserController(IUserService service) {
         super(service);
-        this.userRepository = userRepository;
     }
 
 
@@ -38,8 +32,8 @@ public class UserController extends BaseController<UserDTO, IUserService> {
         service.registration(user);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<List<User>> test() {
-        return ResponseEntity.ok(userRepository.findAll());
+    @GetMapping("/watchlist/{username}/{type}/add/{id}")
+    public void addSeriesWatchlist(@PathVariable String username, @PathVariable String id, @PathVariable String type) {
+        service.addWatchlist(username, id, type);
     }
 }

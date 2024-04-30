@@ -11,7 +11,7 @@ public interface IBasePagedService<D extends BaseDTO> {
 
     PagedResponse<D> getAll(int size, int page);
 
-    PagedResponse<D> getByIds(List<Integer> ids, int size, int page);
+    PagedResponse<D> getByIds(List<String> ids, int size, int page);
 
     PagedResponse<D> search(SearchDTO<D> searchDto, int size, int page);
 
