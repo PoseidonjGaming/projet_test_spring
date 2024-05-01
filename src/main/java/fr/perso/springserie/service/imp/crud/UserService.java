@@ -129,16 +129,16 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     public void addWatchlist(String username, String id, String type) {
         UserDTO user = searchByUsername(username);
         if (type.equals("series")) {
-            if (Objects.isNull(user.getSeriesWatchList())) {
-                user.setSeriesWatchList(new ArrayList<>());
+            if (Objects.isNull(user.getSeriesWatchlist())) {
+                user.setSeriesWatchlist(new ArrayList<>());
             }
         } else {
-            if (Objects.isNull(user.getSeriesWatchList())) {
+            if (Objects.isNull(user.getSeriesWatchlist())) {
                 user.setMoviesWatchlist(new ArrayList<>());
             }
         }
 
-        user.getSeriesWatchList().add(id);
+        user.getSeriesWatchlist().add(id);
         repository.save(mapper.convert(user, entityClass));
     }
 }

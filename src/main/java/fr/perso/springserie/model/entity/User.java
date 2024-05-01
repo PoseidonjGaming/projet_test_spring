@@ -24,7 +24,7 @@ public class User extends BaseEntity {
     @DBRef
     private List<Review> review;
     @DBRef
-    private List<Series> seriesWatchList;
+    private List<Series> seriesWatchlist;
     @DBRef
     private List<Movie> moviesWatchlist;
 }

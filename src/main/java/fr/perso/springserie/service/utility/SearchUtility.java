@@ -39,7 +39,7 @@ public class SearchUtility {
 
     public static ExampleMatcher getUserMatcher() {
         return ExampleMatcher.matchingAll()
-                .withIgnorePaths("roles", "password", "id", "review", "seriesWatchList", "moviesWatchlist")
+                .withIgnorePaths("password", "id", "review", "roles","seriesWatchlist","moviesWatchlist")
                 .withIgnoreNullValues().withMatcher("username", matcher -> matcher.exact().caseSensitive());
     }
 
@@ -48,12 +48,17 @@ public class SearchUtility {
                                                             Class<?> clazz, Class<E> entityClass,
                                                             ExampleMatcher.StringMatcher stringMatcher) {
         browseField(clazz, field -> {
-            if (field.getType().isAnnotationPresent(Entity.class) || field.getType().equals(List.class)) {
+            if (field.getType().isAnnotationPresent(Entity.class)) {
                 List<String> pathField = findField(entityClass, field.getName());
                 matcher[0] = matcher[0].withIgnorePaths(getPath(pathField.toArray(new String[]{})));
-            } else if (field.getType().equals(String.class)) {
+            }else if(field.getType().equals(List.class)){
+                matcher[0].getIgnoredPaths().add(field.getName());
+                matcher[0]= matcher[0].withIgnorePaths(matcher[0].getIgnoredPaths().toArray(new String[]{}));
+            }
+            else if (field.getType().equals(String.class)) {
                 matcher[0] = matcher[0].withMatcher(
-                        getPath(findField(entityClass, field.getName()).toArray(new String[]{})), matcher1 -> matcher1.stringMatcher(stringMatcher).ignoreCase());
+                        getPath(findField(entityClass, field.getName()).toArray(new String[]{})), matcher1 ->
+                                matcher1.stringMatcher(stringMatcher).ignoreCase());
             }
         });
     }

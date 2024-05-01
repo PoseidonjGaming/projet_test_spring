@@ -21,7 +21,7 @@ public class UserDTO extends BaseDTO {
     @Json(type = "review")
     private List<String> reviewIds;
     @Json(type = "series")
-    private List<String> seriesWatchList;
+    private List<String> seriesWatchlist;
     @Json(type = "movie")
     private List<String> moviesWatchlist;
 
