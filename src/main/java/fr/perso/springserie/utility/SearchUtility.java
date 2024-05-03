@@ -106,16 +106,14 @@ public class SearchUtility {
                 return isBetween(get(field, dto), searchDto.getStartDate(), searchDto.getEndDate());
             }
 
-            return true;
+            return Objects.nonNull(get(field, dto));
         };
 
         if (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) {
             return Arrays.stream(dto.getClass().getDeclaredFields())
-                    .filter(field -> Objects.nonNull(get(field, searchDto.getDto())))
                     .allMatch(predicate);
-        }else{
+        } else {
             return Arrays.stream(dto.getClass().getDeclaredFields())
-                    .filter(field -> Objects.nonNull(get(field, searchDto.getDto())))
                     .anyMatch(predicate);
         }
 
@@ -124,8 +122,11 @@ public class SearchUtility {
     public static <O> boolean contains(List<O> entityList, List<O> compareTo) {
         if (Objects.nonNull(entityList) && Objects.nonNull(compareTo)) {
             return new HashSet<>(entityList).containsAll(compareTo);
+        } else if (Objects.nonNull(compareTo)) {
+            return compareTo.isEmpty();
+        }else{
+            return true;
         }
-        return Objects.nonNull(entityList);
     }
 
     public static boolean isBetween(LocalDate releaseDate, LocalDate startDate, LocalDate endDate) {
