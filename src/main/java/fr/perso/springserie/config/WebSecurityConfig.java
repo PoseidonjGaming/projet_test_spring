@@ -30,9 +30,9 @@ import java.util.List;
 public class WebSecurityConfig {
     private static final String[] WHITE_LISTED_URLS = new String[]{
             "user/authenticate", "user/registration", "user/save", "user/search/*",
-            "file/load", "file/test",
-            "series/sort/search", "series/sort", "series/list","series/detail/*",
-            "episode/sort/search", "episode/list", "episode/test",
+            "file/load",
+            "series/sort/search", "series/sort", "series/list", "series/detail/*", "series/search",
+            "episode/sort/search", "episode/list",
             "movie/sort/search", "movie/sort",
             "category/list",
     };
@@ -63,7 +63,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:4200"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "OPTIONS"));
@@ -82,9 +82,9 @@ public class WebSecurityConfig {
                             try {
 
                                 auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                        .requestMatchers(USER_ADMIN_ROUTES).hasAnyRole("user", "super_admin")
-                                        .requestMatchers(USER_ROUTES).hasRole("user")
                                         .requestMatchers(WHITE_LISTED_URLS).permitAll()
+                                        .requestMatchers(USER_ROUTES).hasRole("user")
+                                        .requestMatchers(USER_ADMIN_ROUTES).hasAnyRole("user", "super_admin")
                                         .anyRequest().hasRole("super_admin");
                             } catch (Exception e) {
                                 throw new GenericException(e);

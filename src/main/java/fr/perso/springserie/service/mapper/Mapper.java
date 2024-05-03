@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static fr.perso.springserie.service.utility.ServiceUtility.*;
+import static fr.perso.springserie.utility.ServiceUtility.*;
 
 @Service
 @Primary
@@ -93,7 +93,7 @@ public class Mapper implements IMapper {
         Class<?> listType = (Class<?>) ((ParameterizedType) sourceField.getGenericType()).getActualTypeArguments()[0];
         Field targetField = getField(sourceField.getName().concat("Ids"), target.getClass());
         if (Objects.isNull(targetField)) {
-            targetField = getField(sourceField.getName(), target.getClass());
+            targetField = getField(sourceField.getName().replace("Ids",""), target.getClass());
         }
 
         if (listType.isAnnotationPresent(Entity.class)) {

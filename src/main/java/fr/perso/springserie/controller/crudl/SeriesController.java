@@ -1,5 +1,6 @@
 package fr.perso.springserie.controller.crudl;
 
+import com.mongodb.BasicDBList;
 import fr.perso.springserie.model.dto.SeriesDTO;
 import fr.perso.springserie.model.entity.Series;
 import fr.perso.springserie.repository.IBaseRepository;
@@ -17,22 +18,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/series")
 public class SeriesController extends BaseController<SeriesDTO, IBaseService<SeriesDTO>> {
-    private final IBaseRepository<Series> repo;
-    private final IMapper mapper;
 
-    protected SeriesController(IBaseService<SeriesDTO> service, IBaseRepository<Series> repo, IMapper mapper) {
+    protected SeriesController(IBaseService<SeriesDTO> service) {
         super(service);
-        this.repo = repo;
-        this.mapper = mapper;
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<List<SeriesDTO>> test() {
-        ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreNullValues().withMatcher("name", matcher1 ->
-                matcher1.stringMatcher(ExampleMatcher.StringMatcher.CONTAINING).ignoreCase());
-        SeriesDTO seriesDTO = new SeriesDTO();
-        seriesDTO.setName("l");
-        Example<Series> example = Example.of(mapper.convert(seriesDTO, Series.class), matcher);
-        return ResponseEntity.ok(mapper.convertList(repo.findAll(example), SeriesDTO.class));
-    }
+
 }

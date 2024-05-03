@@ -1,4 +1,4 @@
-package fr.perso.springserie.service.utility;
+package fr.perso.springserie.utility;
 
 import fr.perso.springserie.model.dto.BaseDTO;
 import fr.perso.springserie.model.dto.special.SearchDTO;
@@ -9,13 +9,11 @@ import org.springframework.data.domain.ExampleMatcher;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.function.Predicate;
 
-import static fr.perso.springserie.service.utility.ServiceUtility.browseField;
-import static fr.perso.springserie.service.utility.ServiceUtility.get;
+import static fr.perso.springserie.utility.ServiceUtility.browseField;
+import static fr.perso.springserie.utility.ServiceUtility.get;
 
 @UtilityClass
 public class SearchUtility {
@@ -39,7 +37,7 @@ public class SearchUtility {
 
     public static ExampleMatcher getUserMatcher() {
         return ExampleMatcher.matchingAll()
-                .withIgnorePaths("password", "id", "review", "roles","seriesWatchlist","moviesWatchlist")
+                .withIgnorePaths("password", "id", "review", "roles", "seriesWatchlist", "moviesWatchlist")
                 .withIgnoreNullValues().withMatcher("username", matcher -> matcher.exact().caseSensitive());
     }
 
@@ -51,11 +49,10 @@ public class SearchUtility {
             if (field.getType().isAnnotationPresent(Entity.class)) {
                 List<String> pathField = findField(entityClass, field.getName());
                 matcher[0] = matcher[0].withIgnorePaths(getPath(pathField.toArray(new String[]{})));
-            }else if(field.getType().equals(List.class)){
+            } else if (field.getType().equals(List.class)) {
                 matcher[0].getIgnoredPaths().add(field.getName());
-                matcher[0]= matcher[0].withIgnorePaths(matcher[0].getIgnoredPaths().toArray(new String[]{}));
-            }
-            else if (field.getType().equals(String.class)) {
+                matcher[0] = matcher[0].withIgnorePaths(matcher[0].getIgnoredPaths().toArray(new String[]{}));
+            } else if (field.getType().equals(String.class)) {
                 matcher[0] = matcher[0].withMatcher(
                         getPath(findField(entityClass, field.getName()).toArray(new String[]{})), matcher1 ->
                                 matcher1.stringMatcher(stringMatcher).ignoreCase());
@@ -100,54 +97,43 @@ public class SearchUtility {
     }
 
     public static <D extends BaseDTO> boolean filtering(D dto, SearchDTO<D> searchDto) {
-        final boolean[] filtered = {true};
-        browseField(dto.getClass(), field -> {
-            if (field.getName().endsWith("Ids") && field.getType().equals(List.class)) {
-                filterList(dto, searchDto, field, filtered);
+        Predicate<Field> predicate = field -> {
+            if (field.getType().equals(List.class)) {
+                return contains(get(field, dto), get(field, searchDto.getDto()));
             }
 
             if (field.getType().equals(LocalDate.class)) {
-                filterDate(dto, searchDto, field, filtered);
+                return isBetween(get(field, dto), searchDto.getStartDate(), searchDto.getEndDate());
             }
-        });
 
-        return filtered[0];
-    }
+            return true;
+        };
 
-    private static <D extends BaseDTO> void filterDate(D dto, SearchDTO<D> searchDto, Field field, boolean[] filtered) {
-        LocalDate entityDate = get(field, dto);
         if (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) {
-            filtered[0] = filtered[0] && isBetween(entityDate, searchDto.getStartDate(), searchDto.getEndDate());
-        } else {
-            filtered[0] = filtered[0] || isBetween(entityDate, searchDto.getStartDate(), searchDto.getEndDate());
+            return Arrays.stream(dto.getClass().getDeclaredFields())
+                    .filter(field -> Objects.nonNull(get(field, searchDto.getDto())))
+                    .allMatch(predicate);
+        }else{
+            return Arrays.stream(dto.getClass().getDeclaredFields())
+                    .filter(field -> Objects.nonNull(get(field, searchDto.getDto())))
+                    .anyMatch(predicate);
         }
-    }
 
-    private static <D extends BaseDTO> void filterList(D dto, SearchDTO<D> searchDto, Field field, boolean[] filtered) {
-        List<Integer> ids = get(field, dto);
-        List<Integer> searchIds = get(field, searchDto.getDto());
-        if (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) {
-            filtered[0] = filtered[0] && contains(ids, searchIds);
-        } else {
-            filtered[0] = filtered[0] || contains(ids, searchIds);
-        }
     }
-
 
     public static <O> boolean contains(List<O> entityList, List<O> compareTo) {
-        if ((entityList != null) && (compareTo != null)) {
+        if (Objects.nonNull(entityList) && Objects.nonNull(compareTo)) {
             return new HashSet<>(entityList).containsAll(compareTo);
         }
-        return true;
-
+        return Objects.nonNull(entityList);
     }
 
     public static boolean isBetween(LocalDate releaseDate, LocalDate startDate, LocalDate endDate) {
-        if (startDate != null && endDate != null) {
+        if (Objects.nonNull(startDate) && Objects.nonNull(endDate)) {
             return (releaseDate.isEqual(startDate) || releaseDate.isEqual(endDate))
                     || (releaseDate.isAfter(startDate) && releaseDate.isBefore(endDate));
         }
-        return true;
+        return Objects.nonNull(releaseDate);
 
     }
 }

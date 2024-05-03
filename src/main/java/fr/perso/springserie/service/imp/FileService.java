@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
-import static fr.perso.springserie.service.utility.FileUtility.createFolder;
+import static fr.perso.springserie.utility.FileUtility.createFolder;
 
 @Service
 public class FileService implements IFileService {

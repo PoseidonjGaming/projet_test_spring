@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static fr.perso.springserie.service.utility.SearchUtility.getUserMatcher;
+import static fr.perso.springserie.utility.SearchUtility.getUserMatcher;
 
 @Service
 public class UserService extends BaseService<User, UserDTO> implements IUserService {

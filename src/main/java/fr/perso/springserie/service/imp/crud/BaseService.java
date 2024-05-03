@@ -19,13 +19,11 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 
-import static fr.perso.springserie.service.utility.SearchUtility.*;
-import static fr.perso.springserie.service.utility.ServiceUtility.getMap;
+import static fr.perso.springserie.utility.SearchUtility.*;
+import static fr.perso.springserie.utility.ServiceUtility.getMap;
 
 public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> implements IBaseService<D> {
 
@@ -69,6 +67,9 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public List<D> getByIds(List<String> ids) {
+        if (Objects.isNull(ids)) {
+            return new ArrayList<>();
+        }
         return mapper.convertList(repository.findByIdIn(ids, Example.of(entity)), dtoClass);
     }
 
@@ -167,11 +168,10 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public List<D> search(SearchDTO<D> searchDto) {
-        return mapper.convertList(repository.findAll(
-                Example.of(
-                        mapper.convert(searchDto.getDto(), entityClass),
-                        getMatcher(searchDto.getMode(), searchDto.getType(), entityClass)
-                )), dtoClass).stream().filter(dto -> filtering(dto, searchDto)).toList();
+        E entityConvert = mapper.convert(searchDto.getDto(), entityClass);
+        Example<E> example = Example.of(entityConvert, getMatcher(searchDto.getMode(), searchDto.getType(), entityClass));
+        List<E> entities=repository.findAll(example);
+        return entities.stream().map(e->mapper.convert(e, dtoClass)).filter(dto->filtering(dto, searchDto)).toList();
     }
 
 

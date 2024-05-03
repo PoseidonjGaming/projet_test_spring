@@ -1,4 +1,4 @@
-package fr.perso.springserie.service.utility;
+package fr.perso.springserie.utility;
 
 import fr.perso.springserie.interceptor.exception.GenericException;
 import lombok.experimental.UtilityClass;

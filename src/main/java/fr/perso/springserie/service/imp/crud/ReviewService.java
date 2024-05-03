@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static fr.perso.springserie.service.utility.SearchUtility.getMatcher;
-import static fr.perso.springserie.service.utility.SearchUtility.getUserMatcher;
+import static fr.perso.springserie.utility.SearchUtility.getMatcher;
+import static fr.perso.springserie.utility.SearchUtility.getUserMatcher;
 
 @Service
 public class ReviewService extends BaseService<Review, ReviewDTO> implements IReviewService {
