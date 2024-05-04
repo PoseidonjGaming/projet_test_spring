@@ -82,7 +82,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     public PagedResponse<D> search(SearchDTO<D> searchDto, int size, int page) {
         return createPage(repository.findAll(Example.of(
                         mapper.convert(searchDto.getDto(), entityClass),
-                        getMatcher(searchDto.getMode(), searchDto.getType(), entityClass)),
+                        getMatcher(searchDto, entityClass)),
                 getPageable(size, page)
         ), searchDto);
     }
@@ -170,7 +170,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     public List<D> search(SearchDTO<D> searchDto) {
         return repository.findAll(
                         Example.of(mapper.convert(searchDto.getDto(), entityClass),
-                                getMatcher(searchDto.getMode(), searchDto.getType(), entityClass))
+                                getMatcher(searchDto, entityClass))
                 )
                 .stream().map(e -> mapper.convert(e, dtoClass))
                 .filter(dto -> filtering(dto, searchDto)).toList();
@@ -188,7 +188,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
     public List<D> sortSearch(SearchDTO<D> searchDto, SortDTO sortDTO) {
         return mapper.convertList(repository.findAll(
                         Example.of(mapper.convert(searchDto.getDto(), entityClass),
-                                getMatcher(searchDto.getMode(), searchDto.getType(), entityClass)),
+                                getMatcher(searchDto, entityClass)),
                         Sort.by(sortDTO.getDirection(),
                                 getPath(findField(entityClass, sortDTO.getField()).toArray(new String[]{}))
                         )
@@ -223,8 +223,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
         List<D> list = ds.stream()
                 .filter(dto -> !search(new SearchDTO<>(dto,
                         ExampleMatcher.MatchMode.ALL,
-                        ExampleMatcher.StringMatcher.EXACT,
-                        null, null)).isEmpty()).toList();
+                        ExampleMatcher.StringMatcher.EXACT, null)).isEmpty()).toList();
         if (list.isEmpty()) {
             repository.saveAll(mapper.convertList(ds, entityClass));
         }

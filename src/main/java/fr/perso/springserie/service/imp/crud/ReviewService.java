@@ -2,6 +2,7 @@ package fr.perso.springserie.service.imp.crud;
 
 import fr.perso.springserie.model.dto.ReviewDTO;
 import fr.perso.springserie.model.dto.UserDTO;
+import fr.perso.springserie.model.dto.special.SearchDTO;
 import fr.perso.springserie.model.entity.Review;
 import fr.perso.springserie.model.entity.User;
 import fr.perso.springserie.repository.IBaseRepository;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static fr.perso.springserie.utility.SearchUtility.getMatcher;
@@ -32,9 +34,12 @@ public class ReviewService extends BaseService<Review, ReviewDTO> implements IRe
                 Example.of(mapper.convert(new UserDTO(username), User.class),
                         getUserMatcher())).orElse(null);
         assert user != null;
+        ReviewDTO reviewDTO = new ReviewDTO(null, null, user.getId(), null, null);
         return mapper.convertList(repository.findAll(
-                Example.of(new Review(null, null, user.getId(), null, null),
-                        getMatcher(ExampleMatcher.MatchMode.ANY, ExampleMatcher.StringMatcher.EXACT, entityClass))
+                Example.of(mapper.convert(reviewDTO,entityClass),
+                        getMatcher(new SearchDTO<>(reviewDTO,
+                                ExampleMatcher.MatchMode.ANY,
+                                ExampleMatcher.StringMatcher.EXACT, new ArrayList<>()), entityClass))
         ), dtoClass);
     }
 }

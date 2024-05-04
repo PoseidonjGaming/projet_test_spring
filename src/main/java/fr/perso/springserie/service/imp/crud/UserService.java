@@ -81,7 +81,7 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         List<UserDTO> results = search(new SearchDTO<>(new UserDTO(username),
                 ExampleMatcher.MatchMode.ALL, ExampleMatcher.StringMatcher.EXACT,
-                null, null));
+                null));
         if (!results.isEmpty()) {
             UserDTO user = results.get(0);
             return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
@@ -94,7 +94,7 @@ public class UserService extends BaseService<User, UserDTO> implements IUserServ
     public JwtResponse authentication(JwtUser user) {
         List<UserDTO> results = search(new SearchDTO<>(mapper.convert(user, UserDTO.class),
                 ExampleMatcher.MatchMode.ALL, ExampleMatcher.StringMatcher.EXACT,
-                null, null));
+                null));
         if (!results.isEmpty()) {
             authenticateManager(user.getUsername(), user.getPassword());
             return new JwtResponse(jwtTokenUtil.generateToken(results.get(0)));

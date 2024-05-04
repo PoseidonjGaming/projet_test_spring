@@ -61,8 +61,8 @@ public class ServiceUtility {
 
     }
 
-    public static Map<String, String> getMap(Class<?> clazz, BiConsumer<Field, Map<String, String>> consumer) {
-        Map<String, String> map = new LinkedHashMap<>();
+    public static <T> Map<String, T> getMap(Class<?> clazz, BiConsumer<Field, Map<String, T>> consumer) {
+        Map<String, T> map = new LinkedHashMap<>();
         browseField(clazz, field -> consumer.accept(field, map));
         return map;
     }

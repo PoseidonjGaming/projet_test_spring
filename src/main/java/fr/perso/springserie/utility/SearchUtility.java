@@ -12,27 +12,27 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static fr.perso.springserie.utility.ServiceUtility.browseField;
-import static fr.perso.springserie.utility.ServiceUtility.get;
+import static fr.perso.springserie.utility.ServiceUtility.*;
 
 @UtilityClass
 public class SearchUtility {
 
-    public static <E extends BaseEntity> ExampleMatcher getMatcher(ExampleMatcher.MatchMode mode,
-                                                                   ExampleMatcher.StringMatcher matcherType,
-                                                                   Class<E> entityClass) {
-        final ExampleMatcher[] exampleMatcher = new ExampleMatcher[1];
-        if (mode.equals(ExampleMatcher.MatchMode.ALL)) {
-            exampleMatcher[0] = ExampleMatcher.matchingAll();
+    public static <E extends BaseEntity, D extends BaseDTO>
+    ExampleMatcher getMatcher(SearchDTO<D> searchDTO, Class<E> entityClass) {
+        boolean isNull = Arrays.stream(searchDTO.getDto().getClass().getDeclaredFields())
+                .allMatch(field -> Objects.isNull(get(field, searchDTO.getDto())));
+        ExampleMatcher matcher;
+        if (isNull) {
+            matcher = ExampleMatcher
+                    .matchingAll()
+            ;
         } else {
-            exampleMatcher[0] = ExampleMatcher.matchingAny();
+            matcher = ExampleMatcher
+                    .matchingAny();
         }
 
-        exampleMatcher[0] = exampleMatcher[0].withIgnoreNullValues().withIgnorePaths("id");
-
-        getSpecifiers(exampleMatcher, entityClass, entityClass, matcherType);
-
-        return exampleMatcher[0];
+        return getSpecifiers(matcher.withIgnoreNullValues()
+                .withIgnorePaths("id"), entityClass, searchDTO.getType());
     }
 
     public static ExampleMatcher getUserMatcher() {
@@ -42,22 +42,26 @@ public class SearchUtility {
     }
 
 
-    public static <E extends BaseEntity> void getSpecifiers(ExampleMatcher[] matcher,
-                                                            Class<?> clazz, Class<E> entityClass,
-                                                            ExampleMatcher.StringMatcher stringMatcher) {
-        browseField(clazz, field -> {
-            if (field.getType().isAnnotationPresent(Entity.class)) {
-                List<String> pathField = findField(entityClass, field.getName());
-                matcher[0] = matcher[0].withIgnorePaths(getPath(pathField.toArray(new String[]{})));
-            } else if (field.getType().equals(List.class)) {
-                matcher[0].getIgnoredPaths().add(field.getName());
-                matcher[0] = matcher[0].withIgnorePaths(matcher[0].getIgnoredPaths().toArray(new String[]{}));
-            } else if (field.getType().equals(String.class)) {
-                matcher[0] = matcher[0].withMatcher(
-                        getPath(findField(entityClass, field.getName()).toArray(new String[]{})), matcher1 ->
-                                matcher1.stringMatcher(stringMatcher).ignoreCase());
+    public static ExampleMatcher getSpecifiers(ExampleMatcher initMatcher,
+                                               Class<?> clazz, ExampleMatcher.StringMatcher stringMatcher) {
+        List<ExampleMatcher> matchers = new ArrayList<>();
+        browseField(clazz, initMatcher, (field, matcher) -> {
+            if (field.getType().equals(List.class) || field.getType().equals(LocalDate.class)) {
+                matcher.getIgnoredPaths().add(field.getName());
             }
+
+            if (field.getType().equals(String.class)) {
+                matchers.add(matcher.withMatcher(field.getName(), match -> match.stringMatcher(stringMatcher).ignoreCase()));
+            }
+
         });
+
+        return matchers.stream().reduce((exampleMatcher, exampleMatcher2) -> {
+            exampleMatcher2.getPropertySpecifiers().getSpecifiers().forEach(value -> {
+                exampleMatcher.getPropertySpecifiers().add(value);
+            });
+            return exampleMatcher;
+        }).orElse(initMatcher);
     }
 
     public static String getPath(String... parts) {
@@ -102,19 +106,20 @@ public class SearchUtility {
                 return contains(get(field, dto), get(field, searchDto.getDto()));
             }
 
-            if (field.getType().equals(LocalDate.class)) {
-                return isBetween(get(field, dto), searchDto.getStartDate(), searchDto.getEndDate());
-            }
-
             return Objects.nonNull(get(field, dto));
         };
 
         if (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) {
             return Arrays.stream(dto.getClass().getDeclaredFields())
-                    .allMatch(predicate);
+                    .allMatch(predicate)
+                    && searchDto.getDates().stream().allMatch(dateDTO ->
+                    isBetween(get(getField(dateDTO.getField(), dto.getClass()), dto),
+                            dateDTO.getStartDate(), dateDTO.getEndDate()));
         } else {
             return Arrays.stream(dto.getClass().getDeclaredFields())
-                    .anyMatch(predicate);
+                    .anyMatch(predicate) || searchDto.getDates().stream().anyMatch(dateDTO ->
+                    isBetween(get(getField(dateDTO.getField(), dto.getClass()), dto),
+                            dateDTO.getStartDate(), dateDTO.getEndDate()));
         }
 
     }
@@ -124,7 +129,7 @@ public class SearchUtility {
             return new HashSet<>(entityList).containsAll(compareTo);
         } else if (Objects.nonNull(compareTo)) {
             return compareTo.isEmpty();
-        }else{
+        } else {
             return true;
         }
     }

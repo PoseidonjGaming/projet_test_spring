@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.springframework.data.domain.ExampleMatcher;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,6 +21,5 @@ public class SearchDTO<D extends BaseDTO> {
     private ExampleMatcher.MatchMode mode;
     private ExampleMatcher.StringMatcher type;
 
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private List<DateDTO> dates;
 }
