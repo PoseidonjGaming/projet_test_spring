@@ -12,14 +12,16 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static fr.perso.springserie.utility.ServiceUtility.*;
+import static fr.perso.springserie.utility.ServiceUtility.browseField;
+import static fr.perso.springserie.utility.ServiceUtility.get;
 
 @UtilityClass
 public class SearchUtility {
 
     public static <E extends BaseEntity, D extends BaseDTO>
     ExampleMatcher getMatcher(SearchDTO<D> searchDTO, Class<E> entityClass) {
-        boolean isNull = Arrays.stream(searchDTO.getDto().getClass().getDeclaredFields())
+        boolean isNull = Arrays.stream(searchDTO.getDto().getClass().getDeclaredFields()).
+                filter(field -> !field.getType().equals(List.class))
                 .allMatch(field -> Objects.isNull(get(field, searchDTO.getDto())));
         ExampleMatcher matcher;
         if (isNull) {
@@ -57,9 +59,8 @@ public class SearchUtility {
         });
 
         return matchers.stream().reduce((exampleMatcher, exampleMatcher2) -> {
-            exampleMatcher2.getPropertySpecifiers().getSpecifiers().forEach(value -> {
-                exampleMatcher.getPropertySpecifiers().add(value);
-            });
+            exampleMatcher2.getPropertySpecifiers().getSpecifiers().forEach(value ->
+                    exampleMatcher.getPropertySpecifiers().add(value));
             return exampleMatcher;
         }).orElse(initMatcher);
     }
@@ -106,20 +107,15 @@ public class SearchUtility {
                 return contains(get(field, dto), get(field, searchDto.getDto()));
             }
 
-            return Objects.nonNull(get(field, dto));
+            return true;
         };
 
         if (searchDto.getMode().equals(ExampleMatcher.MatchMode.ALL)) {
             return Arrays.stream(dto.getClass().getDeclaredFields())
-                    .allMatch(predicate)
-                    && searchDto.getDates().stream().allMatch(dateDTO ->
-                    isBetween(get(getField(dateDTO.getField(), dto.getClass()), dto),
-                            dateDTO.getStartDate(), dateDTO.getEndDate()));
+                    .allMatch(predicate);
         } else {
             return Arrays.stream(dto.getClass().getDeclaredFields())
-                    .anyMatch(predicate) || searchDto.getDates().stream().anyMatch(dateDTO ->
-                    isBetween(get(getField(dateDTO.getField(), dto.getClass()), dto),
-                            dateDTO.getStartDate(), dateDTO.getEndDate()));
+                    .anyMatch(predicate);
         }
 
     }
@@ -127,10 +123,8 @@ public class SearchUtility {
     public static <O> boolean contains(List<O> entityList, List<O> compareTo) {
         if (Objects.nonNull(entityList) && Objects.nonNull(compareTo)) {
             return new HashSet<>(entityList).containsAll(compareTo);
-        } else if (Objects.nonNull(compareTo)) {
-            return compareTo.isEmpty();
         } else {
-            return true;
+            return Objects.isNull(compareTo) || compareTo.isEmpty();
         }
     }
 

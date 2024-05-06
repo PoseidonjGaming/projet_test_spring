@@ -168,12 +168,10 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDTO> imple
 
     @Override
     public List<D> search(SearchDTO<D> searchDto) {
-        return repository.findAll(
-                        Example.of(mapper.convert(searchDto.getDto(), entityClass),
-                                getMatcher(searchDto, entityClass))
-                )
-                .stream().map(e -> mapper.convert(e, dtoClass))
-                .filter(dto -> filtering(dto, searchDto)).toList();
+        return mapper.convertList(repository.findAll(
+                Example.of(mapper.convert(searchDto.getDto(), entityClass),
+                        getMatcher(searchDto,entityClass))
+        ), dtoClass).stream().filter(dto->filtering(dto, searchDto)).toList();
     }
 
 

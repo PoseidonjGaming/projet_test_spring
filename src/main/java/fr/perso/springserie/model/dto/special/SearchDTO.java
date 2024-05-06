@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.ExampleMatcher;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Getter
